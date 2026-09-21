@@ -1,32 +1,147 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "init",
-            "type": "shell",
-            "command": "sudo -E env PATH=$PATH bash ${workspaceFolder}/build.sh init"
-        },
-        {
-            "label": "build_debug",
-            "type": "shell",
-            "command": "bash build.sh debug",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "build_release",
-            "type": "shell",
-            "command": "bash build.sh release"
-        },
-        {
-            "label": "gen_parser",
-            "type": "shell",
-            "command": "cd ${workspaceFolder}/src/observer/sql/parser && bash gen_parser.sh"
-        }
-    ]
+  "version": "2.0.0",
+  "options": {
+    "cwd": "${workspaceFolder}",
+    "env": {
+      "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+      "PATH": "/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/flex/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env:PATH}"
+    }
+  },
+  "tasks": [
+    {
+      "label": "init",
+      "type": "process",
+      "command": "/bin/bash",
+      "args": [
+        "${workspaceFolder}/.vscode/setup-deps.sh"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "configure_debug",
+      "type": "process",
+      "command": "/opt/homebrew/bin/cmake",
+      "args": [
+        "-S",
+        "${workspaceFolder}",
+        "-B",
+        "${workspaceFolder}/build_debug",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_C_COMPILER=/usr/bin/clang",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
+        "-DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/gmake",
+        "-DCMAKE_C_COMPILER_LAUNCHER=",
+        "-DCMAKE_CXX_COMPILER_LAUNCHER=",
+        "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
+        "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
+        "-DWITH_UNIT_TESTS=ON",
+        "-DWITH_BENCHMARK=OFF",
+        "-DWITH_MEMTRACER=OFF",
+        "-DENABLE_ASAN=ON"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "build_debug",
+      "type": "process",
+      "command": "/opt/homebrew/bin/cmake",
+      "args": [
+        "--build",
+        "${workspaceFolder}/build_debug",
+        "--parallel",
+        "4"
+      ],
+      "dependsOn": "configure_debug",
+      "dependsOrder": "sequence",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "configure_release",
+      "type": "process",
+      "command": "/opt/homebrew/bin/cmake",
+      "args": [
+        "-S",
+        "${workspaceFolder}",
+        "-B",
+        "${workspaceFolder}/build_release",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_C_COMPILER=/usr/bin/clang",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
+        "-DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/gmake",
+        "-DCMAKE_C_COMPILER_LAUNCHER=",
+        "-DCMAKE_CXX_COMPILER_LAUNCHER=",
+        "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
+        "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
+        "-DWITH_UNIT_TESTS=ON",
+        "-DWITH_BENCHMARK=OFF",
+        "-DWITH_MEMTRACER=OFF",
+        "-DENABLE_ASAN=ON"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "build_release",
+      "type": "process",
+      "command": "/opt/homebrew/bin/cmake",
+      "args": [
+        "--build",
+        "${workspaceFolder}/build_release",
+        "--parallel",
+        "4"
+      ],
+      "dependsOn": "configure_release",
+      "dependsOrder": "sequence",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "test_debug",
+      "type": "process",
+      "command": "/opt/homebrew/bin/ctest",
+      "args": [
+        "--test-dir",
+        "${workspaceFolder}/build_debug",
+        "--output-on-failure"
+      ],
+      "dependsOn": "build_debug",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "obclient (connect to 127.0.0.1:6789)",
+      "type": "process",
+      "command": "${workspaceFolder}/build_debug/bin/obclient",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "6789"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/build_debug"
+      },
+      "problemMatcher": []
+    }
+  ]
 }

@@ -1,29 +1,37 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "cppdbg",
-            "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/${defaultBuildTask}/bin/observer",
-            "args": ["-f", "${workspaceFolder}/etc/observer.ini", "-P", "cli"],
-            "cwd": "${workspaceFolder}/${defaultBuildTask}/",
-            "internalConsoleOptions": "openOnSessionStart",
-            "osx": {
-                "MIMode": "lldb",
-                "externalConsole":true
-            }
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "LLDB",
-            "program": "${workspaceFolder}/${defaultBuildTask}/bin/observer",
-            "args": ["-f", "${workspaceFolder}/etc/observer.ini", "-P", "cli"],
-            "cwd": "${workspaceFolder}/${defaultBuildTask}/"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MiniOB: CLI (LLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build_debug/bin/observer",
+      "args": [
+        "-f",
+        "${workspaceFolder}/etc/observer.ini",
+        "-P",
+        "cli"
+      ],
+      "cwd": "${workspaceFolder}/build_debug",
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "preLaunchTask": "build_debug"
+    },
+    {
+      "name": "MiniOB: Server (LLDB, port 6789)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build_debug/bin/observer",
+      "args": [
+        "-f",
+        "${workspaceFolder}/etc/observer.ini",
+        "-p",
+        "6789"
+      ],
+      "cwd": "${workspaceFolder}/build_debug",
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "preLaunchTask": "build_debug"
+    }
+  ]
 }
