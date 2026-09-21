@@ -1,56 +1,102 @@
 {
+  // Cross-platform build tasks for MiniOB.
+  //
+  // Every task that needs a machine-specific command, argument or environment
+  // variable defines a "linux" / "osx" / "windows" override. VS Code merges the
+  // matching block on top of the common task before running it, so the same
+  // tasks.json works on Windows x86_64, Linux x86_64 and macOS arm64.
+  //
+  // NOTE: platform blocks support command/args/options/problemMatcher, but NOT
+  // dependsOn/group/type, so those stay on the common task definition.
   "version": "2.0.0",
-  "options": {
-    "cwd": "${workspaceFolder}",
-    "env": {
-      "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
-      "PATH": "/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/flex/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env:PATH}"
-    }
-  },
   "tasks": [
     {
       "label": "init",
       "type": "process",
-      "command": "/bin/bash",
+      "command": "bash",
       "args": [
-        "${workspaceFolder}/.vscode/setup-deps.sh"
+        "${workspaceFolder}/build.sh",
+        "init"
       ],
       "problemMatcher": [
         "$gcc"
-      ]
+      ],
+      // macOS: Homebrew bison/flex are required (the system ones are too old).
+      "osx": {
+        "command": "/bin/bash",
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/flex/bin:/opt/homebrew/bin:${env:PATH}"
+          }
+        }
+      }
     },
     {
       "label": "configure_debug",
       "type": "process",
-      "command": "/opt/homebrew/bin/cmake",
+      "command": "cmake",
+      // Common (Linux / Windows) arguments. No generator is forced so an
+      // existing build dir keeps its generator and a fresh one uses the
+      // platform default (Ninja/Unix Makefiles/MinGW Makefiles).
       "args": [
         "-S",
         "${workspaceFolder}",
         "-B",
         "${workspaceFolder}/build_debug",
-        "-G",
-        "Unix Makefiles",
         "-DCMAKE_BUILD_TYPE=Debug",
-        "-DCMAKE_C_COMPILER=/usr/bin/clang",
-        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
-        "-DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/gmake",
-        "-DCMAKE_C_COMPILER_LAUNCHER=",
-        "-DCMAKE_CXX_COMPILER_LAUNCHER=",
-        "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-        "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
-        "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
         "-DWITH_UNIT_TESTS=ON",
         "-DWITH_BENCHMARK=OFF",
         "-DWITH_MEMTRACER=OFF",
         "-DENABLE_ASAN=ON"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      // macOS (Apple Silicon): Homebrew bison/flex + tools from Homebrew PATH.
+      "osx": {
+        "command": "/opt/homebrew/bin/cmake",
+        "args": [
+          "-S",
+          "${workspaceFolder}",
+          "-B",
+          "${workspaceFolder}/build_debug",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
+          "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
+          "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
+          "-DWITH_UNIT_TESTS=ON",
+          "-DWITH_BENCHMARK=OFF",
+          "-DWITH_MEMTRACER=OFF",
+          "-DENABLE_ASAN=ON"
+        ],
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/flex/bin:/opt/homebrew/bin:${env:PATH}"
+          }
+        }
+      },
+      // Windows (x86_64): ASan is not portable to MSVC / MinGW here.
+      "windows": {
+        "args": [
+          "-S",
+          "${workspaceFolder}",
+          "-B",
+          "${workspaceFolder}/build_debug",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DWITH_UNIT_TESTS=ON",
+          "-DWITH_BENCHMARK=OFF",
+          "-DWITH_MEMTRACER=OFF",
+          "-DENABLE_ASAN=OFF"
+        ]
+      }
     },
     {
       "label": "build_debug",
       "type": "process",
-      "command": "/opt/homebrew/bin/cmake",
+      "command": "cmake",
       "args": [
         "--build",
         "${workspaceFolder}/build_debug",
@@ -65,40 +111,77 @@
       "group": {
         "kind": "build",
         "isDefault": true
+      },
+      "osx": {
+        "command": "/opt/homebrew/bin/cmake",
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/bin:${env:PATH}"
+          }
+        }
       }
     },
     {
       "label": "configure_release",
       "type": "process",
-      "command": "/opt/homebrew/bin/cmake",
+      "command": "cmake",
       "args": [
         "-S",
         "${workspaceFolder}",
         "-B",
         "${workspaceFolder}/build_release",
-        "-G",
-        "Unix Makefiles",
         "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_C_COMPILER=/usr/bin/clang",
-        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
-        "-DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/gmake",
-        "-DCMAKE_C_COMPILER_LAUNCHER=",
-        "-DCMAKE_CXX_COMPILER_LAUNCHER=",
-        "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-        "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
-        "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
         "-DWITH_UNIT_TESTS=ON",
         "-DWITH_BENCHMARK=OFF",
         "-DWITH_MEMTRACER=OFF",
         "-DENABLE_ASAN=ON"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      "osx": {
+        "command": "/opt/homebrew/bin/cmake",
+        "args": [
+          "-S",
+          "${workspaceFolder}",
+          "-B",
+          "${workspaceFolder}/build_release",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DCMAKE_PREFIX_PATH=${workspaceFolder}/deps/3rd/usr/local;/opt/homebrew",
+          "-DFLEX_EXECUTABLE=/opt/homebrew/opt/flex/bin/flex",
+          "-DBISON_EXECUTABLE=/opt/homebrew/opt/bison/bin/bison",
+          "-DWITH_UNIT_TESTS=ON",
+          "-DWITH_BENCHMARK=OFF",
+          "-DWITH_MEMTRACER=OFF",
+          "-DENABLE_ASAN=ON"
+        ],
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/flex/bin:/opt/homebrew/bin:${env:PATH}"
+          }
+        }
+      },
+      "windows": {
+        "args": [
+          "-S",
+          "${workspaceFolder}",
+          "-B",
+          "${workspaceFolder}/build_release",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DWITH_UNIT_TESTS=ON",
+          "-DWITH_BENCHMARK=OFF",
+          "-DWITH_MEMTRACER=OFF",
+          "-DENABLE_ASAN=OFF"
+        ]
+      }
     },
     {
       "label": "build_release",
       "type": "process",
-      "command": "/opt/homebrew/bin/cmake",
+      "command": "cmake",
       "args": [
         "--build",
         "${workspaceFolder}/build_release",
@@ -113,12 +196,21 @@
       "group": {
         "kind": "build",
         "isDefault": false
+      },
+      "osx": {
+        "command": "/opt/homebrew/bin/cmake",
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/bin:${env:PATH}"
+          }
+        }
       }
     },
     {
       "label": "test_debug",
       "type": "process",
-      "command": "/opt/homebrew/bin/ctest",
+      "command": "ctest",
       "args": [
         "--test-dir",
         "${workspaceFolder}/build_debug",
@@ -126,7 +218,16 @@
       ],
       "dependsOn": "build_debug",
       "problemMatcher": [],
-      "group": "test"
+      "group": "test",
+      "osx": {
+        "command": "/opt/homebrew/bin/ctest",
+        "options": {
+          "env": {
+            "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+            "PATH": "/opt/homebrew/bin:${env:PATH}"
+          }
+        }
+      }
     },
     {
       "label": "obclient (connect to 127.0.0.1:6789)",
@@ -141,7 +242,10 @@
       "options": {
         "cwd": "${workspaceFolder}/build_debug"
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "windows": {
+        "command": "${workspaceFolder}/build_debug/bin/obclient.exe"
+      }
     }
   ]
 }
