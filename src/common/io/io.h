@@ -15,7 +15,7 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 
 #include <vector>
-
+#include <cstdint>
 #include "common/defs.h"
 #include "common/lang/string.h"
 #include "common/lang/vector.h"
