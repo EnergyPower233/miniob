@@ -12,6 +12,7 @@
 // Created by Ping Xu(haibarapink@gmail.com) on 2025/2/9.
 //
 #pragma once
+#include <cstdint>
 
 #include "common/lang/mutex.h"
 #include "common/sys/rc.h"

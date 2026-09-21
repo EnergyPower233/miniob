@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Longda on 2010
 //
 
+#include <cstdint>
 #include <dirent.h>
 #include <iostream>
 #include <stdio.h>

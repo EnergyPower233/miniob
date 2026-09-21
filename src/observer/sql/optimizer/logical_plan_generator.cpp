@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2023/08/16.
 //
 
+#include <cstdint>
 #include "sql/optimizer/logical_plan_generator.h"
 
 #include "common/log/log.h"

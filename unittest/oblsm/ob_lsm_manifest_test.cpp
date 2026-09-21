@@ -11,6 +11,7 @@ See the Mulan PSL v2 for more details. */
 //
 // Created by Ping Xu(haibarapink@gmail.com)
 //
+#include <cstdint>
 #include "gtest/gtest.h"
 
 #include "common/lang/filesystem.h"

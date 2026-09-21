@@ -13,6 +13,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Meiyi & Longda on 2021/4/13.
 //
 #pragma once
+#include <cstdint>
 
 #include "common/lang/bitmap.h"
 #include "common/lang/sstream.h"

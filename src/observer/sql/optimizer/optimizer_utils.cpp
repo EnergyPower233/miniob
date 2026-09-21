@@ -8,6 +8,7 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
+#include <cstdint>
 #include "sql/optimizer/optimizer_utils.h"
 
 string OptimizerUtils::dump_physical_plan(const unique_ptr<PhysicalOperator>& children)

@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by wangyunlai.wyl on 2024/02/21
 //
 
+#include <cstdint>
 #include "gtest/gtest.h"
 #include "common/lang/serializer.h"
 #include "common/lang/filesystem.h"

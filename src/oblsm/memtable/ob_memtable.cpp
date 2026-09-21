@@ -8,6 +8,7 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
+#include <cstdint>
 #include "oblsm/memtable/ob_memtable.h"
 #include "common/lang/string.h"
 #include "common/lang/memory.h"

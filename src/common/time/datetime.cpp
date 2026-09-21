@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Longda on 2010
 //
 
+#include <cstdint>
 #include "common/time/datetime.h"
 
 #include <pthread.h>

@@ -9,6 +9,7 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
 #pragma once
+#include <cstdint>
 
 #include "storage/table/table_engine.h"
 #include "storage/index/index.h"

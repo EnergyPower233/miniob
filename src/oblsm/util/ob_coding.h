@@ -11,7 +11,7 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 
 #include "common/lang/string.h"
-
+#include <cstdint>
 namespace oceanbase {
 
 static const uint8_t SEQ_SIZE               = 8;
@@ -29,9 +29,7 @@ static const uint8_t LOOKUP_KEY_PREFIX_SIZE = 8;
  */
 template <typename T>
 void put_numeric(string *dst, T v)
-{
-  dst->append(reinterpret_cast<char *>(&v), sizeof(T));
-}
+{ dst->append(reinterpret_cast<char *>(&v), sizeof(T)); }
 
 /**
  * @brief Extracts a numeric value from a binary data source.
@@ -62,9 +60,7 @@ T get_numeric(const char *src)
  * @return A `string_view` representing the user key portion of the internal key.
  */
 inline string_view extract_user_key(const string_view &internal_key)
-{
-  return string_view(internal_key.data(), internal_key.size() - SEQ_SIZE);
-}
+{ return string_view(internal_key.data(), internal_key.size() - SEQ_SIZE); }
 
 /**
  * @brief Extracts the sequence number from an internal key.
@@ -76,9 +72,7 @@ inline string_view extract_user_key(const string_view &internal_key)
  * @return The extracted sequence number as a `uint64_t`.
  */
 inline uint64_t extract_sequence(const string_view &internal_key)
-{
-  return get_numeric<uint64_t>(internal_key.data() + internal_key.size() - SEQ_SIZE);
-}
+{ return get_numeric<uint64_t>(internal_key.data() + internal_key.size() - SEQ_SIZE); }
 
 /**
  * @brief Computes the size of the user key from a lookup key.
@@ -91,9 +85,7 @@ inline uint64_t extract_sequence(const string_view &internal_key)
  * @return The size of the user key portion in bytes.
  */
 inline size_t user_key_size_from_lookup_key(const string_view &lookup_key)
-{
-  return lookup_key.size() - SEQ_SIZE - LOOKUP_KEY_PREFIX_SIZE;
-}
+{ return lookup_key.size() - SEQ_SIZE - LOOKUP_KEY_PREFIX_SIZE; }
 
 /**
  * @brief Extracts the user key from a lookup key.
@@ -105,14 +97,10 @@ inline size_t user_key_size_from_lookup_key(const string_view &lookup_key)
  * @return A `string_view` representing the user key portion of the lookup key.
  */
 inline string_view extract_user_key_from_lookup_key(const string_view &lookup_key)
-{
-  return string_view(lookup_key.data() + LOOKUP_KEY_PREFIX_SIZE, user_key_size_from_lookup_key(lookup_key));
-}
+{ return string_view(lookup_key.data() + LOOKUP_KEY_PREFIX_SIZE, user_key_size_from_lookup_key(lookup_key)); }
 
 inline string_view extract_internal_key(const string_view &lookup_key)
-{
-  return string_view(lookup_key.data() + LOOKUP_KEY_PREFIX_SIZE, lookup_key.size() - LOOKUP_KEY_PREFIX_SIZE);
-}
+{ return string_view(lookup_key.data() + LOOKUP_KEY_PREFIX_SIZE, lookup_key.size() - LOOKUP_KEY_PREFIX_SIZE); }
 
 inline string_view get_length_prefixed_string(const char *data)
 {

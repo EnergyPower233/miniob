@@ -13,6 +13,7 @@ See the Mulan PSL v2 for more details. */
 //
 
 #pragma once
+#include <cstdint>
 
 #include "net/communicator.h"
 #include "common/lang/string.h"

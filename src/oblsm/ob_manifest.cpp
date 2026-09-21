@@ -10,6 +10,7 @@
 //
 // Created by Ping Xu(haibarapink@gmail.com) on 2025/1/24.
 //
+#include <cstdint>
 #include "oblsm/ob_manifest.h"
 #include "common/log/log.h"
 #include "common/sys/rc.h"

@@ -16,6 +16,7 @@ See the Mulan PSL v2 for more details. */
 //
 
 #pragma once
+#include <cstdint>
 
 #include <string.h>
 

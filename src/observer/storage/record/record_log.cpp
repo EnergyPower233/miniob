@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2024/02/02.
 //
 
+#include <cstdint>
 #include "storage/record/record_log.h"
 #include "common/log/log.h"
 #include "common/lang/sstream.h"

@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2023/04/24.
 //
 
+#include <cstdint>
 #include "storage/trx/mvcc_trx.h"
 #include "storage/db/db.h"
 #include "storage/field/field.h"

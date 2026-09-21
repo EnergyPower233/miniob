@@ -13,6 +13,7 @@ See the Mulan PSL v2 for more details. */
 //
 
 #ifdef __MUSL__
+#include <cstdint>
 #include <errno.h>
 #else
 #include <sys/errno.h>

@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2023/06/16.
 //
 
+#include <cstdint>
 #include "gtest/gtest.h"
 
 #include "net/ring_buffer.h"

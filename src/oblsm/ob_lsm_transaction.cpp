@@ -8,6 +8,7 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
+#include <cstdint>
 #include "oblsm/include/ob_lsm_transaction.h"
 #include "oblsm/util/ob_comparator.h"
 #include "common/lang/memory.h"

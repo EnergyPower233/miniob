@@ -11,6 +11,7 @@ See the Mulan PSL v2 for more details. */
 //
 // Created by Wenbin1002 on 2024/04/16
 //
+#include <cstdint>
 #include <fcntl.h>
 
 #include "storage/buffer/double_write_buffer.h"

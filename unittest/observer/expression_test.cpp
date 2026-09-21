@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by wangyunlai.wyl on 2023/08/14
 //
 
+#include <cstdint>
 #include <memory>
 
 #include "sql/expr/expression.h"

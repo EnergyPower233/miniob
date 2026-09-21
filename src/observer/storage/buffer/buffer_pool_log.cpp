@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by wangyunlai on 2022/02/01
 //
 
+#include <cstdint>
 #include "storage/buffer/buffer_pool_log.h"
 #include "storage/buffer/disk_buffer_pool.h"
 #include "storage/clog/log_handler.h"

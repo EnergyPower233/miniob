@@ -9,6 +9,7 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
 #pragma once
+#include <cstdint>
 
 #if defined(USE_SIMD)
 #include "common/math/simd_util.h"

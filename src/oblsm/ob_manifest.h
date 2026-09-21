@@ -11,6 +11,7 @@
 // Created by Ping Xu(haibarapink@gmail.com) on 2025/1/24.
 //
 #pragma once
+#include <cstdint>
 
 #include "json/json.h"
 #include "common/lang/filesystem.h"

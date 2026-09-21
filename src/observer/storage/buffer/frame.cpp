@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by lianyu on 2022/10/29.
 //
 
+#include <cstdint>
 #include "storage/buffer/frame.h"
 #include "session/session.h"
 #include "session/thread_data.h"

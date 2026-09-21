@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2023/4/24.
 //
 
+#include <cstdint>
 #include "storage/trx/vacuous_trx.h"
 
 RC VacuousTrxKit::init() { return RC::SUCCESS; }

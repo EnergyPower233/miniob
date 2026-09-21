@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Meiyi & Longda & Wangyunlai on 2021/5/12.
 //
 
+#include <cstdint>
 #include "storage/db/db.h"
 
 #include <fcntl.h>

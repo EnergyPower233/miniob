@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by wangyunlai.wyl on 2024/02/05.
 //
 
+#include <cstdint>
 #include "common/log/log.h"
 #include "common/lang/defer.h"
 #include "common/lang/algorithm.h"

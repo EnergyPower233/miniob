@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by wangyunlai on 2024/01/31
 //
 
+#include <cstdint>
 #include "gtest/gtest.h"
 
 #define private public

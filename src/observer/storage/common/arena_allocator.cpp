@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
+#include <cstdint>
 #include "storage/common/arena_allocator.h"
 
 static const int kBlockSize = 4096;

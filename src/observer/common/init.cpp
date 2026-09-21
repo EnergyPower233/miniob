@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by Longda on 2021/5/3.
 //
 
+#include <cstdint>
 #include "common/init.h"
 
 #include "common/conf/ini.h"

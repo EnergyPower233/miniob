@@ -12,6 +12,7 @@ See the Mulan PSL v2 for more details. */
 // Created by qiling on 2022
 //
 
+#include <cstdint>
 #include "storage/persist/persist.h"
 #include "gtest/gtest.h"
 #include <string.h>
