@@ -57,7 +57,7 @@ ENDIF(WIN32)
 
 # This is for clangd plugin for vscode
 # mute sign-compare error in lex/yacc
-SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -Wall -Werror -Wno-error=sign-compare")
+SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -Wall -Werror -Wno-error=sign-compare -Wno-error=shorten-64-to-32")
 IF ("${CMAKE_BUILD_TYPE_LOWER}" STREQUAL "debug")
     SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -DDEBUG -g -O0")
 ELSEIF ("${CMAKE_BUILD_TYPE_LOWER}" STREQUAL "release")
@@ -97,7 +97,14 @@ ENDIF(USE_MUSL_LIBC)
 
 IF (ENABLE_ASAN)
     MESSAGE(STATUS "Instrumenting with Address Sanitizer")
-    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope")
+    SET(ASAN_FLAGS "-fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope")
+    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} ${ASAN_FLAGS}")
+    # The sanitizer runtime must also be linked. With the Xcode generator
+    # CMAKE_C_FLAGS/CMAKE_CXX_FLAGS are only used for compilation, so without
+    # adding the flag here the ASan runtime is not linked (this breaks the
+    # configure step, e.g. FindThreads, with undefined ___asan_init).
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
     IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ${STATIC_STDLIB})
         ADD_LINK_OPTIONS(-static-libasan)
     ENDIF()
@@ -177,6 +184,18 @@ MESSAGE(STATUS "CMAKE_CXX_FLAGS is " ${CMAKE_CXX_FLAGS})
 MESSAGE(STATUS "Using replxx for line reading")
 FIND_PACKAGE(Threads REQUIRED)
 FIND_PACKAGE(replxx REQUIRED)
+
+# On recent macOS SDKs pipe2() is only declared as available on a newer OS than
+# the one being targeted. libevent built against such an SDK defines
+# EVENT__HAVE_PIPE2 and references pipe2(), which does not exist in libSystem on
+# current macOS releases, causing an undefined symbol at link time. Build a small
+# shim as an OBJECT library and add its objects directly to every executable
+# that (transitively) links libevent, so the reference is always resolved.
+SET(PIPE2_COMPAT_OBJECTS "")
+IF (APPLE)
+    ADD_LIBRARY(pipe2_compat OBJECT ${PROJECT_SOURCE_DIR}/src/observer/pipe2_compat.c)
+    SET(PIPE2_COMPAT_OBJECTS $<TARGET_OBJECTS:pipe2_compat>)
+ENDIF()
 
 # ADD_SUBDIRECTORY(src bin)  bin 为目标目录， 可以省略
 # ADD_SUBDIRECTORY(deps)

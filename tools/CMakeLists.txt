@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(clog_dump clog_dump.cpp)
+ADD_EXECUTABLE(clog_dump clog_dump.cpp ${PIPE2_COMPAT_OBJECTS})
 TARGET_LINK_LIBRARIES(clog_dump observer_static)
 TARGET_INCLUDE_DIRECTORIES(clog_dump PRIVATE ${PROJECT_SOURCE_DIR}/src/observer/)
 

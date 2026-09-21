@@ -83,11 +83,21 @@ function do_init
 
   MAKE_COMMAND="make --silent"
 
+  # On macOS, recent Xcode SDKs declare pipe2() as only available on a newer OS.
+  # libevent's symbol probe only takes the address of pipe2, which compiles with
+  # a warning, so it would wrongly enable EVENT__HAVE_PIPE2 and reference a
+  # symbol that does not exist in libSystem on the running OS. Promote that
+  # warning to an error so the probe fails as it should.
+  LIBEVENT_CMAKE_EXTRA=""
+  if [ "$(uname -s)" = "Darwin" ]; then
+    LIBEVENT_CMAKE_EXTRA="-DCMAKE_REQUIRED_FLAGS=-Werror=unguarded-availability-new"
+  fi
+
   # build libevent
   cd ${TOPDIR}/deps/3rd/libevent && \
     mkdir -p build && \
     cd build && \
-    ${CMAKE_COMMAND_THIRD_PARTY} .. -DEVENT__DISABLE_OPENSSL=ON -DEVENT__LIBRARY_TYPE=BOTH && \
+    ${CMAKE_COMMAND_THIRD_PARTY} .. -DEVENT__DISABLE_OPENSSL=ON -DEVENT__LIBRARY_TYPE=BOTH ${LIBEVENT_CMAKE_EXTRA} && \
     ${MAKE_COMMAND} -j4 && \
     make install
 
