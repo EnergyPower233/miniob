@@ -23,15 +23,9 @@ See the Mulan PSL v2 for more details. */
 class Foo
 {
 public:
-  Foo()
-  {
-    // TODO: 添加必要的日志信息，观察函数何时调用。
-  }
+  Foo() { std::cout << " Foo 被调用。\n"; }
 
-  ~Foo()
-  {
-    // TODO: 添加必要的日志信息，观察函数何时调用。
-  }
+  ~Foo() { std::cout << " Foo 被析构。\n"; }
 
   void display() { std::cout << "Displaying Foo content." << std::endl; }
 };
@@ -59,7 +53,7 @@ int main()
     }
     std::cout << "shared_ptr use_count(): " << shared_ptr1.use_count() << std::endl;
     // sharedPtr1 超出作用域，引用计数减少到0，自动销毁对象
-    std::cout << "shared_tr block ended." << std::endl;
+    std::cout << "shared_ptr block ended." << std::endl;
   }
 
   std::cout << "shared_tr destroyed" << std::endl;

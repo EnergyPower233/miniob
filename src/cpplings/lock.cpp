@@ -24,9 +24,10 @@ scoped_lock 不支持手动锁定和解锁，也不支持条件变量。
  */
 
 #include <iostream>  // std::cout
-#include <thread>    // std::thread
-#include <vector>    // std::vector
-#include <cassert>   // assert
+#include <mutex>
+#include <thread>   // std::thread
+#include <vector>   // std::vector
+#include <cassert>  // assert
 
 struct Node
 {
@@ -34,15 +35,19 @@ struct Node
   Node *next;
 };
 
-Node *list_head(nullptr);
-
+Node      *list_head(nullptr);
+std::mutex mtx;
 // 向 `list_head` 中添加一个 value 为 `val` 的 Node 节点。
 void append_node(int val)
 {
+  std::unique_lock<std::mutex> mtx;
+  // std::scoped_lock<std::mutex> lock(mtx);
   Node *old_head = list_head;
   Node *new_node = new Node{val, old_head};
 
   // TODO: 使用 scoped_lock/unique_lock 来使这段代码线程安全。
+
+  /*OK*/
   list_head = new_node;
 }
 

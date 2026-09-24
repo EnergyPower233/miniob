@@ -18,6 +18,8 @@ See the Mulan PSL v2 for more details. */
 
 #include <condition_variable>
 #include <iostream>
+#include <atomic>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -31,13 +33,17 @@ std::condition_variable cv;
 // TODO: 每次调用会增加 count 的值，当count 的值达到 expect 的时候通知 waiter_thread
 void add_count_and_notify()
 {
-  std::scoped_lock slk(m);
-  count += 1;
+  std::scoped_lock<std::mutex> slk(m);
+  count++;
+  if (count == expect_thread_num)
+    cv.notify_one();
 }
 
 void waiter_thread()
 {
   // TODO: 等待 count 的值达到 expect_thread_num，然后打印 count 的值
+  std::unique_lock<std::mutex> lk(m);
+  cv.wait(lk);
   std::cout << "Printing count: " << count << std::endl;
   assert(count == expect_thread_num);
 }
@@ -48,8 +54,8 @@ int main()
   std::vector<std::thread> threads;
   std::thread              waiter(waiter_thread);
   for (int i = 0; i < thread_num; ++i)
-    threads.push_back(std::thread(add_count_and_notify));
-  waiter.join();
+    threads.emplace_back(add_count_and_notify);
+  waiter.join();  // main 等 waiter 结束
   for (auto &th : threads)
     th.join();
   std::cout << "passed!" << std::endl;

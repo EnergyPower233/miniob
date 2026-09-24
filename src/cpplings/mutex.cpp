@@ -20,9 +20,10 @@ See the Mulan PSL v2 for more details. */
 */
 #include <iostream>  // std::cout
 #include <atomic>    // std::atomic
-#include <thread>    // std::thread
-#include <vector>    // std::vector
-#include <cassert>   // assert
+#include <mutex>
+#include <thread>   // std::thread
+#include <vector>   // std::vector
+#include <cassert>  // assert
 
 struct Node
 {
@@ -30,16 +31,23 @@ struct Node
   Node *next;
 };
 
+std::mutex m;
+
 std::atomic<Node *> list_head(nullptr);
 
 // 向 `list_head` 中添加一个 value 为 `val` 的 Node 节点。
 void append_node(int val)
 {
+  m.lock();
+  // 现代Cpp一般不会这样写
+
   Node *old_head = list_head;
   Node *new_node = new Node{val, old_head};
 
   // TODO: 使用 mutex 来使这段代码线程安全。
   list_head = new_node;
+
+  m.unlock();
 }
 
 int main()
@@ -69,3 +77,21 @@ int main()
   std::cout << "passed!" << std::endl;
   return 0;
 }
+/*
+
+
+Typedef struct Node{
+  int x;
+  Node* next;
+
+};
+
+struct Node node1 = {1,nullptr};
+struct Node node2 = {1,&node1};
+struct Node node3 = {1,&node2};
+
+Node* node1_ptr = &node1;
+
+(*(*(*node1_ptr).next).next).x
+node1_ptr->next->next->x
+*/
