@@ -37,7 +37,6 @@ struct Node
 
 Node* list_head(nullptr);
 
-Node*      list_head(nullptr);
 std::mutex mtx;
 // 向 `list_head` 中添加一个 value 为 `val` 的 Node 节点。
 void append_node(int val)
@@ -46,9 +45,6 @@ void append_node(int val)
   Node*                        new_node = new Node{val, old_head};
   std::unique_lock<std::mutex> mtx;
   // std::scoped_lock<std::mutex> lock(mtx);
-  Node* old_head = list_head;
-  Node* new_node = new Node{val, old_head};
-
   // TODO: 使用 scoped_lock/unique_lock 来使这段代码线程安全。
 
   /*OK*/

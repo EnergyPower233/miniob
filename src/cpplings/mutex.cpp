@@ -43,9 +43,6 @@ void append_node(int val)
   m.lock();
   // 现代Cpp一般不会这样写
 
-  Node* old_head = list_head;
-  Node* new_node = new Node{val, old_head};
-
   // TODO: 使用 mutex 来使这段代码线程安全。
   list_head = new_node;
 
