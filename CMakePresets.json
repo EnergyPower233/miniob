@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "patch": 0,
+    "minor": 21
+  },
+  "configurePresets": [
+    {
+      "name": "windows-clang-debug",
+      "displayName": "Windows Clang Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/windows-clang-debug",
+      "condition": {
+        "rhs": "Windows",
+        "type": "equals",
+        "lhs": "${hostSystemName}"
+      },
+      "cacheVariables": {
+        "WITH_MEMTRACER": false,
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_ASAN": false,
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "WITH_UNIT_TESTS": true,
+        "WITH_BENCHMARK": false
+      }
+    },
+    {
+      "name": "windows-clang-release",
+      "displayName": "Windows Clang Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/windows-clang-release",
+      "condition": {
+        "rhs": "Windows",
+        "type": "equals",
+        "lhs": "${hostSystemName}"
+      },
+      "cacheVariables": {
+        "WITH_MEMTRACER": false,
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_ASAN": false,
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "WITH_UNIT_TESTS": true,
+        "WITH_BENCHMARK": false
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Clang Debug (native host)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/${hostSystemName}-clang-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "WITH_UNIT_TESTS": true,
+        "WITH_BENCHMARK": false,
+        "WITH_MEMTRACER": false,
+        "ENABLE_ASAN": false
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Clang Release (native host)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/${hostSystemName}-clang-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "WITH_UNIT_TESTS": true,
+        "WITH_BENCHMARK": false,
+        "WITH_MEMTRACER": false,
+        "ENABLE_ASAN": false
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-clang-debug",
+      "jobs": 4,
+      "configurePreset": "windows-clang-debug"
+    },
+    {
+      "name": "windows-clang-release",
+      "jobs": 4,
+      "configurePreset": "windows-clang-release"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "jobs": 4
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "jobs": 4
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    }
+  ]
+}

@@ -1,7 +1,18 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CXX_STANDARD 20)
 
+include(cmake/WindowsClang.cmake)
 project(minidb)
+include(cmake/HostTools.cmake)
+
+if(WIN32)
+    if(NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        message(FATAL_ERROR "Windows builds require Clang for both C and C++. Use a new build directory with the windows-clang-debug preset.")
+    endif()
+    if(MSVC OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
+        message(FATAL_ERROR "This project uses GNU-style Clang flags. Use MSYS2 CLANG64 clang/clang++, not clang-cl or an MSVC-targeting LLVM toolchain.")
+    endif()
+endif()
 
 MESSAGE(STATUS "This is Project source dir " ${PROJECT_SOURCE_DIR})
 MESSAGE(STATUS "This is PROJECT_BINARY_DIR dir " ${PROJECT_BINARY_DIR})
@@ -9,7 +20,7 @@ MESSAGE(STATUS "This is PROJECT_BINARY_DIR dir " ${PROJECT_BINARY_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(UNITTEST_OUTPUT_PATH ${PROJECT_BINARY_DIR}/unittest)
 
-SET(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/deps/3rd/usr/local;/usr/local;${CMAKE_PREFIX_PATH}")
+list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/deps/3rd/usr/local")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 # 设置默认构建类型为 Debug
@@ -21,7 +32,12 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
 # 输出当前构建类型
 message(STATUS "Using build type: ${CMAKE_BUILD_TYPE}")
 
-OPTION(ENABLE_ASAN "Enable build with address sanitizer" ON)
+if(WIN32)
+    set(MINIOB_ASAN_DEFAULT OFF)
+else()
+    set(MINIOB_ASAN_DEFAULT ON)
+endif()
+OPTION(ENABLE_ASAN "Enable build with address sanitizer" ${MINIOB_ASAN_DEFAULT})
 OPTION(ENABLE_TSAN "Build with thread sanitizer" OFF)
 OPTION(ENABLE_UBSAN "Build with undefined behavior sanitizer" OFF)
 OPTION(WITH_UNIT_TESTS "Compile miniob with unit tests" ON)
@@ -180,8 +196,8 @@ IF(WITH_UNIT_TESTS)
     enable_testing()
 ENDIF(WITH_UNIT_TESTS)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_COMMON_FLAGS})
-SET(CMAKE_C_FLAGS ${CMAKE_COMMON_FLAGS})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_COMMON_FLAGS}")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_COMMON_FLAGS}")
 
 MESSAGE(STATUS "CMAKE_CXX_FLAGS is " ${CMAKE_CXX_FLAGS})
 

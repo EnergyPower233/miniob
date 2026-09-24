@@ -1,76 +1,60 @@
 {
-  // MiniOB debug configurations (CodeLLDB / `lldb`).
-  //
-  // CodeLLDB is cross-platform (Linux x86_64, Windows x86_64, macOS arm64),
-  // so a single configuration is used and the per-OS differences are applied
-  // through the "linux" / "osx" / "windows" blocks below. Only the executable
-  // suffix really differs between platforms.
-  //
-  // The debugger (gdb/lldb/MSVC) and its binaries are selected by the
-  // extension based on the OS/arch it is running on, so no machine-specific
-  // paths are hard-coded here.
   "version": "0.2.0",
   "configurations": [
     {
       "name": "MiniOB: CLI (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build_debug/bin/observer",
+      "program": "${workspaceFolder}/out/Linux-clang-debug/bin/observer",
       "args": [
         "-f",
         "${workspaceFolder}/etc/observer.ini",
         "-P",
         "cli"
       ],
-      "cwd": "${workspaceFolder}/build_debug",
+      "cwd": "${workspaceFolder}/out/Linux-clang-debug",
       "terminal": "integrated",
       "stopOnEntry": false,
       "preLaunchTask": "build_debug",
-
-      // macOS (Apple Silicon / arm64)
       "osx": {
-        "program": "${workspaceFolder}/build_debug/bin/observer"
+        "program": "${workspaceFolder}/out/Darwin-clang-debug/bin/observer",
+        "cwd": "${workspaceFolder}/out/Darwin-clang-debug"
       },
-
-      // Linux (x86_64)
       "linux": {
-        "program": "${workspaceFolder}/build_debug/bin/observer"
+        "program": "${workspaceFolder}/out/Linux-clang-debug/bin/observer",
+        "cwd": "${workspaceFolder}/out/Linux-clang-debug"
       },
-
-      // Windows (x86_64): CMake emits observer.exe
       "windows": {
-        "program": "${workspaceFolder}/build_debug/bin/observer.exe"
+        "program": "${workspaceFolder}/out/Windows-clang-debug/bin/observer.exe",
+        "cwd": "${workspaceFolder}/out/Windows-clang-debug"
       }
     },
     {
       "name": "MiniOB: Server (LLDB, port 6789)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build_debug/bin/observer",
+      "program": "${workspaceFolder}/out/Linux-clang-debug/bin/observer",
       "args": [
         "-f",
         "${workspaceFolder}/etc/observer.ini",
         "-p",
         "6789"
       ],
-      "cwd": "${workspaceFolder}/build_debug",
+      "cwd": "${workspaceFolder}/out/Linux-clang-debug",
       "terminal": "integrated",
       "stopOnEntry": false,
       "preLaunchTask": "build_debug",
-
-      // macOS (Apple Silicon / arm64)
       "osx": {
-        "program": "${workspaceFolder}/build_debug/bin/observer"
+        "program": "${workspaceFolder}/out/Darwin-clang-debug/bin/observer",
+        "cwd": "${workspaceFolder}/out/Darwin-clang-debug"
       },
-
-      // Linux (x86_64)
       "linux": {
-        "program": "${workspaceFolder}/build_debug/bin/observer"
+        "program": "${workspaceFolder}/out/Linux-clang-debug/bin/observer",
+        "cwd": "${workspaceFolder}/out/Linux-clang-debug"
       },
-
-      // Windows (x86_64): CMake emits observer.exe
       "windows": {
-        "program": "${workspaceFolder}/build_debug/bin/observer.exe"
+        "program": "${workspaceFolder}/out/Windows-clang-debug/bin/observer.exe",
+        "cwd": "${workspaceFolder}/out/Windows-clang-debug"
       }
     }
   ]
