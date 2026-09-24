@@ -39,7 +39,7 @@ struct ObLsmBgCompactCtx
 class ObLsmImpl : public ObLsm
 {
 public:
-  ObLsmImpl(const ObLsmOptions &options, const string &path);
+  ObLsmImpl(const ObLsmOptions& options, const string& path);
   ~ObLsmImpl() override
   {
     if (!options_.force_sync_new_log) {
@@ -49,29 +49,29 @@ public:
     executor_.await_termination();
   }
 
-  RC put(const string_view &key, const string_view &value) override;
+  RC put(const string_view& key, const string_view& value) override;
 
-  RC get(const string_view &key, string *value) override;
+  RC get(const string_view& key, string* value) override;
 
-  RC remove(const string_view &key) override;
+  RC remove(const string_view& key) override;
 
-  ObLsmTransaction *begin_transaction() override;
+  ObLsmTransaction* begin_transaction() override;
 
-  ObLsmIterator *new_iterator(ObLsmReadOptions options) override;
+  ObLsmIterator* new_iterator(ObLsmReadOptions options) override;
 
   SSTablesPtr get_sstables() { return sstables_; }
 
   RC recover();
-  RC batch_put(const std::vector<pair<string, string>> &kvs) override;
+  RC batch_put(const std::vector<pair<string, string>>& kvs) override;
 
   // used for debug
   void dump_sstables() override;
 
 private:
   RC recover_from_wal();
-  RC recover_from_manifest_records(const std::vector<ObManifestCompaction> &records);
-  RC load_manifest_snapshot(const ObManifestSnapshot &snapshot);
-  RC load_manifest_sstable(const std::vector<std::vector<uint64_t>> &sstables);
+  RC recover_from_manifest_records(const std::vector<ObManifestCompaction>& records);
+  RC load_manifest_snapshot(const ObManifestSnapshot& snapshot);
+  RC load_manifest_sstable(const std::vector<std::vector<uint64_t>>& sstables);
   RC write_manifest_snapshot();
 
 private:
@@ -110,7 +110,7 @@ private:
    * @warning Ensure that the `picked` object is properly populated with valid inputs.
    *
    */
-  vector<shared_ptr<ObSSTable>> do_compaction(ObCompaction *compaction);
+  vector<shared_ptr<ObSSTable>> do_compaction(ObCompaction* compaction);
 
   /**
    * @brief Initiates a major compaction process.

@@ -17,7 +17,7 @@ See the Mulan PSL v2 for more details. */
 
 namespace common {
 
-int thread_set_name(const char *name)
+int thread_set_name(const char* name)
 {
   const int namelen = 16;
   char      buf[namelen];

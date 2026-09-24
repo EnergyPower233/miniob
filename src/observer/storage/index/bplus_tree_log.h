@@ -67,20 +67,20 @@ public:
    * @param log_handler 日志处理器。实际上就会调用此对象进行日志记录
    * @param buffer_pool_id 关联的缓冲池ID。一个B+树仅记录在一个文件中。
    */
-  BplusTreeLogger(LogHandler &log_handler, int32_t buffer_pool_id);
+  BplusTreeLogger(LogHandler& log_handler, int32_t buffer_pool_id);
   ~BplusTreeLogger();
 
   /**
    * @brief 初始化B+树文件头页
    * @details 头页中包含了一些B+树的元信息
    */
-  RC init_header_page(Frame *frame, const IndexFileHeader &header);
+  RC init_header_page(Frame* frame, const IndexFileHeader& header);
   /**
    * @brief 更新B+树文件头页，也就是指向根页的页面编号
    * @param root_page_num 更新后的根页编号
    * @param old_page_num 更新前的根页编号。用于回滚
    */
-  RC update_root_page(Frame *frame, PageNum root_page_num, PageNum old_page_num);
+  RC update_root_page(Frame* frame, PageNum root_page_num, PageNum old_page_num);
 
   /**
    * @brief 在某个页面中插入一些元素
@@ -89,7 +89,7 @@ public:
    * @param items 插入的元素
    * @param item_num 元素个数
    */
-  RC node_insert_items(IndexNodeHandler &node_handler, int index, span<const char> items, int item_num);
+  RC node_insert_items(IndexNodeHandler& node_handler, int index, span<const char> items, int item_num);
   /**
    * @brief 在某个页面中删除一些元素
    * @param node_handler 页面处理器。同时也包含了页面编号、页帧
@@ -98,35 +98,35 @@ public:
    * @param item_num 元素个数
    * @details 会在内存中记录一些数据帮助回滚操作
    */
-  RC node_remove_items(IndexNodeHandler &node_handler, int index, span<const char> items, int item_num);
+  RC node_remove_items(IndexNodeHandler& node_handler, int index, span<const char> items, int item_num);
 
   /**
    * @brief 初始化一个空的叶子节点
    */
-  RC leaf_init_empty(IndexNodeHandler &node_handler);
+  RC leaf_init_empty(IndexNodeHandler& node_handler);
   /**
    * @brief 修改叶子节点的下一个兄弟节点编号
    */
-  RC leaf_set_next_page(IndexNodeHandler &node_handler, PageNum page_num, PageNum old_page_num);
+  RC leaf_set_next_page(IndexNodeHandler& node_handler, PageNum page_num, PageNum old_page_num);
 
   /**
    * @brief 初始化一个空的内部节点
    */
-  RC internal_init_empty(IndexNodeHandler &node_handler);
+  RC internal_init_empty(IndexNodeHandler& node_handler);
   /**
    * @brief 创建一个新的根节点
    */
   RC internal_create_new_root(
-      IndexNodeHandler &node_handler, PageNum first_page_num, span<const char> key, PageNum page_num);
+      IndexNodeHandler& node_handler, PageNum first_page_num, span<const char> key, PageNum page_num);
   /**
    * @brief 更新某个内部页面上，更新指定位置的键值
    */
-  RC internal_update_key(IndexNodeHandler &node_handler, int index, span<const char> key, span<const char> old_key);
+  RC internal_update_key(IndexNodeHandler& node_handler, int index, span<const char> key, span<const char> old_key);
 
   /**
    * @brief 修改某个页面的父节点编号
    */
-  RC set_parent_page(IndexNodeHandler &node_handler, PageNum page_num, PageNum old_page_num);
+  RC set_parent_page(IndexNodeHandler& node_handler, PageNum page_num, PageNum old_page_num);
 
   /**
    * @brief 提交。表示整个操作成功
@@ -135,25 +135,25 @@ public:
   /**
    * @brief 回滚。操作执行一半失败了，把所有操作都回滚回来
    */
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler);
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler);
 
   /**
    * @brief 重做日志。通常在系统启动时，会把所有日志重做一遍
    */
-  static RC redo(BufferPoolManager &bpm, const LogEntry &entry);
+  static RC redo(BufferPoolManager& bpm, const LogEntry& entry);
   /**
    * @brief 日志记录转字符串
    */
-  static string log_entry_to_string(const LogEntry &entry);
+  static string log_entry_to_string(const LogEntry& entry);
 
 private:
-  RC __redo(LSN lsn, BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler, common::Deserializer &redo_buffer);
+  RC __redo(LSN lsn, BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler, common::Deserializer& redo_buffer);
 
 protected:
   RC append_log_entry(unique_ptr<bplus_tree::LogEntryHandler> entry);
 
 private:
-  LogHandler &log_handler_;
+  LogHandler& log_handler_;
   int32_t     buffer_pool_id_ = -1;  /// 关联的缓冲池ID
 
   vector<unique_ptr<bplus_tree::LogEntryHandler>> entries_;  /// 当前记录了的日志
@@ -175,18 +175,18 @@ public:
    * @param tree_handler B+树处理器
    * @param operation_result 操作结果。如果不为nullptr，会在事务结束后，自动根据结果来提交或回滚。
    */
-  BplusTreeMiniTransaction(BplusTreeHandler &tree_handler, RC *operation_result = nullptr);
+  BplusTreeMiniTransaction(BplusTreeHandler& tree_handler, RC* operation_result = nullptr);
   ~BplusTreeMiniTransaction();
 
-  LatchMemo       &latch_memo() { return latch_memo_; }
-  BplusTreeLogger &logger() { return logger_; }
+  LatchMemo&       latch_memo() { return latch_memo_; }
+  BplusTreeLogger& logger() { return logger_; }
 
   RC commit();
   RC rollback();
 
 private:
-  BplusTreeHandler &tree_handler_;
-  RC               *operation_result_ = nullptr;
+  BplusTreeHandler& tree_handler_;
+  RC*               operation_result_ = nullptr;
   LatchMemo         latch_memo_;
   BplusTreeLogger   logger_;
 };
@@ -198,12 +198,12 @@ private:
 class BplusTreeLogReplayer final : public LogReplayer
 {
 public:
-  BplusTreeLogReplayer(BufferPoolManager &bpm);
+  BplusTreeLogReplayer(BufferPoolManager& bpm);
   virtual ~BplusTreeLogReplayer() = default;
 
   /// @copydoc LogReplayer::replay
-  virtual RC replay(const LogEntry &entry) override;
+  virtual RC replay(const LogEntry& entry) override;
 
 private:
-  BufferPoolManager &buffer_pool_manager_;
+  BufferPoolManager& buffer_pool_manager_;
 };

@@ -65,11 +65,11 @@ string MvccTrxCommitLogEntry::to_string() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MvccTrxLogHandler::MvccTrxLogHandler(LogHandler &log_handler) : log_handler_(log_handler) {}
+MvccTrxLogHandler::MvccTrxLogHandler(LogHandler& log_handler) : log_handler_(log_handler) {}
 
 MvccTrxLogHandler::~MvccTrxLogHandler() {}
 
-RC MvccTrxLogHandler::insert_record(int32_t trx_id, Table *table, const RID &rid)
+RC MvccTrxLogHandler::insert_record(int32_t trx_id, Table* table, const RID& rid)
 {
   ASSERT(trx_id > 0, "invalid trx_id:%d", trx_id);
 
@@ -81,10 +81,10 @@ RC MvccTrxLogHandler::insert_record(int32_t trx_id, Table *table, const RID &rid
 
   LSN lsn = 0;
   return log_handler_.append(
-      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char *>(&log_entry), sizeof(log_entry)));
+      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char*>(&log_entry), sizeof(log_entry)));
 }
 
-RC MvccTrxLogHandler::delete_record(int32_t trx_id, Table *table, const RID &rid)
+RC MvccTrxLogHandler::delete_record(int32_t trx_id, Table* table, const RID& rid)
 {
   ASSERT(trx_id > 0, "invalid trx_id:%d", trx_id);
 
@@ -96,7 +96,7 @@ RC MvccTrxLogHandler::delete_record(int32_t trx_id, Table *table, const RID &rid
 
   LSN lsn = 0;
   return log_handler_.append(
-      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char *>(&log_entry), sizeof(log_entry)));
+      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char*>(&log_entry), sizeof(log_entry)));
 }
 
 RC MvccTrxLogHandler::commit(int32_t trx_id, int32_t commit_trx_id)
@@ -109,8 +109,8 @@ RC MvccTrxLogHandler::commit(int32_t trx_id, int32_t commit_trx_id)
   log_entry.commit_trx_id         = commit_trx_id;
 
   LSN lsn = 0;
-  RC rc = log_handler_.append(
-      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char *>(&log_entry), sizeof(log_entry)));
+  RC  rc  = log_handler_.append(
+      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char*>(&log_entry), sizeof(log_entry)));
   if (OB_FAIL(rc)) {
     return rc;
   }
@@ -130,15 +130,15 @@ RC MvccTrxLogHandler::rollback(int32_t trx_id)
 
   LSN lsn = 0;
   return log_handler_.append(
-      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char *>(&log_entry), sizeof(log_entry)));
+      lsn, LogModule::Id::TRANSACTION, span<const char>(reinterpret_cast<const char*>(&log_entry), sizeof(log_entry)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-MvccTrxLogReplayer::MvccTrxLogReplayer(Db &db, MvccTrxKit &trx_kit, LogHandler &log_handler)
-  : db_(db), trx_kit_(trx_kit), log_handler_(log_handler)
+MvccTrxLogReplayer::MvccTrxLogReplayer(Db& db, MvccTrxKit& trx_kit, LogHandler& log_handler)
+    : db_(db), trx_kit_(trx_kit), log_handler_(log_handler)
 {}
 
-RC MvccTrxLogReplayer::replay(const LogEntry &entry)
+RC MvccTrxLogReplayer::replay(const LogEntry& entry)
 {
   RC rc = RC::SUCCESS;
 
@@ -151,11 +151,11 @@ RC MvccTrxLogReplayer::replay(const LogEntry &entry)
     return RC::LOG_ENTRY_INVALID;
   }
 
-  auto *header = reinterpret_cast<const MvccTrxLogHeader *>(entry.data());
-  MvccTrx *trx = nullptr;
-  auto trx_iter = trx_map_.find(header->trx_id);
+  auto*    header   = reinterpret_cast<const MvccTrxLogHeader*>(entry.data());
+  MvccTrx* trx      = nullptr;
+  auto     trx_iter = trx_map_.find(header->trx_id);
   if (trx_iter == trx_map_.end()) {
-    trx = static_cast<MvccTrx *>(trx_kit_.create_trx(log_handler_, header->trx_id));
+    trx = static_cast<MvccTrx*>(trx_kit_.create_trx(log_handler_, header->trx_id));
     // trx = new MvccTrx(trx_kit_, log_handler_, header->trx_id);
   } else {
     trx = trx_iter->second;
@@ -167,7 +167,7 @@ RC MvccTrxLogReplayer::replay(const LogEntry &entry)
   /// 如果事务结束了，需要从内存中把它删除
   if (MvccTrxLogOperation(header->operation_type).type() == MvccTrxLogOperation::Type::ROLLBACK ||
       MvccTrxLogOperation(header->operation_type).type() == MvccTrxLogOperation::Type::COMMIT) {
-    Trx *trx = trx_map_[header->trx_id];
+    Trx* trx = trx_map_[header->trx_id];
     trx_kit_.destroy_trx(trx);
     trx_map_.erase(header->trx_id);
   }
@@ -178,9 +178,9 @@ RC MvccTrxLogReplayer::replay(const LogEntry &entry)
 RC MvccTrxLogReplayer::on_done()
 {
   /// 日志回放已经完成，需要把没有提交的事务，回滚掉
-  for (auto &pair : trx_map_) {
-    MvccTrx *trx = pair.second;
-    trx->rollback(); // 恢复时的rollback，可能遇到之前已经回滚一半的事务又再次调用回滚的情况
+  for (auto& pair : trx_map_) {
+    MvccTrx* trx = pair.second;
+    trx->rollback();  // 恢复时的rollback，可能遇到之前已经回滚一半的事务又再次调用回滚的情况
     delete pair.second;
   }
   trx_map_.clear();

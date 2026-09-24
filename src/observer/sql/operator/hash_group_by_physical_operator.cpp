@@ -21,35 +21,34 @@ using namespace std;
 using namespace common;
 
 HashGroupByPhysicalOperator::HashGroupByPhysicalOperator(
-    vector<unique_ptr<Expression>> &&group_by_exprs, vector<Expression *> &&expressions)
+    vector<unique_ptr<Expression>>&& group_by_exprs, vector<Expression*>&& expressions)
     : GroupByPhysicalOperator(std::move(expressions)), group_by_exprs_(std::move(group_by_exprs))
-{
-}
+{}
 
-RC HashGroupByPhysicalOperator::open(Trx *trx)
+RC HashGroupByPhysicalOperator::open(Trx* trx)
 {
   ASSERT(children_.size() == 1, "group by operator only support one child, but got %d", children_.size());
 
-  PhysicalOperator &child = *children_[0];
+  PhysicalOperator& child = *children_[0];
   RC                rc    = child.open(trx);
   if (OB_FAIL(rc)) {
     LOG_INFO("failed to open child operator. rc=%s", strrc(rc));
     return rc;
   }
 
-  ExpressionTuple<Expression *> group_value_expression_tuple(value_expressions_);
+  ExpressionTuple<Expression*> group_value_expression_tuple(value_expressions_);
 
   ValueListTuple group_by_evaluated_tuple;
 
   while (OB_SUCC(rc = child.next())) {
-    Tuple *child_tuple = child.current_tuple();
+    Tuple* child_tuple = child.current_tuple();
     if (nullptr == child_tuple) {
       LOG_WARN("failed to get tuple from child operator. rc=%s", strrc(rc));
       return RC::INTERNAL;
     }
 
     // 找到对应的group
-    GroupType *found_group = nullptr;
+    GroupType* found_group = nullptr;
     rc                     = find_group(*child_tuple, found_group);
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to find group. rc=%s", strrc(rc));
@@ -60,8 +59,8 @@ RC HashGroupByPhysicalOperator::open(Trx *trx)
     group_value_expression_tuple.set_tuple(child_tuple);
 
     // 计算聚合值
-    GroupValueType &group_value = get<1>(*found_group);
-    rc = aggregate(get<0>(group_value), group_value_expression_tuple);
+    GroupValueType& group_value = get<1>(*found_group);
+    rc                          = aggregate(get<0>(group_value), group_value_expression_tuple);
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to aggregate values. rc=%s", strrc(rc));
       return rc;
@@ -78,9 +77,9 @@ RC HashGroupByPhysicalOperator::open(Trx *trx)
   }
 
   // 得到最终聚合后的值
-  for (GroupType &group : groups_) {
-    GroupValueType &group_value = get<1>(group);
-    rc = evaluate(group_value);
+  for (GroupType& group : groups_) {
+    GroupValueType& group_value = get<1>(group);
+    rc                          = evaluate(group_value);
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to evaluate group value. rc=%s", strrc(rc));
       return rc;
@@ -117,16 +116,16 @@ RC HashGroupByPhysicalOperator::close()
   return RC::SUCCESS;
 }
 
-Tuple *HashGroupByPhysicalOperator::current_tuple()
+Tuple* HashGroupByPhysicalOperator::current_tuple()
 {
   if (current_group_ != groups_.end()) {
-    GroupValueType &group_value = get<1>(*current_group_);
+    GroupValueType& group_value = get<1>(*current_group_);
     return &get<1>(group_value);
   }
   return nullptr;
 }
 
-RC HashGroupByPhysicalOperator::find_group(const Tuple &child_tuple, GroupType *&found_group)
+RC HashGroupByPhysicalOperator::find_group(const Tuple& child_tuple, GroupType*& found_group)
 {
   found_group = nullptr;
 
@@ -142,7 +141,7 @@ RC HashGroupByPhysicalOperator::find_group(const Tuple &child_tuple, GroupType *
   }
 
   // 找到对应的group
-  for (GroupType &group : groups_) {
+  for (GroupType& group : groups_) {
     int compare_result = 0;
     rc                 = group_by_evaluated_tuple.compare(get<0>(group), compare_result);
     if (OB_FAIL(rc)) {
@@ -170,8 +169,8 @@ RC HashGroupByPhysicalOperator::find_group(const Tuple &child_tuple, GroupType *
 
     CompositeTuple composite_tuple;
     composite_tuple.add_tuple(make_unique<ValueListTuple>(std::move(child_tuple_to_value)));
-    groups_.emplace_back(std::move(group_by_evaluated_tuple), 
-                         GroupValueType(std::move(aggregator_list), std::move(composite_tuple)));
+    groups_.emplace_back(
+        std::move(group_by_evaluated_tuple), GroupValueType(std::move(aggregator_list), std::move(composite_tuple)));
     found_group = &groups_.back();
   }
 

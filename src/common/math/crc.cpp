@@ -269,7 +269,7 @@ unsigned int crc_table[] = {0x00000000,
     0x5A05DF1B,
     0x2D02EF8D};
 
-unsigned int crc32(const char *buffer, unsigned int size)
+unsigned int crc32(const char* buffer, unsigned int size)
 {
   unsigned int crc = 0xffffffff;
   for (unsigned int i = 0; i < size; i++) {

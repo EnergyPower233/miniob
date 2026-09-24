@@ -27,18 +27,18 @@ See the Mulan PSL v2 for more details. */
 class HashGroupByPhysicalOperator : public GroupByPhysicalOperator
 {
 public:
-  HashGroupByPhysicalOperator(vector<unique_ptr<Expression>> &&group_by_exprs, vector<Expression *> &&expressions);
+  HashGroupByPhysicalOperator(vector<unique_ptr<Expression>>&& group_by_exprs, vector<Expression*>&& expressions);
 
   virtual ~HashGroupByPhysicalOperator() = default;
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::HASH_GROUP_BY; }
   OpType               get_op_type() const override { return OpType::HASHGROUPBY; }
 
-  RC open(Trx *trx) override;
+  RC open(Trx* trx) override;
   RC next() override;
   RC close() override;
 
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
 private:
   using AggregatorList = GroupByPhysicalOperator::AggregatorList;
@@ -47,7 +47,7 @@ private:
   using GroupType = tuple<ValueListTuple, GroupValueType>;
 
 private:
-  RC find_group(const Tuple &child_tuple, GroupType *&found_group);
+  RC find_group(const Tuple& child_tuple, GroupType*& found_group);
 
 private:
   vector<unique_ptr<Expression>> group_by_exprs_;

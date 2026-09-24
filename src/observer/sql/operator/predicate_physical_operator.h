@@ -33,13 +33,13 @@ public:
   PhysicalOperatorType type() const override { return PhysicalOperatorType::PREDICATE; }
   OpType               get_op_type() const override { return OpType::FILTER; }
 
-  RC open(Trx *trx) override;
+  RC open(Trx* trx) override;
   RC next() override;
   RC close() override;
 
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
-  RC tuple_schema(TupleSchema &schema) const override;
+  RC tuple_schema(TupleSchema& schema) const override;
 
 private:
   unique_ptr<Expression> expression_;

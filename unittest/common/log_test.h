@@ -26,9 +26,9 @@ public:
   LogTest();
   virtual ~LogTest();
 
-  int init(const string &logFile = "test.log");
+  int init(const string& logFile = "test.log");
 
-  void *log_loop(void *param);
+  void* log_loop(void* param);
 };
 
 #endif /* CTESTLOG_H_ */

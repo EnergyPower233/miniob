@@ -25,7 +25,7 @@ See the Mulan PSL v2 for more details. */
 class GroupByPhysicalOperator : public PhysicalOperator
 {
 public:
-  GroupByPhysicalOperator(vector<Expression *> &&expressions);
+  GroupByPhysicalOperator(vector<Expression*>&& expressions);
   virtual ~GroupByPhysicalOperator() = default;
 
 protected:
@@ -42,17 +42,17 @@ protected:
   using GroupValueType = tuple<AggregatorList, CompositeTuple>;
 
 protected:
-  void create_aggregator_list(AggregatorList &aggregator_list);
+  void create_aggregator_list(AggregatorList& aggregator_list);
 
   /// @brief 聚合一条记录
   /// @param aggregator_list 需要执行聚合运算的列表
   /// @param tuple 执行聚合运算的一条记录
-  RC aggregate(AggregatorList &aggregator_list, const Tuple &tuple);
+  RC aggregate(AggregatorList& aggregator_list, const Tuple& tuple);
 
   /// @brief 所有tuple聚合结束后，运算最终结果
-  RC evaluate(GroupValueType &group_value);
+  RC evaluate(GroupValueType& group_value);
 
 protected:
-  vector<Expression *> aggregate_expressions_;  /// 聚合表达式
-  vector<Expression *> value_expressions_;      /// 计算聚合时的表达式
+  vector<Expression*> aggregate_expressions_;  /// 聚合表达式
+  vector<Expression*> value_expressions_;      /// 计算聚合时的表达式
 };

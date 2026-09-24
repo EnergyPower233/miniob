@@ -24,13 +24,13 @@ namespace oceanbase {
 class TrxIterator : public ObLsmIterator
 {
 public:
-  TrxIterator(ObLsmIterator *left, ObLsmIterator *right) : left_(left), right_(right) {}
+  TrxIterator(ObLsmIterator* left, ObLsmIterator* right) : left_(left), right_(right) {}
   ~TrxIterator() override = default;
 
   bool valid() const override { return false; }
   void seek_to_first() override {}
   void seek_to_last() override {}
-  void seek(const string_view &key) override {}
+  void seek(const string_view& key) override {}
   void next() override {}
 
   string_view key() const override { return ""; }
@@ -41,19 +41,19 @@ private:
   unique_ptr<ObLsmIterator> right_;
 };
 
-ObLsmTransaction::ObLsmTransaction(ObLsm *db, uint64_t ts) : db_(db), ts_(ts)
+ObLsmTransaction::ObLsmTransaction(ObLsm* db, uint64_t ts) : db_(db), ts_(ts)
 {
   (void)db_;
   (void)ts_;
 }
 
-RC ObLsmTransaction::get(const string_view &key, string *value) { return RC::UNIMPLEMENTED; }
+RC ObLsmTransaction::get(const string_view& key, string* value) { return RC::UNIMPLEMENTED; }
 
-RC ObLsmTransaction::put(const string_view &key, const string_view &value) { return RC::UNIMPLEMENTED; }
+RC ObLsmTransaction::put(const string_view& key, const string_view& value) { return RC::UNIMPLEMENTED; }
 
-RC ObLsmTransaction::remove(const string_view &key) { return RC::UNIMPLEMENTED; }
+RC ObLsmTransaction::remove(const string_view& key) { return RC::UNIMPLEMENTED; }
 
-ObLsmIterator *ObLsmTransaction::new_iterator(ObLsmReadOptions options) { return nullptr; }
+ObLsmIterator* ObLsmTransaction::new_iterator(ObLsmReadOptions options) { return nullptr; }
 
 RC ObLsmTransaction::commit() { return RC::UNIMPLEMENTED; }
 

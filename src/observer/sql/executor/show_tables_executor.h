@@ -33,12 +33,12 @@ public:
   ShowTablesExecutor()          = default;
   virtual ~ShowTablesExecutor() = default;
 
-  RC execute(SQLStageEvent *sql_event)
+  RC execute(SQLStageEvent* sql_event)
   {
-    SqlResult    *sql_result    = sql_event->session_event()->sql_result();
-    SessionEvent *session_event = sql_event->session_event();
+    SqlResult*    sql_result    = sql_event->session_event()->sql_result();
+    SessionEvent* session_event = sql_event->session_event();
 
-    Db *db = session_event->session()->get_current_db();
+    Db* db = session_event->session()->get_current_db();
 
     vector<string> all_tables;
     db->all_tables(all_tables);
@@ -48,7 +48,7 @@ public:
     sql_result->set_tuple_schema(tuple_schema);
 
     auto oper = new StringListPhysicalOperator;
-    for (const string &s : all_tables) {
+    for (const string& s : all_tables) {
       oper->append(s);
     }
 

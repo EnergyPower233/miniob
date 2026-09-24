@@ -24,6 +24,6 @@ class ObLsmIterator;
  * the union of memtable and sstable.
  *
  */
-ObLsmIterator *new_merging_iterator(const ObComparator *comparator, vector<unique_ptr<ObLsmIterator>> &&children);
+ObLsmIterator* new_merging_iterator(const ObComparator* comparator, vector<unique_ptr<ObLsmIterator>>&& children);
 
 }  // namespace oceanbase

@@ -19,12 +19,12 @@ See the Mulan PSL v2 for more details. */
 class OptimizeGroup : public CascadeTask
 {
 public:
-  OptimizeGroup(Group *group, OptimizerContext *context)
+  OptimizeGroup(Group* group, OptimizerContext* context)
       : CascadeTask(context, CascadeTaskType::OPTIMIZE_GROUP), group_(group)
   {}
 
   void perform() override;
 
 private:
-  Group *group_;
+  Group* group_;
 };

@@ -25,7 +25,7 @@ class Table;
 class TableScanVecPhysicalOperator : public PhysicalOperator
 {
 public:
-  TableScanVecPhysicalOperator(Table *table, ReadWriteMode mode) : table_(table), mode_(mode) {}
+  TableScanVecPhysicalOperator(Table* table, ReadWriteMode mode) : table_(table), mode_(mode) {}
 
   virtual ~TableScanVecPhysicalOperator() = default;
 
@@ -33,17 +33,17 @@ public:
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::TABLE_SCAN_VEC; }
 
-  RC open(Trx *trx) override;
-  RC next(Chunk &chunk) override;
+  RC open(Trx* trx) override;
+  RC next(Chunk& chunk) override;
   RC close() override;
 
-  void set_predicates(vector<unique_ptr<Expression>> &&exprs);
+  void set_predicates(vector<unique_ptr<Expression>>&& exprs);
 
 private:
-  RC filter(Chunk &chunk);
+  RC filter(Chunk& chunk);
 
 private:
-  Table                         *table_ = nullptr;
+  Table*                         table_ = nullptr;
   ReadWriteMode                  mode_  = ReadWriteMode::READ_WRITE;
   ChunkFileScanner               chunk_scanner_;
   Chunk                          all_columns_;

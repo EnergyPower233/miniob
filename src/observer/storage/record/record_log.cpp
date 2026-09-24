@@ -74,7 +74,7 @@ string RecordLogHeader::to_string() const
 // class RecordLogHandler
 
 RC RecordLogHandler::init(
-    LogHandler &log_handler, int32_t buffer_pool_id, int32_t record_size, StorageFormat storage_format)
+    LogHandler& log_handler, int32_t buffer_pool_id, int32_t record_size, StorageFormat storage_format)
 {
   RC rc = RC::SUCCESS;
 
@@ -87,11 +87,11 @@ RC RecordLogHandler::init(
 }
 
 // data is the column index in page
-RC RecordLogHandler::init_new_page(Frame *frame, PageNum page_num, span<const char> data)
+RC RecordLogHandler::init_new_page(Frame* frame, PageNum page_num, span<const char> data)
 {
   const int        log_payload_size = RecordLogHeader::SIZE + data.size();
   vector<char>     log_payload(log_payload_size);
-  RecordLogHeader *header = reinterpret_cast<RecordLogHeader *>(log_payload.data());
+  RecordLogHeader* header = reinterpret_cast<RecordLogHeader*>(log_payload.data());
   header->buffer_pool_id  = buffer_pool_id_;
   header->operation_type  = RecordOperation(RecordOperation::Type::INIT_PAGE).type_id();
   header->page_num        = page_num;
@@ -110,11 +110,11 @@ RC RecordLogHandler::init_new_page(Frame *frame, PageNum page_num, span<const ch
   return rc;
 }
 
-RC RecordLogHandler::insert_record(Frame *frame, const RID &rid, const char *record)
+RC RecordLogHandler::insert_record(Frame* frame, const RID& rid, const char* record)
 {
   const int        log_payload_size = RecordLogHeader::SIZE + record_size_;
   vector<char>     log_payload(log_payload_size);
-  RecordLogHeader *header = reinterpret_cast<RecordLogHeader *>(log_payload.data());
+  RecordLogHeader* header = reinterpret_cast<RecordLogHeader*>(log_payload.data());
   header->buffer_pool_id  = buffer_pool_id_;
   header->operation_type  = RecordOperation(RecordOperation::Type::INSERT).type_id();
   header->page_num        = rid.page_num;
@@ -130,11 +130,11 @@ RC RecordLogHandler::insert_record(Frame *frame, const RID &rid, const char *rec
   return rc;
 }
 
-RC RecordLogHandler::update_record(Frame *frame, const RID &rid, const char *record)
+RC RecordLogHandler::update_record(Frame* frame, const RID& rid, const char* record)
 {
   const int        log_payload_size = RecordLogHeader::SIZE + record_size_;
   vector<char>     log_payload(log_payload_size);
-  RecordLogHeader *header = reinterpret_cast<RecordLogHeader *>(log_payload.data());
+  RecordLogHeader* header = reinterpret_cast<RecordLogHeader*>(log_payload.data());
   header->buffer_pool_id  = buffer_pool_id_;
   header->operation_type  = RecordOperation(RecordOperation::Type::UPDATE).type_id();
   header->page_num        = rid.page_num;
@@ -150,7 +150,7 @@ RC RecordLogHandler::update_record(Frame *frame, const RID &rid, const char *rec
   return rc;
 }
 
-RC RecordLogHandler::delete_record(Frame *frame, const RID &rid)
+RC RecordLogHandler::delete_record(Frame* frame, const RID& rid)
 {
   RecordLogHeader header;
   header.buffer_pool_id = buffer_pool_id_;
@@ -162,7 +162,7 @@ RC RecordLogHandler::delete_record(Frame *frame, const RID &rid)
   LSN lsn = 0;
   RC  rc  = log_handler_->append(lsn,
       LogModule::Id::RECORD_MANAGER,
-      span<const char>(reinterpret_cast<const char *>(&header), RecordLogHeader::SIZE));
+      span<const char>(reinterpret_cast<const char*>(&header), RecordLogHeader::SIZE));
   if (OB_SUCC(rc) && lsn > 0) {
     frame->set_lsn(lsn);
   }
@@ -172,9 +172,9 @@ RC RecordLogHandler::delete_record(Frame *frame, const RID &rid)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // class RecordLogReplayer
 
-RecordLogReplayer::RecordLogReplayer(BufferPoolManager &bpm) : bpm_(bpm) {}
+RecordLogReplayer::RecordLogReplayer(BufferPoolManager& bpm) : bpm_(bpm) {}
 
-RC RecordLogReplayer::replay(const LogEntry &entry)
+RC RecordLogReplayer::replay(const LogEntry& entry)
 {
   LOG_TRACE("replaying record manager log: %s", entry.to_string().c_str());
 
@@ -188,10 +188,10 @@ RC RecordLogReplayer::replay(const LogEntry &entry)
     return RC::INVALID_ARGUMENT;
   }
 
-  auto log_header = reinterpret_cast<const RecordLogHeader *>(entry.data());
+  auto log_header = reinterpret_cast<const RecordLogHeader*>(entry.data());
 
-  DiskBufferPool *buffer_pool = nullptr;
-  Frame          *frame       = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
+  Frame*          frame       = nullptr;
   RC              rc          = bpm_.get_buffer_pool(log_header->buffer_pool_id, buffer_pool);
   if (OB_FAIL(rc)) {
     LOG_WARN("fail to get buffer pool. buffer pool id=%d, rc=%s", log_header->buffer_pool_id, strrc(rc));
@@ -242,7 +242,7 @@ RC RecordLogReplayer::replay(const LogEntry &entry)
   return RC::SUCCESS;
 }
 
-RC RecordLogReplayer::replay_init_page(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header)
+RC RecordLogReplayer::replay_init_page(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header)
 {
   VacuousLogHandler             vacuous_log_handler;
   unique_ptr<RecordPageHandler> record_page_handler(
@@ -262,7 +262,7 @@ RC RecordLogReplayer::replay_init_page(DiskBufferPool &buffer_pool, const Record
   return rc;
 }
 
-RC RecordLogReplayer::replay_insert(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header)
+RC RecordLogReplayer::replay_insert(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header)
 {
   VacuousLogHandler             vacuous_log_handler;
   unique_ptr<RecordPageHandler> record_page_handler(
@@ -274,7 +274,7 @@ RC RecordLogReplayer::replay_insert(DiskBufferPool &buffer_pool, const RecordLog
     return rc;
   }
 
-  const char *record = log_header.data;
+  const char* record = log_header.data;
   RID         rid(log_header.page_num, log_header.slot_num);
   rc = record_page_handler->insert_record(record, &rid);
   if (OB_FAIL(rc)) {
@@ -286,7 +286,7 @@ RC RecordLogReplayer::replay_insert(DiskBufferPool &buffer_pool, const RecordLog
   return rc;
 }
 
-RC RecordLogReplayer::replay_delete(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header)
+RC RecordLogReplayer::replay_delete(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header)
 {
   VacuousLogHandler             vacuous_log_handler;
   unique_ptr<RecordPageHandler> record_page_handler(
@@ -309,7 +309,7 @@ RC RecordLogReplayer::replay_delete(DiskBufferPool &buffer_pool, const RecordLog
   return rc;
 }
 
-RC RecordLogReplayer::replay_update(DiskBufferPool &buffer_pool, const RecordLogHeader &header)
+RC RecordLogReplayer::replay_update(DiskBufferPool& buffer_pool, const RecordLogHeader& header)
 {
   VacuousLogHandler             vacuous_log_handler;
   unique_ptr<RecordPageHandler> record_page_handler(RecordPageHandler::create(StorageFormat(header.storage_format)));

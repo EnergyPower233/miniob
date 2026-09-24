@@ -26,9 +26,9 @@ See the Mulan PSL v2 for more details. */
 
 namespace common {
 
-Log *g_log = nullptr;
+Log* g_log = nullptr;
 
-Log::Log(const string &log_file_name, const LOG_LEVEL log_level, const LOG_LEVEL console_level)
+Log::Log(const string& log_file_name, const LOG_LEVEL log_level, const LOG_LEVEL console_level)
     : log_name_(log_file_name), log_level_(log_level), console_level_(console_level)
 {
   prefix_map_[LOG_LEVEL_PANIC] = "PANIC:";
@@ -72,7 +72,7 @@ void Log::check_param_valid()
   return;
 }
 
-bool Log::check_output(const LOG_LEVEL level, const char *module)
+bool Log::check_output(const LOG_LEVEL level, const char* module)
 {
   if (LOG_LEVEL_LAST > level && level <= console_level_) {
     return true;
@@ -87,7 +87,7 @@ bool Log::check_output(const LOG_LEVEL level, const char *module)
   return false;
 }
 
-int Log::output(const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...)
+int Log::output(const LOG_LEVEL level, const char* module, const char* prefix, const char* f, ...)
 {
   bool locked = false;
   try {
@@ -126,7 +126,7 @@ int Log::output(const LOG_LEVEL level, const char *module, const char *prefix, c
       locked = false;
     }
 
-  } catch (exception &e) {
+  } catch (exception& e) {
     if (locked) {
       pthread_mutex_unlock(&lock_);
     }
@@ -161,16 +161,16 @@ int Log::set_log_level(LOG_LEVEL log_level)
 
 LOG_LEVEL Log::get_log_level() { return log_level_; }
 
-const char *Log::prefix_msg(LOG_LEVEL level)
+const char* Log::prefix_msg(LOG_LEVEL level)
 {
   if (LOG_LEVEL_PANIC <= level && level < LOG_LEVEL_LAST) {
     return prefix_map_[level].c_str();
   }
-  static const char *empty_prefix = "";
+  static const char* empty_prefix = "";
   return empty_prefix;
 }
 
-void Log::set_default_module(const string &modules) { split_string(modules, ",", default_set_); }
+void Log::set_default_module(const string& modules) { split_string(modules, ",", default_set_); }
 
 int Log::set_rotate_type(LOG_ROTATE rotate_type)
 {
@@ -217,7 +217,7 @@ int Log::rename_old_logs()
 
   while (log_index < MAX_LOG_NUM) {
     string log_name = log_name_ + "." + size_to_pad_str(log_index, 3);
-    int         result   = access(log_name.c_str(), R_OK);
+    int    result   = access(log_name.c_str(), R_OK);
     if (result) {
       break;
     }
@@ -272,7 +272,7 @@ int Log::rotate_by_size()
     char log_index_str[4] = {0};
     snprintf(log_index_str, sizeof(log_index_str), "%03d", 1);
     string log_name_new = log_name_ + "." + log_index_str;
-    result                   = rename(log_name_.c_str(), log_name_new.c_str());
+    result              = rename(log_name_.c_str(), log_name_new.c_str());
     if (result) {
       cerr << "Failed to rename " << log_name_ << " to " << log_name_new << endl;
     }
@@ -327,9 +327,9 @@ LoggerFactory::~LoggerFactory()
 }
 
 int LoggerFactory::init(
-    const string &log_file, Log **logger, LOG_LEVEL log_level, LOG_LEVEL console_level, LOG_ROTATE rotate_type)
+    const string& log_file, Log** logger, LOG_LEVEL log_level, LOG_LEVEL console_level, LOG_ROTATE rotate_type)
 {
-  Log *log = new (nothrow) Log(log_file, log_level, console_level);
+  Log* log = new (nothrow) Log(log_file, log_level, console_level);
   if (log == nullptr) {
     cout << "Error: fail to construct a log object!" << endl;
     return -1;
@@ -342,7 +342,7 @@ int LoggerFactory::init(
 }
 
 int LoggerFactory::init_default(
-    const string &log_file, LOG_LEVEL log_level, LOG_LEVEL console_level, LOG_ROTATE rotate_type)
+    const string& log_file, LOG_LEVEL log_level, LOG_LEVEL console_level, LOG_ROTATE rotate_type)
 {
   if (g_log != nullptr) {
     LOG_INFO("Default logger has been initialized");

@@ -26,10 +26,10 @@ public:
   ExpressionRewriter();
   virtual ~ExpressionRewriter() = default;
 
-  RC rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made) override;
+  RC rewrite(unique_ptr<LogicalOperator>& oper, bool& change_made) override;
 
 private:
-  RC rewrite_expression(unique_ptr<Expression> &expr, bool &change_made);
+  RC rewrite_expression(unique_ptr<Expression>& expr, bool& change_made);
 
 private:
   vector<unique_ptr<ExpressionRewriteRule>> expr_rewrite_rules_;

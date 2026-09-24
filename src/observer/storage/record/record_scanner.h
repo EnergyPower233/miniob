@@ -38,5 +38,5 @@ public:
    *
    * @param record 返回的下一条记录
    */
-  virtual RC next(Record &record) = 0;
+  virtual RC next(Record& record) = 0;
 };

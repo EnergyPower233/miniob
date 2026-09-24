@@ -25,7 +25,7 @@ class ObBlockBuilder
 {
 
 public:
-  RC add(const string_view &key, const string_view &value);
+  RC add(const string_view& key, const string_view& value);
 
   string_view finish();
 

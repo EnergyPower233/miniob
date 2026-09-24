@@ -36,8 +36,8 @@ namespace common {
 #define S44 21
 
 static void MD5Transform(UINT4[4], unsigned char[64]);
-static void Encode(unsigned char *, UINT4 *, unsigned int);
-static void Decode(UINT4 *, unsigned char *, unsigned int);
+static void Encode(unsigned char*, UINT4*, unsigned int);
+static void Decode(UINT4*, unsigned char*, unsigned int);
 static void MD5_memcpy(POINTER, POINTER, unsigned int);
 static void MD5_memset(POINTER, int, unsigned int);
 
@@ -151,7 +151,7 @@ static unsigned char PADDING[64] = {0x80,
 /*
  * MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-void MD5Init(MD5_CTX *context)
+void MD5Init(MD5_CTX* context)
 {
   context->count[0] = context->count[1] = 0;
   /*
@@ -167,7 +167,7 @@ void MD5Init(MD5_CTX *context)
  * MD5 block update operation. Continues an MD5 message-digest operation,
  * processing another message block, and updating the context.
  */
-void MD5Update(MD5_CTX *context, unsigned char *input, unsigned int inputLen)
+void MD5Update(MD5_CTX* context, unsigned char* input, unsigned int inputLen)
 {
   unsigned int i, index, partLen;
 
@@ -203,7 +203,7 @@ void MD5Update(MD5_CTX *context, unsigned char *input, unsigned int inputLen)
  * MD5 finalization. Ends an MD5 message-digest operation, writing the the
  * message digest and zeroizing the context.
  */
-void MD5Final(unsigned char digest[16], MD5_CTX *context)
+void MD5Final(unsigned char digest[16], MD5_CTX* context)
 {
   unsigned char bits[8];
   unsigned int  index, padLen;
@@ -326,7 +326,7 @@ static void MD5Transform(UINT4 state[4], unsigned char block[64])
  * Encodes input (UINT4) into output (unsigned char). Assumes len is a
  * multiple of 4.
  */
-static void Encode(unsigned char *output, UINT4 *input, unsigned int len)
+static void Encode(unsigned char* output, UINT4* input, unsigned int len)
 {
   unsigned int i, j;
 
@@ -342,7 +342,7 @@ static void Encode(unsigned char *output, UINT4 *input, unsigned int len)
  * Decodes input (unsigned char) into output (UINT4). Assumes len is a
  * multiple of 4.
  */
-static void Decode(UINT4 *output, unsigned char *input, unsigned int len)
+static void Decode(UINT4* output, unsigned char* input, unsigned int len)
 {
   unsigned int i, j;
 
@@ -371,36 +371,36 @@ static void MD5_memset(POINTER output, int value, unsigned int len)
   unsigned int i;
 
   for (i = 0; i < len; i++)
-    ((char *)output)[i] = (char)value;
+    ((char*)output)[i] = (char)value;
 }
 
 /*
  * Digests a string
  */
-int MD5String(char *string, unsigned char digest[16])
+int MD5String(char* string, unsigned char digest[16])
 {
   MD5_CTX      context;
   unsigned int len = strlen(string);
 
   MD5Init(&context);
-  MD5Update(&context, (unsigned char *)string, len);
+  MD5Update(&context, (unsigned char*)string, len);
   MD5Final(digest, &context);
   return 0;
 }
 
-int MD5Buffer(char *buffer, unsigned int len, unsigned char digest[16])
+int MD5Buffer(char* buffer, unsigned int len, unsigned char digest[16])
 {
   MD5_CTX context;
 
   MD5Init(&context);
-  MD5Update(&context, (unsigned char *)buffer, len);
+  MD5Update(&context, (unsigned char*)buffer, len);
   MD5Final(digest, &context);
   return 0;
 }
 
-int MD5File(char *filename, unsigned char digest[16])
+int MD5File(char* filename, unsigned char digest[16])
 {
-  FILE         *file;
+  FILE*         file;
   MD5_CTX       context;
   int           len;
   unsigned char buffer[1024];

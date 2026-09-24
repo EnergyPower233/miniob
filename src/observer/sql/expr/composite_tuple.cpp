@@ -20,15 +20,15 @@ using namespace std;
 int CompositeTuple::cell_num() const
 {
   int num = 0;
-  for (const auto &tuple : tuples_) {
+  for (const auto& tuple : tuples_) {
     num += tuple->cell_num();
   }
   return num;
 }
 
-RC CompositeTuple::cell_at(int index, Value &cell) const
+RC CompositeTuple::cell_at(int index, Value& cell) const
 {
-  for (const auto &tuple : tuples_) {
+  for (const auto& tuple : tuples_) {
     if (index < tuple->cell_num()) {
       return tuple->cell_at(index, cell);
     } else {
@@ -38,9 +38,9 @@ RC CompositeTuple::cell_at(int index, Value &cell) const
   return RC::NOTFOUND;
 }
 
-RC CompositeTuple::spec_at(int index, TupleCellSpec &spec) const
+RC CompositeTuple::spec_at(int index, TupleCellSpec& spec) const
 {
-  for (const auto &tuple : tuples_) {
+  for (const auto& tuple : tuples_) {
     if (index < tuple->cell_num()) {
       return tuple->spec_at(index, spec);
     } else {
@@ -50,10 +50,10 @@ RC CompositeTuple::spec_at(int index, TupleCellSpec &spec) const
   return RC::NOTFOUND;
 }
 
-RC CompositeTuple::find_cell(const TupleCellSpec &spec, Value &cell) const
+RC CompositeTuple::find_cell(const TupleCellSpec& spec, Value& cell) const
 {
   RC rc = RC::NOTFOUND;
-  for (const auto &tuple : tuples_) {
+  for (const auto& tuple : tuples_) {
     rc = tuple->find_cell(spec, cell);
     if (OB_SUCC(rc)) {
       break;
@@ -64,8 +64,8 @@ RC CompositeTuple::find_cell(const TupleCellSpec &spec, Value &cell) const
 
 void CompositeTuple::add_tuple(unique_ptr<Tuple> tuple) { tuples_.push_back(std::move(tuple)); }
 
-Tuple &CompositeTuple::tuple_at(size_t index) 
-{ 
+Tuple& CompositeTuple::tuple_at(size_t index)
+{
   ASSERT(index < tuples_.size(), "index=%d, tuples_size=%d", index, tuples_.size());
-  return *tuples_[index]; 
+  return *tuples_[index];
 }

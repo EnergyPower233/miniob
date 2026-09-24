@@ -47,7 +47,7 @@ public:
    *
    * @param path 日志文件存放的目录
    */
-  virtual RC init(const char *path) = 0;
+  virtual RC init(const char* path) = 0;
 
   /**
    * @brief 启动日志模块
@@ -69,14 +69,14 @@ public:
    * @param replayer 日志回放器
    * @param start_lsn 从哪个LSN开始回放
    */
-  virtual RC replay(LogReplayer &replayer, LSN start_lsn) = 0;
+  virtual RC replay(LogReplayer& replayer, LSN start_lsn) = 0;
 
   /**
    * @brief 迭代日志
    * @param consumer 消费者
    * @param start_lsn 从哪个LSN开始迭代
    */
-  virtual RC iterate(function<RC(LogEntry &)> consumer, LSN start_lsn) = 0;
+  virtual RC iterate(function<RC(LogEntry&)> consumer, LSN start_lsn) = 0;
 
   /**
    * @brief 写入一条日志
@@ -85,8 +85,8 @@ public:
    * @param data 日志数据
    * @note 子类不应该重新实现这个函数
    */
-  virtual RC append(LSN &lsn, LogModule::Id module, span<const char> data);
-  virtual RC append(LSN &lsn, LogModule::Id module, vector<char> &&data);
+  virtual RC append(LSN& lsn, LogModule::Id module, span<const char> data);
+  virtual RC append(LSN& lsn, LogModule::Id module, vector<char>&& data);
 
   /**
    * @brief 等待某个LSN的日志被刷新到磁盘
@@ -96,12 +96,12 @@ public:
 
   virtual LSN current_lsn() const = 0;
 
-  static RC create(const char *name, LogHandler *&handler);
+  static RC create(const char* name, LogHandler*& handler);
 
 private:
   /**
    * @brief 写入一条日志
    * @details 子类应该重现实现这个函数
    */
-  virtual RC _append(LSN &lsn, LogModule module, vector<char> &&data) = 0;
+  virtual RC _append(LSN& lsn, LogModule module, vector<char>&& data) = 0;
 };

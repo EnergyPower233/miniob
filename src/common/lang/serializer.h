@@ -34,18 +34,18 @@ public:
   Serializer()  = default;
   ~Serializer() = default;
 
-  Serializer(const Serializer &)            = delete;
-  Serializer &operator=(const Serializer &) = delete;
+  Serializer(const Serializer&)            = delete;
+  Serializer& operator=(const Serializer&) = delete;
 
   /// @brief 写入指定长度的数据
   int write(span<const char> data);
   /// @brief 写入指定长度的数据
-  int write(const char *data, int size) { return write(span<const char>(data, size)); }
+  int write(const char* data, int size) { return write(span<const char>(data, size)); }
   /// @brief 当前写入了多少数据
   int64_t size() const { return buffer_.size(); }
 
-  BufferType       &data() { return buffer_; }
-  const BufferType &data() const { return buffer_; }
+  BufferType&       data() { return buffer_; }
+  const BufferType& data() const { return buffer_; }
 
   /// @brief 写入一个int32整数
   int write_int32(int32_t value);
@@ -63,16 +63,16 @@ class Deserializer final
 {
 public:
   explicit Deserializer(span<const char> buffer) : buffer_(buffer) {}
-  Deserializer(const char *buffer, int size) : buffer_(buffer, size) {}
+  Deserializer(const char* buffer, int size) : buffer_(buffer, size) {}
   ~Deserializer() = default;
 
-  Deserializer(const Deserializer &)            = delete;
-  Deserializer &operator=(const Deserializer &) = delete;
+  Deserializer(const Deserializer&)            = delete;
+  Deserializer& operator=(const Deserializer&) = delete;
 
   /// @brief 读取指定大小的数据
   int read(span<char> data);
   /// @brief 读取指定长度的数据
-  int read(char *data, int size) { return read(span<char>(data, size)); }
+  int read(char* data, int size) { return read(span<char>(data, size)); }
 
   /// @brief buffer的大小
   int64_t size() const { return buffer_.size(); }
@@ -81,9 +81,9 @@ public:
   int64_t remain() const { return buffer_.size() - position_; }
 
   /// @brief 读取一个int32数据
-  int read_int32(int32_t &value);
+  int read_int32(int32_t& value);
   /// @brief 读取一个int64数据
-  int read_int64(int64_t &value);
+  int read_int64(int64_t& value);
 
 private:
   span<const char> buffer_;        ///< 存放数据的buffer

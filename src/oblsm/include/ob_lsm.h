@@ -42,13 +42,13 @@ public:
    * @return An RC value indicating success or failure of the operation.
    * @note The caller must delete the returned database pointer (`*dbptr`) when done.
    */
-  static RC open(const ObLsmOptions &options, const string &path, ObLsm **dbptr);
+  static RC open(const ObLsmOptions& options, const string& path, ObLsm** dbptr);
 
   ObLsm() = default;
 
-  ObLsm(const ObLsm &) = delete;
+  ObLsm(const ObLsm&) = delete;
 
-  ObLsm &operator=(const ObLsm &) = delete;
+  ObLsm& operator=(const ObLsm&) = delete;
 
   virtual ~ObLsm() = default;
 
@@ -61,7 +61,7 @@ public:
    * @param value The value associated with the key.
    * @return An RC value indicating success or failure of the operation.
    */
-  virtual RC put(const string_view &key, const string_view &value) = 0;
+  virtual RC put(const string_view& key, const string_view& value) = 0;
 
   /**
    * @brief Retrieves the value associated with a specified key.
@@ -73,7 +73,7 @@ public:
    * @param value Pointer to a string where the retrieved value will be stored.
    * @return An RC value indicating success or failure of the operation.
    */
-  virtual RC get(const string_view &key, string *value) = 0;
+  virtual RC get(const string_view& key, string* value) = 0;
 
   /**
    * @brief Delete a key-value entry in the LSM-Tree.
@@ -83,10 +83,10 @@ public:
    * @param key The key to remove.
    * @return An RC value indicating success or failure of the operation.
    */
-  virtual RC remove(const string_view &key) = 0;
+  virtual RC remove(const string_view& key) = 0;
 
   // TODO: distinguish transaction interface and non-transaction interface, refer to rocksdb
-  virtual ObLsmTransaction *begin_transaction() = 0;
+  virtual ObLsmTransaction* begin_transaction() = 0;
 
   /**
    * @brief Creates a new iterator for traversing the LSM-Tree database.
@@ -100,7 +100,7 @@ public:
    * @return A pointer to the newly created iterator.
    * @note The caller is responsible for deleting the iterator when it is no longer needed.
    */
-  virtual ObLsmIterator *new_iterator(ObLsmReadOptions options) = 0;
+  virtual ObLsmIterator* new_iterator(ObLsmReadOptions options) = 0;
 
   /**
    * @brief Inserts a batch of key-value entries into the LSM-Tree.
@@ -108,7 +108,7 @@ public:
    * @param kvs A vector of key-value pairs to insert.
    * @return An RC value indicating success or failure of the operation.
    */
-  virtual RC batch_put(const vector<pair<string, string>> &kvs) = 0;
+  virtual RC batch_put(const vector<pair<string, string>>& kvs) = 0;
 
   /**
    * @brief Dumps all SSTables for debugging purposes.

@@ -27,13 +27,13 @@ See the Mulan PSL v2 for more details. */
 
 using namespace common;
 
-RC ResolveStage::handle_request(SQLStageEvent *sql_event)
+RC ResolveStage::handle_request(SQLStageEvent* sql_event)
 {
   RC            rc            = RC::SUCCESS;
-  SessionEvent *session_event = sql_event->session_event();
-  SqlResult    *sql_result    = session_event->sql_result();
+  SessionEvent* session_event = sql_event->session_event();
+  SqlResult*    sql_result    = session_event->sql_result();
 
-  Db *db = session_event->session()->get_current_db();
+  Db* db = session_event->session()->get_current_db();
   if (nullptr == db) {
     LOG_ERROR("cannot find current db");
     rc = RC::SCHEMA_DB_NOT_EXIST;
@@ -42,8 +42,8 @@ RC ResolveStage::handle_request(SQLStageEvent *sql_event)
     return rc;
   }
 
-  ParsedSqlNode *sql_node = sql_event->sql_node().get();
-  Stmt          *stmt     = nullptr;
+  ParsedSqlNode* sql_node = sql_event->sql_node().get();
+  Stmt*          stmt     = nullptr;
 
   rc = Stmt::create_stmt(db, *sql_node, stmt);
   if (rc != RC::SUCCESS && rc != RC::UNIMPLEMENTED) {

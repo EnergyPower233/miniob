@@ -32,7 +32,7 @@ using namespace common;
 SessionStage::~SessionStage() {}
 
 // TODO remove me
-void SessionStage::handle_request(SessionEvent *sev)
+void SessionStage::handle_request(SessionEvent* sev)
 {
   string sql = sev->query();
   if (common::is_blank(sql.c_str())) {
@@ -44,7 +44,7 @@ void SessionStage::handle_request(SessionEvent *sev)
   SQLStageEvent sql_event(sev, sql);
   (void)handle_sql(&sql_event);
 
-  Communicator *communicator    = sev->get_communicator();
+  Communicator* communicator    = sev->get_communicator();
   bool          need_disconnect = false;
   RC            rc              = communicator->write_result(sev, need_disconnect);
   LOG_INFO("write result return %s", strrc(rc));
@@ -55,9 +55,9 @@ void SessionStage::handle_request(SessionEvent *sev)
   Session::set_current_session(nullptr);
 }
 
-void SessionStage::handle_request2(SessionEvent *event)
+void SessionStage::handle_request2(SessionEvent* event)
 {
-  const string &sql = event->query();
+  const string& sql = event->query();
   if (common::is_blank(sql.c_str())) {
     return;
   }
@@ -77,7 +77,7 @@ void SessionStage::handle_request2(SessionEvent *event)
  * execute_stage中的执行，通过explain语句看需要哪些operator，然后找对应的operator来
  * 调试或者看代码执行过程即可。
  */
-RC SessionStage::handle_sql(SQLStageEvent *sql_event)
+RC SessionStage::handle_sql(SQLStageEvent* sql_event)
 {
   RC rc = query_cache_stage_.handle_request(sql_event);
   if (OB_FAIL(rc)) {

@@ -49,17 +49,17 @@ public:
    * @brief 有新的连接到达时，调用此接口
    * @param communicator 与客户端通讯的对象
    */
-  virtual RC new_connection(Communicator *communicator) = 0;
+  virtual RC new_connection(Communicator* communicator) = 0;
 
   /**
    * @brief 连接断开时，调用此接口。通常都是内部调用
    * @param communicator 与客户端通讯的对象
    */
-  virtual RC close_connection(Communicator *communicator) = 0;
+  virtual RC close_connection(Communicator* communicator) = 0;
 
 public:
   /**
    * @brief 创建一个线程模型
    */
-  static ThreadHandler *create(const char *name);
+  static ThreadHandler* create(const char* name);
 };

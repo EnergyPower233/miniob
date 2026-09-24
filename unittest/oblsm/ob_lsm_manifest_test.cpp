@@ -181,14 +181,14 @@ TEST(oblsm_manifest_test, DISABLED_oblsm_recover_empty)
   filesystem::remove_all("oblsm_tmp");
   filesystem::create_directory("oblsm_tmp");
   ObLsmOptions options;
-  ObLsm       *lsm = nullptr;
+  ObLsm*       lsm = nullptr;
   RC           rc  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
   delete lsm;
 
   lsm = nullptr;
-  rc = ObLsm::open(options, "oblsm_tmp", &lsm);
+  rc  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
   delete lsm;
 }
@@ -198,7 +198,7 @@ TEST(oblsm_manifest_test, DISABLED_oblsm_simple_recover)
   filesystem::remove_all("oblsm_tmp");
   filesystem::create_directory("oblsm_tmp");
   ObLsmOptions options;
-  ObLsm       *lsm = nullptr;
+  ObLsm*       lsm = nullptr;
   RC           rc  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
@@ -229,9 +229,7 @@ TEST(oblsm_manifest_test, DISABLED_oblsm_simple_recover)
   delete lsm;
 }
 
-
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

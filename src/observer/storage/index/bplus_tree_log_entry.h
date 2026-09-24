@@ -76,15 +76,15 @@ private:
 class LogEntryHandler
 {
 public:
-  LogEntryHandler(LogOperation operation, Frame *frame = nullptr);
+  LogEntryHandler(LogOperation operation, Frame* frame = nullptr);
   virtual ~LogEntryHandler() = default;
 
   /**
    * @brief 返回日志对应的frame
    * @details 每条日志都对应着操作关联的页面。但是在日志重放时，或者只是想将日志内容格式化时，是没有对应的页面的。
    */
-  Frame       *frame() { return frame_; }
-  const Frame *frame() const { return frame_; }
+  Frame*       frame() { return frame_; }
+  const Frame* frame() const { return frame_; }
 
   PageNum page_num() const;
   void    set_page_num(PageNum page_num) { page_num_ = page_num; }
@@ -93,24 +93,24 @@ public:
   LogOperation operation_type() const { return operation_type_; }
 
   /// @brief 序列化日志
-  RC serialize(common::Serializer &buffer) const;
+  RC serialize(common::Serializer& buffer) const;
   /// @brief 序列化日志头
-  RC serialize_header(common::Serializer &buffer) const;
+  RC serialize_header(common::Serializer& buffer) const;
 
   /// @brief 序列化日志内容。所有子类应该实现这个函数
-  virtual RC serialize_body(common::Serializer &buffer) const = 0;
+  virtual RC serialize_body(common::Serializer& buffer) const = 0;
 
   /**
    * @brief 回滚
    * @details 在事务回滚时，需要根据日志内容进行回滚
    */
-  virtual RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) = 0;
+  virtual RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) = 0;
 
   /**
    * @brief 重做
    * @details 在系统重启时，需要根据日志内容进行重做
    */
-  virtual RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) = 0;
+  virtual RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) = 0;
 
   virtual string to_string() const;
 
@@ -127,14 +127,14 @@ public:
    * frame。 在LogEntryHandler类中也做了特殊处理。就是虽然有frame指针对象，但是也另外单独记录了page_num。
    */
   static RC from_buffer(
-      function<RC(PageNum, Frame *&)> frame_getter, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+      function<RC(PageNum, Frame*&)> frame_getter, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
   static RC from_buffer(
-      DiskBufferPool &buffer_pool, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
-  static RC from_buffer(common::Deserializer &deserializer, unique_ptr<LogEntryHandler> &handler);
+      DiskBufferPool& buffer_pool, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
+  static RC from_buffer(common::Deserializer& deserializer, unique_ptr<LogEntryHandler>& handler);
 
 protected:
   LogOperation operation_type_;
-  Frame       *frame_ = nullptr;
+  Frame*       frame_ = nullptr;
 
   /// page num本来存放在frame中。但是只有在运行时才能拿到frame，为了强制适配
   /// 解析文件buffer时不存在运行时的情况，直接记录page num
@@ -148,7 +148,7 @@ protected:
 class NodeLogEntryHandler : public LogEntryHandler
 {
 public:
-  NodeLogEntryHandler(LogOperation operation, Frame *frame) : LogEntryHandler(operation, frame) {}
+  NodeLogEntryHandler(LogOperation operation, Frame* frame) : LogEntryHandler(operation, frame) {}
 
   virtual ~NodeLogEntryHandler() = default;
 };
@@ -160,18 +160,18 @@ public:
 class InitHeaderPageLogEntryHandler : public LogEntryHandler
 {
 public:
-  InitHeaderPageLogEntryHandler(Frame *frame, const IndexFileHeader &file_header);
+  InitHeaderPageLogEntryHandler(Frame* frame, const IndexFileHeader& file_header);
   virtual ~InitHeaderPageLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
-  const IndexFileHeader &file_header() const { return file_header_; }
+  const IndexFileHeader& file_header() const { return file_header_; }
 
 private:
   IndexFileHeader file_header_;
@@ -184,16 +184,16 @@ private:
 class UpdateRootPageLogEntryHandler : public LogEntryHandler
 {
 public:
-  UpdateRootPageLogEntryHandler(Frame *frame, PageNum root_page_num, PageNum old_page_num);
+  UpdateRootPageLogEntryHandler(Frame* frame, PageNum root_page_num, PageNum old_page_num);
   virtual ~UpdateRootPageLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   PageNum root_page_num() const { return root_page_num_; }
 
@@ -209,16 +209,16 @@ private:
 class SetParentPageLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  SetParentPageLogEntryHandler(Frame *frame, PageNum parent_page_num, PageNum old_parent_page_num);
+  SetParentPageLogEntryHandler(Frame* frame, PageNum parent_page_num, PageNum old_parent_page_num);
   virtual ~SetParentPageLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   PageNum parent_page_num() const { return parent_page_num_; }
 
@@ -234,21 +234,21 @@ private:
 class NormalOperationLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  NormalOperationLogEntryHandler(Frame *frame, LogOperation operation, int index, span<const char> items, int item_num);
+  NormalOperationLogEntryHandler(Frame* frame, LogOperation operation, int index, span<const char> items, int item_num);
   virtual ~NormalOperationLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
   static RC deserialize(
-      Frame *frame, LogOperation operation, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+      Frame* frame, LogOperation operation, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   int         index() const { return index_; }
   int         item_num() const { return item_num_; }
-  const char *items() const { return items_.data(); }
+  const char* items() const { return items_.data(); }
   int32_t     item_bytes() const { return static_cast<int32_t>(items_.size()); }
 
 private:
@@ -264,16 +264,16 @@ private:
 class LeafInitEmptyLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  LeafInitEmptyLogEntryHandler(Frame *frame);
+  LeafInitEmptyLogEntryHandler(Frame* frame);
   virtual ~LeafInitEmptyLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override { return RC::SUCCESS; }
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override { return RC::SUCCESS; }
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override { return RC::SUCCESS; }
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override { return RC::SUCCESS; }
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   // string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 };
 
 /**
@@ -283,16 +283,16 @@ public:
 class LeafSetNextPageLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  LeafSetNextPageLogEntryHandler(Frame *frame, PageNum new_page_num, PageNum old_page_num);
+  LeafSetNextPageLogEntryHandler(Frame* frame, PageNum new_page_num, PageNum old_page_num);
   virtual ~LeafSetNextPageLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   PageNum new_page_num() const { return new_page_num_; }
 
@@ -308,16 +308,16 @@ private:
 class InternalInitEmptyLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  InternalInitEmptyLogEntryHandler(Frame *frame);
+  InternalInitEmptyLogEntryHandler(Frame* frame);
   virtual ~InternalInitEmptyLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override { return RC::SUCCESS; }
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override { return RC::SUCCESS; }
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override { return RC::SUCCESS; }
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override { return RC::SUCCESS; }
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   // string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 };
 
 /**
@@ -327,20 +327,20 @@ public:
 class InternalCreateNewRootLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  InternalCreateNewRootLogEntryHandler(Frame *frame, PageNum first_page_num, span<const char> key, PageNum page_num);
+  InternalCreateNewRootLogEntryHandler(Frame* frame, PageNum first_page_num, span<const char> key, PageNum page_num);
   virtual ~InternalCreateNewRootLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override { return RC::SUCCESS; }
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override { return RC::SUCCESS; }
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   PageNum     first_page_num() const { return first_page_num_; }
   PageNum     page_num() const { return page_num_; }
-  const char *key() const { return key_.data(); }
+  const char* key() const { return key_.data(); }
   int32_t     key_bytes() const { return static_cast<int32_t>(key_.size()); }
 
 private:
@@ -356,19 +356,19 @@ private:
 class InternalUpdateKeyLogEntryHandler : public NodeLogEntryHandler
 {
 public:
-  InternalUpdateKeyLogEntryHandler(Frame *frame, int index, span<const char> key, span<const char> old_key);
+  InternalUpdateKeyLogEntryHandler(Frame* frame, int index, span<const char> key, span<const char> old_key);
   virtual ~InternalUpdateKeyLogEntryHandler() = default;
 
-  RC serialize_body(common::Serializer &buffer) const override;
-  RC rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
-  RC redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler) override;
+  RC serialize_body(common::Serializer& buffer) const override;
+  RC rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
+  RC redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler) override;
 
   string to_string() const override;
 
-  static RC deserialize(Frame *frame, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler);
+  static RC deserialize(Frame* frame, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler);
 
   int         index() const { return index_; }
-  const char *key() const { return key_.data(); }
+  const char* key() const { return key_.data(); }
   int32_t     key_bytes() const { return static_cast<int32_t>(key_.size()); }
 
 private:

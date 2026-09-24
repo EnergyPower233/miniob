@@ -19,11 +19,9 @@ See the Mulan PSL v2 for more details. */
 #include "storage/record/record.h"
 
 PredicatePhysicalOperator::PredicatePhysicalOperator(std::unique_ptr<Expression> expr) : expression_(std::move(expr))
-{
-  ASSERT(expression_->value_type() == AttrType::BOOLEANS, "predicate's expression should be BOOLEAN type");
-}
+{ ASSERT(expression_->value_type() == AttrType::BOOLEANS, "predicate's expression should be BOOLEAN type"); }
 
-RC PredicatePhysicalOperator::open(Trx *trx)
+RC PredicatePhysicalOperator::open(Trx* trx)
 {
   if (children_.size() != 1) {
     LOG_WARN("predicate operator must has one child");
@@ -36,10 +34,10 @@ RC PredicatePhysicalOperator::open(Trx *trx)
 RC PredicatePhysicalOperator::next()
 {
   RC                rc   = RC::SUCCESS;
-  PhysicalOperator *oper = children_.front().get();
+  PhysicalOperator* oper = children_.front().get();
 
   while (RC::SUCCESS == (rc = oper->next())) {
-    Tuple *tuple = oper->current_tuple();
+    Tuple* tuple = oper->current_tuple();
     if (nullptr == tuple) {
       rc = RC::INTERNAL;
       LOG_WARN("failed to get tuple from operator");
@@ -65,9 +63,6 @@ RC PredicatePhysicalOperator::close()
   return RC::SUCCESS;
 }
 
-Tuple *PredicatePhysicalOperator::current_tuple() { return children_[0]->current_tuple(); }
+Tuple* PredicatePhysicalOperator::current_tuple() { return children_[0]->current_tuple(); }
 
-RC PredicatePhysicalOperator::tuple_schema(TupleSchema &schema) const
-{
-  return children_[0]->tuple_schema(schema);
-}
+RC PredicatePhysicalOperator::tuple_schema(TupleSchema& schema) const { return children_[0]->tuple_schema(schema); }

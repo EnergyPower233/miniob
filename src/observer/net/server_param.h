@@ -26,7 +26,7 @@ class ServerParam
 public:
   ServerParam();
 
-  ServerParam(const ServerParam &other) = default;
+  ServerParam(const ServerParam& other) = default;
   ~ServerParam()                        = default;
 
 public:

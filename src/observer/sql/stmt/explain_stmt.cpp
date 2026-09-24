@@ -18,9 +18,9 @@ See the Mulan PSL v2 for more details. */
 
 ExplainStmt::ExplainStmt(unique_ptr<Stmt> child_stmt) : child_stmt_(std::move(child_stmt)) {}
 
-RC ExplainStmt::create(Db *db, const ExplainSqlNode &explain, Stmt *&stmt)
+RC ExplainStmt::create(Db* db, const ExplainSqlNode& explain, Stmt*& stmt)
 {
-  Stmt *child_stmt = nullptr;
+  Stmt* child_stmt = nullptr;
   RC    rc         = Stmt::create_stmt(db, *explain.sql_node, child_stmt);
   if (rc != RC::SUCCESS) {
     LOG_WARN("failed to create explain's child stmt. rc=%s", strrc(rc));
@@ -28,6 +28,6 @@ RC ExplainStmt::create(Db *db, const ExplainSqlNode &explain, Stmt *&stmt)
   }
 
   unique_ptr<Stmt> child_stmt_ptr = unique_ptr<Stmt>(child_stmt);
-  stmt                                 = new ExplainStmt(std::move(child_stmt_ptr));
+  stmt                            = new ExplainStmt(std::move(child_stmt_ptr));
   return rc;
 }

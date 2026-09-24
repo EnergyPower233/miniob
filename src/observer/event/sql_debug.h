@@ -30,10 +30,10 @@ public:
   SqlDebug()          = default;
   virtual ~SqlDebug() = default;
 
-  void add_debug_info(const string &debug_info);
+  void add_debug_info(const string& debug_info);
   void clear_debug_info();
 
-  const list<string> &get_debug_infos() const;
+  const list<string>& get_debug_infos() const;
 
 private:
   list<string> debug_infos_;
@@ -45,4 +45,4 @@ private:
  * 如果当前上下文不在SQL执行过程中，那么不会生成调试信息。
  * 在普通文本场景下，调试信息会直接输出到客户端，并增加 '#' 作为前缀。
  */
-void sql_debug(const char *fmt, ...);
+void sql_debug(const char* fmt, ...);

@@ -43,10 +43,8 @@ public:
    * @return The JSON value representing the object.
    */
   template <typename T>
-  static Json::Value to_json(const T &t)
-  {
-    return t.to_json();
-  }
+  static Json::Value to_json(const T& t)
+  { return t.to_json(); }
 
   /**
    * @brief Converts a JSON value to an object of type T.
@@ -59,7 +57,7 @@ public:
    * @return An RC indicating the result of the operation.
    */
   template <typename T>
-  static RC from_json(const Json::Value &v, T &t)
+  static RC from_json(const Json::Value& v, T& t)
   {
     RC rc = t.from_json(v);
     return rc;
@@ -75,7 +73,7 @@ public:
  * @return A JSON value representing the integer value of `CompactionType`.
  */
 template <>
-inline Json::Value JsonConverter::to_json<CompactionType>(const CompactionType &type)
+inline Json::Value JsonConverter::to_json<CompactionType>(const CompactionType& type)
 {
   int         type_as_int = static_cast<int>(type);
   Json::Value res{type_as_int};
@@ -92,7 +90,7 @@ inline Json::Value JsonConverter::to_json<CompactionType>(const CompactionType &
  * @return An RC indicating the result of the operation.
  */
 template <>
-inline RC JsonConverter::from_json<CompactionType>(const Json::Value &v, CompactionType &type)
+inline RC JsonConverter::from_json<CompactionType>(const Json::Value& v, CompactionType& type)
 {
   int type_as_int = -1;
   if (v.isInt()) {
@@ -132,7 +130,7 @@ struct ObManifestSSTableInfo
    * @param rhs The other `ObManifestSSTableInfo` to compare with.
    * @return `true` if the two objects are equal, `false` otherwise.
    */
-  bool operator==(const ObManifestSSTableInfo &rhs) const { return sstable_id == rhs.sstable_id && level == rhs.level; }
+  bool operator==(const ObManifestSSTableInfo& rhs) const { return sstable_id == rhs.sstable_id && level == rhs.level; }
 
   /**
    * @brief Converts the `ObManifestSSTableInfo` object to a JSON value.
@@ -153,7 +151,7 @@ struct ObManifestSSTableInfo
    * @param v The JSON value to populate the object with.
    * @return An RC indicating the result of the operation.
    */
-  RC from_json(const Json::Value &v);
+  RC from_json(const Json::Value& v);
 };
 
 /**
@@ -172,7 +170,7 @@ public:
 
   static string record_type() { return "ObManifestCompaction"; }
 
-  bool operator==(const ObManifestCompaction &rhs) const
+  bool operator==(const ObManifestCompaction& rhs) const
   {
     return compaction_type == rhs.compaction_type && deleted_tables == rhs.deleted_tables &&
            added_tables == rhs.added_tables && sstable_sequence_id == rhs.sstable_sequence_id && seq_id == rhs.seq_id;
@@ -191,7 +189,7 @@ public:
    * @param v The JSON value to populate the object with.
    * @return An RC indicating the result of the operation.
    */
-  RC from_json(const Json::Value &v);
+  RC from_json(const Json::Value& v);
 };
 
 /**
@@ -209,7 +207,7 @@ public:
 
   static string record_type() { return "ObManifestSnapshot"; }
 
-  bool operator==(const ObManifestSnapshot &rhs) const
+  bool operator==(const ObManifestSnapshot& rhs) const
   {
     return sstables == rhs.sstables && seq == rhs.seq && sstable_id == rhs.sstable_id &&
            compaction_type == rhs.compaction_type;
@@ -228,7 +226,7 @@ public:
    * @param v The JSON value to populate the object with.
    * @return An RC indicating the result of the operation.
    */
-  RC from_json(const Json::Value &v);
+  RC from_json(const Json::Value& v);
 };
 
 /**
@@ -244,7 +242,7 @@ public:
 
   static string record_type() { return "ObManifestNewMemtable"; }
 
-  bool operator==(const ObManifestNewMemtable &rhs) const { return memtable_id == rhs.memtable_id; }
+  bool operator==(const ObManifestNewMemtable& rhs) const { return memtable_id == rhs.memtable_id; }
 
   /**
    * @brief Converts the `ObManifestNewMemtable` to a JSON value.
@@ -259,7 +257,7 @@ public:
    * @param v The JSON value to populate the object with.
    * @return An RC indicating the result of the operation.
    */
-  RC from_json(const Json::Value &v);
+  RC from_json(const Json::Value& v);
 };
 
 /**
@@ -275,7 +273,7 @@ public:
    * @brief Constructs an ObManifest object with the specified path.
    * @param path The directory path where the manifest files are stored.
    */
-  ObManifest(const std::string &path) : path_(filesystem::path(path)) { current_path_ = path_ / "CURRENT"; }
+  ObManifest(const std::string& path) : path_(filesystem::path(path)) { current_path_ = path_ / "CURRENT"; }
 
   /**
    * @brief Opens the manifest file and initializes the reader and writer.
@@ -294,7 +292,7 @@ public:
    * @return RC::SUCCESS if Push successful
    */
   template <typename T>
-  RC push(const T &data)
+  RC push(const T& data)
   {
     static_assert(std::is_same<T, ObManifestCompaction>::value || std::is_same<T, ObManifestSnapshot>::value ||
                       std::is_same<T, ObManifestNewMemtable>::value,
@@ -302,7 +300,7 @@ public:
     Json::Value json = JsonConverter::to_json(data);
     string      str  = json.toStyledString();
     size_t      len  = str.size();
-    RC          rc   = writer_->write(string_view{reinterpret_cast<char *>(&len), sizeof(len)});
+    RC          rc   = writer_->write(string_view{reinterpret_cast<char*>(&len), sizeof(len)});
     if (OB_FAIL(rc)) {
       LOG_WARN("Failed to push record into manifest file %s, rc %s", writer_->file_name().c_str(), strrc(rc));
       return rc;
@@ -327,7 +325,7 @@ public:
    * @param memtable The mamtable record containing the memtable_id to be written to the new manifest file.
    * @return RC::SUCCESS,if ObManifest successfully writes snapshot and memtable records into a new manifest file.
    */
-  RC redirect(const ObManifestSnapshot &snapshot, const ObManifestNewMemtable &memtable);
+  RC redirect(const ObManifestSnapshot& snapshot, const ObManifestNewMemtable& memtable);
 
   /**
    * @brief Redirects to a new manifest file.
@@ -337,8 +335,8 @@ public:
    * @param compactions Record changes to each compaction operation.
    * @return RC::SUCCESS, If there is nothing wrong with the recovery process.
    */
-  RC recover(std::unique_ptr<ObManifestSnapshot> &snapshot_record,
-      std::unique_ptr<ObManifestNewMemtable> &memtbale_record, std::vector<ObManifestCompaction> &compactions);
+  RC recover(std::unique_ptr<ObManifestSnapshot>& snapshot_record,
+      std::unique_ptr<ObManifestNewMemtable>& memtbale_record, std::vector<ObManifestCompaction>& compactions);
 
   uint64_t latest_seq{0};  ///< The latest sequence number persisted in the LSM.
 
@@ -353,9 +351,7 @@ private:
    * @return The full path to the manifest file.
    */
   string get_manifest_file_path(string path, uint64_t mf_seq)
-  {
-    return filesystem::path(path) / (std::to_string(mf_seq) + MANIFEST_SUFFIX);
-  }
+  { return filesystem::path(path) / (std::to_string(mf_seq) + MANIFEST_SUFFIX); }
 
 private:
   filesystem::path path_;          ///< The directory path where manifest files are stored.

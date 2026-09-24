@@ -20,7 +20,7 @@ See the Mulan PSL v2 for more details. */
 class PendingTasks
 {
 public:
-  CascadeTask *pop()
+  CascadeTask* pop()
   {
     auto task = task_stack_.top();
     task_stack_.pop();
@@ -28,7 +28,7 @@ public:
     return task;
   }
 
-  void push(CascadeTask *task)
+  void push(CascadeTask* task)
   {
     task_stack_.push(task);
     LOG_DEBUG("push task %d", task_stack_.size());
@@ -49,5 +49,5 @@ private:
   /**
    * Stack for tracking tasks
    */
-  std::stack<CascadeTask *> task_stack_;
+  std::stack<CascadeTask*> task_stack_;
 };

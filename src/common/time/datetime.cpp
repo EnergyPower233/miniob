@@ -24,7 +24,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/string.h"
 namespace common {
 
-DateTime::DateTime(string &xml_str)
+DateTime::DateTime(string& xml_str)
 {
   tm tmp;
   sscanf(xml_str.c_str(),
@@ -39,7 +39,7 @@ DateTime::DateTime(string &xml_str)
   m_time = make_hms(tmp.tm_hour, tmp.tm_min, tmp.tm_sec, 0);
 }
 
-time_t DateTime::str_to_time_t(string &xml_str)
+time_t DateTime::str_to_time_t(string& xml_str)
 {
   tm tmp;
   sscanf(xml_str.c_str(),
@@ -66,8 +66,8 @@ string DateTime::time_t_to_xml_str(time_t timet)
 {
   string        ret_val;
   ostringstream oss;
-  struct tm          tmbuf;
-  tm                *tm_info = gmtime_r(&timet, &tmbuf);
+  struct tm     tmbuf;
+  tm*           tm_info = gmtime_r(&timet, &tmbuf);
   oss << tm_info->tm_year + 1900 << "-";
   if ((tm_info->tm_mon + 1) <= 9)
     oss << "0";
@@ -88,9 +88,9 @@ string DateTime::time_t_to_xml_str(time_t timet)
   return ret_val;
 }
 
-string DateTime::str_to_time_t_str(string &xml_str)
+string DateTime::str_to_time_t_str(string& xml_str)
 {
-  tm                 tmp;
+  tm            tmp;
   ostringstream oss;
   sscanf(xml_str.c_str(),
       "%04d-%02d-%02dT%02d:%02d:%02dZ",
@@ -127,7 +127,7 @@ string DateTime::to_xml_date_time()
 {
 
   string        ret_val;
-  tm                 tm_info;
+  tm            tm_info;
   ostringstream oss;
 
   tm_info = to_tm();
@@ -251,7 +251,7 @@ int DateTime::max_day_in_month_for(int yr, int month)
   }
 }
 
-void DateTime::parse_duration(string dur_str, struct tm &tm_t)
+void DateTime::parse_duration(string dur_str, struct tm& tm_t)
 {
   string::size_type index = 0;
   bzero(&tm_t, sizeof(tm_t));
@@ -350,26 +350,26 @@ string Now::unique()
   uint64_t        temp;
   static uint64_t last_unique = 0;
 #if defined(LINUX)
-  #if defined(__MUSL__)
-    #define MUTEX_INITIALIZER(__mutex, __type)          \
-      do {                                              \
-        static pthread_mutexattr_t  __attr;             \
-        static pthread_mutexattr_t *__p_attr = nullptr; \
-        if (nullptr == __p_attr) {                      \
-          __p_attr = &__attr;                           \
-          pthread_mutexattr_init(__p_attr);             \
-          pthread_mutexattr_settype(__p_attr, __type);  \
-          pthread_mutex_init(&__mutex, __p_attr);       \
-        }                                               \
-      } while (0)
+#if defined(__MUSL__)
+#define MUTEX_INITIALIZER(__mutex, __type)          \
+  do {                                              \
+    static pthread_mutexattr_t  __attr;             \
+    static pthread_mutexattr_t* __p_attr = nullptr; \
+    if (nullptr == __p_attr) {                      \
+      __p_attr = &__attr;                           \
+      pthread_mutexattr_init(__p_attr);             \
+      pthread_mutexattr_settype(__p_attr, __type);  \
+      pthread_mutex_init(&__mutex, __p_attr);       \
+    }                                               \
+  } while (0)
 
-    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-    MUTEX_INITIALIZER(mutex, PTHREAD_MUTEX_ERRORCHECK);
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  MUTEX_INITIALIZER(mutex, PTHREAD_MUTEX_ERRORCHECK);
 
-    #undef MUTEX_INITIALIZER
-  #else
-    static pthread_mutex_t mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-  #endif
+#undef MUTEX_INITIALIZER
+#else
+  static pthread_mutex_t mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+#endif
 #elif defined(__MACH__)
   static pthread_mutex_t mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER;
 #endif
@@ -397,14 +397,14 @@ string Now::unique()
   return oss.str();
 }
 
-bool DateTime::is_valid_xml_datetime(const string &str)
+bool DateTime::is_valid_xml_datetime(const string& str)
 {
   // check length. 20 is the length of a xml date
   if (str.length() != 20)
     return false;
 
   // check each character is correct
-  const char *const flag = "0000-00-00T00:00:00Z";
+  const char* const flag = "0000-00-00T00:00:00Z";
   for (unsigned int i = 0; i < str.length(); ++i) {
     if (flag[i] == '0') {
       if (!isdigit(str[i]))

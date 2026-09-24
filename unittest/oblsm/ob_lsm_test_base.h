@@ -34,7 +34,7 @@ public:
 class ObLsmTestBase : public ::testing::TestWithParam<size_t>
 {
 protected:
-  ObLsm       *db;
+  ObLsm*       db;
   ObLsmOptions options;
   string       path;
 

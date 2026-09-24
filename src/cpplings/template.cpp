@@ -27,9 +27,7 @@ See the Mulan PSL v2 for more details. */
 // 1. 基础函数模板
 template <typename T>
 T max_value(T a, T b)
-{
-  return (a > b) ? a : b;
-}
+{ return (a > b) ? a : b; }
 
 // 2. 类模板
 template <typename T>
@@ -67,16 +65,12 @@ public:
 // 4. 变参模板 - 递归终止条件
 template <typename T>
 T sum(T value)
-{
-  return value;
-}
+{ return value; }
 
 // 变参模板 - 递归调用
 template <typename T, typename... Args>
 T sum(T first, Args... args)
-{
-  return first + sum(args...);
-}
+{ return first + sum(args...); }
 
 // 5. SFINAE技术示例
 // SFINAE (Substitution Failure Is Not An Error) 是C++模板编程中的重要概念：
@@ -86,16 +80,12 @@ T sum(T first, Args... args)
 // 以下示例展示如何使用SFINAE检测类型是否支持特定操作
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, bool>::type is_positive(T value)
-{
-  return value > 0;
-}
+{ return value > 0; }
 
 // 启用仅当T是浮点类型时的函数
 template <typename T>
 typename std::enable_if<std::is_floating_point<T>::value, bool>::type is_positive(T value)
-{
-  return value > 0.0;
-}
+{ return value > 0.0; }
 
 int main()
 {

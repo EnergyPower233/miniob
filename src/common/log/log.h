@@ -59,11 +59,11 @@ typedef enum
 class Log
 {
 public:
-  Log(const string &log_name, const LOG_LEVEL log_level = LOG_LEVEL_INFO,
+  Log(const string& log_name, const LOG_LEVEL log_level = LOG_LEVEL_INFO,
       const LOG_LEVEL console_level = LOG_LEVEL_WARN);
   ~Log(void);
 
-  static int init(const string &log_file);
+  static int init(const string& log_file);
 
   /**
    * Stream-style logging with default level.
@@ -73,7 +73,7 @@ public:
    * prefix handling instead of this operator.
    */
   template <class T>
-  Log &operator<<(T message);
+  Log& operator<<(T message);
 
   template <class T>
   int panic(T message);
@@ -93,7 +93,7 @@ public:
   template <class T>
   int trace(T message);
 
-  int output(const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...);
+  int output(const LOG_LEVEL level, const char* module, const char* prefix, const char* f, ...);
 
   int       set_console_level(const LOG_LEVEL console_level);
   LOG_LEVEL get_console_level();
@@ -104,15 +104,15 @@ public:
   int        set_rotate_type(LOG_ROTATE rotate_type);
   LOG_ROTATE get_rotate_type();
 
-  const char *prefix_msg(const LOG_LEVEL level);
+  const char* prefix_msg(const LOG_LEVEL level);
 
   /**
    * Set Default Module list
    * if one module is default module,
    * it will output whatever output level is lower than log_level_ or not
    */
-  void set_default_module(const string &modules);
-  bool check_output(const LOG_LEVEL log_level, const char *module);
+  void set_default_module(const string& modules);
+  bool check_output(const LOG_LEVEL log_level, const char* module);
 
   int rotate(const int year = 0, const int month = 0, const int day = 0);
 
@@ -132,7 +132,7 @@ private:
   int rotate_by_day(const int year, const int month, const int day);
 
   template <class T>
-  int out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T &message);
+  int out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T& message);
 
 private:
   pthread_mutex_t lock_;
@@ -167,14 +167,14 @@ public:
   LoggerFactory();
   virtual ~LoggerFactory();
 
-  static int init(const string &log_file, Log **logger, LOG_LEVEL log_level = LOG_LEVEL_INFO,
+  static int init(const string& log_file, Log** logger, LOG_LEVEL log_level = LOG_LEVEL_INFO,
       LOG_LEVEL console_level = LOG_LEVEL_WARN, LOG_ROTATE rotate_type = LOG_ROTATE_BYDAY);
 
-  static int init_default(const string &log_file, LOG_LEVEL log_level = LOG_LEVEL_INFO,
+  static int init_default(const string& log_file, LOG_LEVEL log_level = LOG_LEVEL_INFO,
       LOG_LEVEL console_level = LOG_LEVEL_WARN, LOG_ROTATE rotate_type = LOG_ROTATE_BYDAY);
 };
 
-extern Log *g_log;
+extern Log* g_log;
 
 #ifndef __FILE_NAME__
 #define __FILE_NAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
@@ -187,7 +187,7 @@ extern Log *g_log;
     struct timeval tv;                                                     \
     gettimeofday(&tv, NULL);                                               \
     struct tm  curr_time;                                                  \
-    struct tm *p = localtime_r(&tv.tv_sec, &curr_time);                    \
+    struct tm* p = localtime_r(&tv.tv_sec, &curr_time);                    \
                                                                            \
     char sz_head[LOG_HEAD_SIZE] = {0};                                     \
     if (p) {                                                               \
@@ -236,7 +236,7 @@ extern Log *g_log;
 #define LOG_TRACE(fmt, ...) LOG_OUTPUT(common::LOG_LEVEL_TRACE, fmt, ##__VA_ARGS__)
 
 template <class T>
-Log &Log::operator<<(T msg)
+Log& Log::operator<<(T msg)
 {
   // at this time, the input level is the default log level
   out(console_level_, log_level_, msg);
@@ -245,42 +245,30 @@ Log &Log::operator<<(T msg)
 
 template <class T>
 int Log::panic(T message)
-{
-  return out(LOG_LEVEL_PANIC, LOG_LEVEL_PANIC, message);
-}
+{ return out(LOG_LEVEL_PANIC, LOG_LEVEL_PANIC, message); }
 
 template <class T>
 int Log::error(T message)
-{
-  return out(LOG_LEVEL_ERR, LOG_LEVEL_ERR, message);
-}
+{ return out(LOG_LEVEL_ERR, LOG_LEVEL_ERR, message); }
 
 template <class T>
 int Log::warnning(T message)
-{
-  return out(LOG_LEVEL_WARN, LOG_LEVEL_WARN, message);
-}
+{ return out(LOG_LEVEL_WARN, LOG_LEVEL_WARN, message); }
 
 template <class T>
 int Log::info(T message)
-{
-  return out(LOG_LEVEL_INFO, LOG_LEVEL_INFO, message);
-}
+{ return out(LOG_LEVEL_INFO, LOG_LEVEL_INFO, message); }
 
 template <class T>
 int Log::debug(T message)
-{
-  return out(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, message);
-}
+{ return out(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, message); }
 
 template <class T>
 int Log::trace(T message)
-{
-  return out(LOG_LEVEL_TRACE, LOG_LEVEL_TRACE, message);
-}
+{ return out(LOG_LEVEL_TRACE, LOG_LEVEL_TRACE, message); }
 
 template <class T>
-int Log::out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T &msg)
+int Log::out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T& msg)
 {
   bool locked = false;
   if (console_level < LOG_LEVEL_PANIC || console_level > console_level_ || log_level < LOG_LEVEL_PANIC ||
@@ -304,7 +292,7 @@ int Log::out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T &msg)
       pthread_mutex_unlock(&lock_);
       locked = false;
     }
-  } catch (exception &e) {
+  } catch (exception& e) {
     if (locked) {
       pthread_mutex_unlock(&lock_);
     }
@@ -320,8 +308,8 @@ int Log::out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T &msg)
 #define ASSERT(expression, description, ...) \
   do {                                       \
     if (!(expression)) {                     \
-      LOG_PANIC(description, ##__VA_ARGS__); \
-      LOG_PANIC("%s", lbt());                \
+      LOG_PANIC(description, ##__VA_ARGS__);  \
+      LOG_PANIC("%s", lbt());                 \
       assert(expression);                    \
     }                                        \
   } while (0)
@@ -353,6 +341,6 @@ int Log::out(const LOG_LEVEL console_level, const LOG_LEVEL log_level, T &msg)
  * 拿到栈信息后，可以使用下面的例子获取具体的函数调用栈：
  * addr2line -pCfe ./bin/observer 0xffffa939589c 0xaaaab3a8c854 0xaaaab3a60f90
  */
-const char *lbt();
+const char* lbt();
 
 }  // namespace common

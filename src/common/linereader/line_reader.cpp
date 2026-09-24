@@ -20,21 +20,21 @@ MiniobLineReader::MiniobLineReader() : history_file_(""), previous_history_save_
 
 MiniobLineReader::~MiniobLineReader() { reader_.history_save(history_file_); }
 
-MiniobLineReader &MiniobLineReader::instance()
+MiniobLineReader& MiniobLineReader::instance()
 {
   static MiniobLineReader instance;
   return instance;
 }
 
-void MiniobLineReader::init(const std::string &history_file)
+void MiniobLineReader::init(const std::string& history_file)
 {
   history_file_ = history_file;
   reader_.history_load(history_file_);
 }
 
-std::string MiniobLineReader::my_readline(const std::string &prompt)
+std::string MiniobLineReader::my_readline(const std::string& prompt)
 {
-  const char *cinput = nullptr;
+  const char* cinput = nullptr;
   cinput             = reader_.input(prompt);
   if (cinput == nullptr) {
     return "";
@@ -63,7 +63,7 @@ std::string MiniobLineReader::my_readline(const std::string &prompt)
   return line;
 }
 
-bool MiniobLineReader::is_exit_command(const std::string &cmd)
+bool MiniobLineReader::is_exit_command(const std::string& cmd)
 {
   std::string lower_cmd = cmd;
   common::str_to_lower(lower_cmd);

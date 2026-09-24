@@ -31,7 +31,7 @@ public:
 
   StmtType type() const override { return StmtType::BEGIN; }
 
-  static RC create(Stmt *&stmt)
+  static RC create(Stmt*& stmt)
   {
     stmt = new TrxBeginStmt();
     return RC::SUCCESS;

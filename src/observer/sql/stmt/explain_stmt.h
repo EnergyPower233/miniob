@@ -28,9 +28,9 @@ public:
 
   StmtType type() const override { return StmtType::EXPLAIN; }
 
-  Stmt *child() const { return child_stmt_.get(); }
+  Stmt* child() const { return child_stmt_.get(); }
 
-  static RC create(Db *db, const ExplainSqlNode &query, Stmt *&stmt);
+  static RC create(Db* db, const ExplainSqlNode& query, Stmt*& stmt);
 
 private:
   unique_ptr<Stmt> child_stmt_;

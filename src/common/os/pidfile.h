@@ -27,7 +27,7 @@ namespace common {
  * @param[in] programName as basis for file to write
  * @return    0 for success, error otherwise
  */
-int writePidFile(const char *progName);
+int writePidFile(const char* progName);
 
 //! Cleanup PID file for the current component
 /**
@@ -36,6 +36,6 @@ int writePidFile(const char *progName);
  */
 void removePidFile(void);
 
-string &getPidPath();
+string& getPidPath();
 
 }  // namespace common

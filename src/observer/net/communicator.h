@@ -46,13 +46,13 @@ public:
   /**
    * @brief 接收到一个新的连接时，进行初始化
    */
-  virtual RC init(int fd, unique_ptr<Session> session, const string &addr);
+  virtual RC init(int fd, unique_ptr<Session> session, const string& addr);
 
   /**
    * @brief 监听到有新的数据到达，调用此函数进行接收消息
    * 如果需要创建新的任务来处理，那么就创建一个SessionEvent 对象并通过event参数返回。
    */
-  virtual RC read_event(SessionEvent *&event) = 0;
+  virtual RC read_event(SessionEvent*& event) = 0;
 
   /**
    * @brief 在任务处理完成后，通过此接口将结果返回给客户端
@@ -61,18 +61,18 @@ public:
    * @return 处理结果。即使返回不是SUCCESS，也不能直接断开连接，需要通过need_disconnect来判断
    *         是否需要断开连接
    */
-  virtual RC write_result(SessionEvent *event, bool &need_disconnect) = 0;
+  virtual RC write_result(SessionEvent* event, bool& need_disconnect) = 0;
 
   /**
    * @brief 关联的会话信息
    */
-  Session *session() const { return session_.get(); }
+  Session* session() const { return session_.get(); }
 
   /**
    * @brief 对端地址
    * 如果是unix socket，可能没有意义
    */
-  const char *addr() const { return addr_.c_str(); }
+  const char* addr() const { return addr_.c_str(); }
 
   /**
    * @brief 关联的文件描述符
@@ -82,7 +82,7 @@ public:
 protected:
   unique_ptr<Session> session_;
   string              addr_;
-  BufferedWriter     *writer_ = nullptr;
+  BufferedWriter*     writer_ = nullptr;
   int                 fd_     = -1;
 };
 
@@ -104,5 +104,5 @@ enum class CommunicateProtocol
 class CommunicatorFactory
 {
 public:
-  Communicator *create(CommunicateProtocol protocol);
+  Communicator* create(CommunicateProtocol protocol);
 };

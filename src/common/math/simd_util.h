@@ -19,10 +19,10 @@ static constexpr int SIMD_WIDTH = 8;  // AVX2 (256bit)
 int mm256_extract_epi32_var_indx(const __m256i vec, const unsigned int i);
 
 /// @brief 数组求和
-int   mm256_sum_epi32(const int *values, int size);
-float mm256_sum_ps(const float *values, int size);
+int   mm256_sum_epi32(const int* values, int size);
+float mm256_sum_ps(const float* values, int size);
 
 /// @brief selective load 的标量实现
 template <typename V>
-void selective_load(V *memory, int offset, V *vec, __m256i &inv);
+void selective_load(V* memory, int offset, V* vec, __m256i& inv);
 #endif

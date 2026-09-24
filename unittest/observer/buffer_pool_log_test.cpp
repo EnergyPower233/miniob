@@ -24,7 +24,7 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-int buffer_pool_page_count(DiskBufferPool *buffer_pool)
+int buffer_pool_page_count(DiskBufferPool* buffer_pool)
 {
   int                count = 0;
   BufferPoolIterator iterator;
@@ -52,7 +52,7 @@ TEST(BufferPoolLog, test_wal_normal)
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.create_file(buffer_pool_filename.c_str()));
 
   DiskLogHandler  log_handler;
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
 
   BufferPoolLogReplayer log_replayer(buffer_pool_manager);
@@ -63,7 +63,7 @@ TEST(BufferPoolLog, test_wal_normal)
 
   const int allocate_page_num = 100;
   for (int i = 0; i < allocate_page_num; i++) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
   }
@@ -72,7 +72,7 @@ TEST(BufferPoolLog, test_wal_normal)
   const int deallocate_page_num = 50;
   for (int i = 1; i <= allocate_page_num2 + deallocate_page_num; i++) {
     if (i % 3 != 0) {
-      Frame *frame = nullptr;
+      Frame* frame = nullptr;
       ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
       ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
     } else {
@@ -125,7 +125,7 @@ TEST(BufferPoolLog, test_wal_exception)
   BufferPoolLogReplayer log_replayer(buffer_pool_manager);
 
   DiskLogHandler  log_handler;
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
 
   ASSERT_EQ(RC::SUCCESS, log_handler.init(clog_path.c_str()));
@@ -134,7 +134,7 @@ TEST(BufferPoolLog, test_wal_exception)
 
   const int allocate_page_num = 100;
   for (int i = 0; i < allocate_page_num; i++) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
   }
@@ -143,7 +143,7 @@ TEST(BufferPoolLog, test_wal_exception)
   const int deallocate_page_num = 50;
   for (int i = 1; i <= allocate_page_num2 + deallocate_page_num; i++) {
     if (i % 3 != 0) {
-      Frame *frame = nullptr;
+      Frame* frame = nullptr;
       ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
       ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
     } else {
@@ -203,7 +203,7 @@ TEST(BufferPoolLog, test_wal_exception2)
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.create_file(buffer_pool_filename.c_str()));
 
   BufferPoolLogReplayer log_replayer(buffer_pool_manager);
-  DiskBufferPool       *buffer_pool = nullptr;
+  DiskBufferPool*       buffer_pool = nullptr;
   DiskLogHandler        log_handler;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
 
@@ -214,7 +214,7 @@ TEST(BufferPoolLog, test_wal_exception2)
   /// step 2,3 创建100个页面然后正常关闭，包括关闭日志
   const int allocate_page_num = 100;
   for (int i = 0; i < allocate_page_num; i++) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
   }
@@ -245,7 +245,7 @@ TEST(BufferPoolLog, test_wal_exception2)
   const int deallocate_page_num = 50;
   for (int i = 1; i <= allocate_page_num2 + deallocate_page_num; i++) {
     if (i % 3 != 0) {
-      Frame *frame = nullptr;
+      Frame* frame = nullptr;
       ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
       ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
     } else {
@@ -309,16 +309,16 @@ TEST(BufferPoolLog, test_wal_multi_files)
 
   BufferPoolManager buffer_pool_manager;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.init(make_unique<VacuousDoubleWriteBuffer>()));
-  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager](const filesystem::path &filename) {
+  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager](const filesystem::path& filename) {
     ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.create_file(filename.c_str()));
   });
 
   DiskLogHandler log_handler;
 
-  vector<DiskBufferPool *> buffer_pools;
+  vector<DiskBufferPool*> buffer_pools;
   ranges::for_each(
-      buffer_pool_filenames, [&buffer_pool_manager, &buffer_pools, &log_handler](const filesystem::path &filename) {
-        DiskBufferPool *buffer_pool = nullptr;
+      buffer_pool_filenames, [&buffer_pool_manager, &buffer_pools, &log_handler](const filesystem::path& filename) {
+        DiskBufferPool* buffer_pool = nullptr;
         ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.open_file(log_handler, filename.c_str(), buffer_pool));
         buffer_pools.push_back(buffer_pool);
       });
@@ -331,8 +331,8 @@ TEST(BufferPoolLog, test_wal_multi_files)
 
   const int allocate_page_num = 100;
   for (int i = 0; i < allocate_page_num; i++) {
-    ranges::for_each(buffer_pools, [](DiskBufferPool *buffer_pool) {
-      Frame *frame = nullptr;
+    ranges::for_each(buffer_pools, [](DiskBufferPool* buffer_pool) {
+      Frame* frame = nullptr;
       ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
       ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
     });
@@ -342,37 +342,37 @@ TEST(BufferPoolLog, test_wal_multi_files)
   const int deallocate_page_num = 50;
   for (int i = 1; i <= allocate_page_num2 + deallocate_page_num; i++) {
     if (i % 3 != 0) {
-      ranges::for_each(buffer_pools, [](DiskBufferPool *buffer_pool) {
-        Frame *frame = nullptr;
+      ranges::for_each(buffer_pools, [](DiskBufferPool* buffer_pool) {
+        Frame* frame = nullptr;
         ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
         ASSERT_EQ(RC::SUCCESS, buffer_pool->unpin_page(frame));
       });
     } else {
       ranges::for_each(
-          buffer_pools, [i](DiskBufferPool *buffer_pool) { ASSERT_EQ(RC::SUCCESS, buffer_pool->dispose_page(i / 3)); });
+          buffer_pools, [i](DiskBufferPool* buffer_pool) { ASSERT_EQ(RC::SUCCESS, buffer_pool->dispose_page(i / 3)); });
     }
   }
   ASSERT_EQ(RC::SUCCESS, log_handler.stop());
   ASSERT_EQ(RC::SUCCESS, log_handler.await_termination());
 
-  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager](const filesystem::path &filename) {
+  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager](const filesystem::path& filename) {
     ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.close_file(filename.c_str()));
   });
   buffer_pools.clear();
 
   ranges::for_each(
-      buffer_pool_filenames, [](const filesystem::path &filename) { ASSERT_TRUE(filesystem::remove(filename)); });
+      buffer_pool_filenames, [](const filesystem::path& filename) { ASSERT_TRUE(filesystem::remove(filename)); });
 
   BufferPoolManager buffer_pool_manager2;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager2.init(make_unique<VacuousDoubleWriteBuffer>()));
-  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager2](const filesystem::path &filename) {
+  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager2](const filesystem::path& filename) {
     ASSERT_EQ(RC::SUCCESS, buffer_pool_manager2.create_file(filename.c_str()));
   });
 
   DiskLogHandler log_handler2;
   ranges::for_each(
-      buffer_pool_filenames, [&buffer_pool_manager2, &buffer_pools, &log_handler2](const filesystem::path &filename) {
-        DiskBufferPool *buffer_pool = nullptr;
+      buffer_pool_filenames, [&buffer_pool_manager2, &buffer_pools, &log_handler2](const filesystem::path& filename) {
+        DiskBufferPool* buffer_pool = nullptr;
         ASSERT_EQ(RC::SUCCESS, buffer_pool_manager2.open_file(log_handler2, filename.c_str(), buffer_pool));
         ASSERT_NE(buffer_pool, nullptr);
         buffer_pools.push_back(buffer_pool);
@@ -381,11 +381,11 @@ TEST(BufferPoolLog, test_wal_multi_files)
   BufferPoolLogReplayer log_replayer2(buffer_pool_manager2);
   ASSERT_EQ(RC::SUCCESS, log_handler2.init(clog_path.c_str()));
   ASSERT_EQ(RC::SUCCESS, log_handler2.replay(log_replayer2, 0));
-  ranges::for_each(buffer_pools, [](DiskBufferPool *buffer_pool) {
+  ranges::for_each(buffer_pools, [](DiskBufferPool* buffer_pool) {
     ASSERT_EQ(allocate_page_num + allocate_page_num2 - deallocate_page_num, buffer_pool_page_count(buffer_pool));
   });
   ASSERT_EQ(RC::SUCCESS, log_handler2.start());
-  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager2](const filesystem::path &filename) {
+  ranges::for_each(buffer_pool_filenames, [&buffer_pool_manager2](const filesystem::path& filename) {
     ASSERT_EQ(RC::SUCCESS, buffer_pool_manager2.close_file(filename.c_str()));
   });
   buffer_pools.clear();
@@ -393,7 +393,7 @@ TEST(BufferPoolLog, test_wal_multi_files)
   ASSERT_EQ(RC::SUCCESS, log_handler2.await_termination());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

@@ -29,9 +29,9 @@ uint32_t getCpuNum() { return thread::hardware_concurrency(); }
 void print_stacktrace()
 {
   int    size = MAX_STACK_SIZE;
-  void  *array[MAX_STACK_SIZE];
+  void*  array[MAX_STACK_SIZE];
   int    stack_num  = backtrace(array, size);
-  char **stacktrace = backtrace_symbols(array, stack_num);
+  char** stacktrace = backtrace_symbols(array, stack_num);
   for (int i = 0; i < stack_num; ++i) {
     LOG_INFO("%d ----- %s\n", i, stacktrace[i]);
   }

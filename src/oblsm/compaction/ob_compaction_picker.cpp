@@ -31,7 +31,7 @@ unique_ptr<ObCompaction> TiredCompactionPicker::pick(SSTablesPtr sstables)
   return compaction;
 }
 
-ObCompactionPicker *ObCompactionPicker::create(CompactionType type, ObLsmOptions *options)
+ObCompactionPicker* ObCompactionPicker::create(CompactionType type, ObLsmOptions* options)
 {
 
   switch (type) {

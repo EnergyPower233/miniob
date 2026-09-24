@@ -21,7 +21,7 @@ See the Mulan PSL v2 for more details. */
 
 #include "common/lang/mutex.h"
 
-RC Communicator::init(int fd, unique_ptr<Session> session, const string &addr)
+RC Communicator::init(int fd, unique_ptr<Session> session, const string& addr)
 {
   fd_      = fd;
   session_ = std::move(session);
@@ -45,7 +45,7 @@ Communicator::~Communicator()
 
 /////////////////////////////////////////////////////////////////////////////////
 
-Communicator *CommunicatorFactory::create(CommunicateProtocol protocol)
+Communicator* CommunicatorFactory::create(CommunicateProtocol protocol)
 {
   switch (protocol) {
     case CommunicateProtocol::PLAIN: {

@@ -30,15 +30,15 @@ public:
 
   ~OptimizerContext();
 
-  Memo &get_memo();
+  Memo& get_memo();
 
-  RuleSet &get_rule_set();
+  RuleSet& get_rule_set();
 
-  void push_task(CascadeTask *task) { task_pool_->push(task); }
+  void push_task(CascadeTask* task) { task_pool_->push(task); }
 
-  CostModel *get_cost_model() { return &cost_model_; }
+  CostModel* get_cost_model() { return &cost_model_; }
 
-  void set_task_pool(PendingTasks *pending_tasks)
+  void set_task_pool(PendingTasks* pending_tasks)
   {
     if (task_pool_ != nullptr) {
       delete task_pool_;
@@ -46,20 +46,20 @@ public:
     task_pool_ = pending_tasks;
   }
 
-  void record_operator_node_in_memo(unique_ptr<OperatorNode> &&node);
+  void record_operator_node_in_memo(unique_ptr<OperatorNode>&& node);
 
-  GroupExpr *make_group_expression(OperatorNode *node);
+  GroupExpr* make_group_expression(OperatorNode* node);
 
-  bool record_node_into_group(OperatorNode *node, GroupExpr **gexpr) { return record_node_into_group(node, gexpr, -1); }
+  bool record_node_into_group(OperatorNode* node, GroupExpr** gexpr) { return record_node_into_group(node, gexpr, -1); }
 
-  bool record_node_into_group(OperatorNode *node, GroupExpr **gexpr, int target_group);
+  bool record_node_into_group(OperatorNode* node, GroupExpr** gexpr, int target_group);
 
   double get_cost_upper_bound() const { return cost_upper_bound_; }
 
 private:
-  Memo         *memo_;
-  RuleSet      *rule_set_;
+  Memo*         memo_;
+  RuleSet*      rule_set_;
   CostModel     cost_model_;
-  PendingTasks *task_pool_;
+  PendingTasks* task_pool_;
   double        cost_upper_bound_;
 };

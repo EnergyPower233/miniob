@@ -59,7 +59,7 @@ TEST(Serializer, serializer)
   ASSERT_NE(ret, 0);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

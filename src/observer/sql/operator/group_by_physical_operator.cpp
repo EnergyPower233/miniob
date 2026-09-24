@@ -21,29 +21,29 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-GroupByPhysicalOperator::GroupByPhysicalOperator(vector<Expression *> &&expressions)
+GroupByPhysicalOperator::GroupByPhysicalOperator(vector<Expression*>&& expressions)
 {
   aggregate_expressions_ = std::move(expressions);
   value_expressions_.reserve(aggregate_expressions_.size());
-  ranges::for_each(aggregate_expressions_, [this](Expression *expr) {
-    auto       *aggregate_expr = static_cast<AggregateExpr *>(expr);
-    Expression *child_expr     = aggregate_expr->child().get();
+  ranges::for_each(aggregate_expressions_, [this](Expression* expr) {
+    auto*       aggregate_expr = static_cast<AggregateExpr*>(expr);
+    Expression* child_expr     = aggregate_expr->child().get();
     ASSERT(child_expr != nullptr, "aggregate expression must have a child expression");
     value_expressions_.emplace_back(child_expr);
   });
 }
 
-void GroupByPhysicalOperator::create_aggregator_list(AggregatorList &aggregator_list)
+void GroupByPhysicalOperator::create_aggregator_list(AggregatorList& aggregator_list)
 {
   aggregator_list.clear();
   aggregator_list.reserve(aggregate_expressions_.size());
-  std::ranges::for_each(aggregate_expressions_, [&aggregator_list](Expression *expr) {
-    auto *aggregate_expr = static_cast<AggregateExpr *>(expr);
+  std::ranges::for_each(aggregate_expressions_, [&aggregator_list](Expression* expr) {
+    auto* aggregate_expr = static_cast<AggregateExpr*>(expr);
     aggregator_list.emplace_back(aggregate_expr->create_aggregator());
   });
 }
 
-RC GroupByPhysicalOperator::aggregate(AggregatorList &aggregator_list, const Tuple &tuple)
+RC GroupByPhysicalOperator::aggregate(AggregatorList& aggregator_list, const Tuple& tuple)
 {
   ASSERT(static_cast<int>(aggregator_list.size()) == tuple.cell_num(), 
          "aggregator list size must be equal to tuple size. aggregator num: %d, tuple num: %d",
@@ -53,7 +53,7 @@ RC GroupByPhysicalOperator::aggregate(AggregatorList &aggregator_list, const Tup
   Value     value;
   const int size = static_cast<int>(aggregator_list.size());
   for (int i = 0; i < size; i++) {
-    Aggregator *aggregator = aggregator_list[i].get();
+    Aggregator* aggregator = aggregator_list[i].get();
 
     rc = tuple.cell_at(i, value);
     if (OB_FAIL(rc)) {
@@ -71,21 +71,21 @@ RC GroupByPhysicalOperator::aggregate(AggregatorList &aggregator_list, const Tup
   return rc;
 }
 
-RC GroupByPhysicalOperator::evaluate(GroupValueType &group_value)
+RC GroupByPhysicalOperator::evaluate(GroupValueType& group_value)
 {
   RC rc = RC::SUCCESS;
 
   vector<TupleCellSpec> aggregator_names;
-  for (Expression *expr : aggregate_expressions_) {
+  for (Expression* expr : aggregate_expressions_) {
     aggregator_names.emplace_back(expr->name());
   }
 
-  AggregatorList &aggregators           = get<0>(group_value);
-  CompositeTuple &composite_value_tuple = get<1>(group_value);
+  AggregatorList& aggregators           = get<0>(group_value);
+  CompositeTuple& composite_value_tuple = get<1>(group_value);
 
   ValueListTuple evaluated_tuple;
   vector<Value>  values;
-  for (unique_ptr<Aggregator> &aggregator : aggregators) {
+  for (unique_ptr<Aggregator>& aggregator : aggregators) {
     Value value;
     rc = aggregator->evaluate(value);
     if (OB_FAIL(rc)) {

@@ -11,7 +11,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/log/log.h"
 #include "storage/common/column.h"
 
-Column::Column(const FieldMeta &meta, size_t size)
+Column::Column(const FieldMeta& meta, size_t size)
     : data_(nullptr),
       count_(0),
       capacity_(0),
@@ -21,16 +21,16 @@ Column::Column(const FieldMeta &meta, size_t size)
       column_type_(Type::NORMAL_COLUMN)
 {
   // TODO: optimized the memory usage if it doesn't need to allocate memory
-  data_     = new char[size * attr_len_];
+  data_ = new char[size * attr_len_];
   memset(data_, 0, size * attr_len_);
   capacity_ = size;
 }
 
 Column::Column(AttrType attr_type, int attr_len, size_t capacity)
 {
-  attr_type_   = attr_type;
-  attr_len_    = attr_len;
-  data_        = new char[capacity * attr_len_];
+  attr_type_ = attr_type;
+  attr_len_  = attr_len;
+  data_      = new char[capacity * attr_len_];
   memset(data_, 0, capacity * attr_len_);
   count_       = 0;
   capacity_    = capacity;
@@ -38,10 +38,10 @@ Column::Column(AttrType attr_type, int attr_len, size_t capacity)
   column_type_ = Type::NORMAL_COLUMN;
 }
 
-void Column::init(const FieldMeta &meta, size_t size)
+void Column::init(const FieldMeta& meta, size_t size)
 {
   reset();
-  data_        = new char[size * meta.len()];
+  data_ = new char[size * meta.len()];
   memset(data_, 0, size * meta.len());
   count_       = 0;
   capacity_    = size;
@@ -54,7 +54,7 @@ void Column::init(const FieldMeta &meta, size_t size)
 void Column::init(AttrType attr_type, int attr_len, size_t capacity)
 {
   reset();
-  data_        = new char[capacity * attr_len];
+  data_ = new char[capacity * attr_len];
   memset(data_, 0, capacity * attr_len);
   count_       = 0;
   capacity_    = capacity;
@@ -64,20 +64,20 @@ void Column::init(AttrType attr_type, int attr_len, size_t capacity)
   column_type_ = Type::NORMAL_COLUMN;
 }
 
-void Column::init(const Value &value, size_t size)
+void Column::init(const Value& value, size_t size)
 {
   reset();
   attr_type_ = value.attr_type();
   attr_len_  = value.length();
   if (attr_len_ == 0) {
-    data_      = new char[1];
+    data_    = new char[1];
     data_[0] = '\0';
   } else {
-    data_      = new char[attr_len_];
+    data_ = new char[attr_len_];
   }
-  count_     = size;
-  capacity_  = 1;
-  own_       = true;
+  count_    = size;
+  capacity_ = 1;
+  own_      = true;
   memcpy(data_, value.data(), attr_len_);
   column_type_ = Type::CONSTANT_COLUMN;
 }
@@ -98,9 +98,9 @@ void Column::reset()
   attr_len_  = -1;
 }
 
-RC Column::append_one(const char *data) { return append(data, 1); }
+RC Column::append_one(const char* data) { return append(data, 1); }
 
-RC Column::append(const char *data, int count)
+RC Column::append(const char* data, int count)
 {
   if (!own_) {
     LOG_WARN("append data to non-owned column");
@@ -118,7 +118,7 @@ RC Column::append(const char *data, int count)
   return RC::SUCCESS;
 }
 
-RC Column::append_value(const Value &value)
+RC Column::append_value(const Value& value)
 {
   if (!own_) {
     LOG_WARN("append data to non-owned column");
@@ -138,7 +138,7 @@ RC Column::append_value(const Value &value)
   return RC::SUCCESS;
 }
 
-string_t Column::add_text(const char *data, int length)
+string_t Column::add_text(const char* data, int length)
 {
   if (vector_buffer_ == nullptr) {
     vector_buffer_ = make_unique<VectorBuffer>();
@@ -149,7 +149,7 @@ string_t Column::add_text(const char *data, int length)
 Value Column::get_value(int index) const
 {
   if (column_type_ == Type::CONSTANT_COLUMN) {
-    index  = 0;
+    index = 0;
   }
   if (index >= count_ || index < 0) {
     return Value();
@@ -157,7 +157,7 @@ Value Column::get_value(int index) const
   return Value(attr_type_, &data_[index * attr_len_], attr_len_);
 }
 
-void Column::reference(const Column &column)
+void Column::reference(const Column& column)
 {
   if (this == &column) {
     return;

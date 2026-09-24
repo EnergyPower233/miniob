@@ -26,14 +26,14 @@ class Db;
 class DescTableStmt : public Stmt
 {
 public:
-  DescTableStmt(const string &table_name) : table_name_(table_name) {}
+  DescTableStmt(const string& table_name) : table_name_(table_name) {}
   virtual ~DescTableStmt() = default;
 
   StmtType type() const override { return StmtType::DESC_TABLE; }
 
-  const string &table_name() const { return table_name_; }
+  const string& table_name() const { return table_name_; }
 
-  static RC create(Db *db, const DescTableSqlNode &desc_table, Stmt *&stmt);
+  static RC create(Db* db, const DescTableSqlNode& desc_table, Stmt*& stmt);
 
 private:
   string table_name_;

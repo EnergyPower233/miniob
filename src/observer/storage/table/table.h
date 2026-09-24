@@ -59,8 +59,8 @@ public:
    * @param attribute_count 字段个数
    * @param attributes 字段
    */
-  RC create(Db *db, int32_t table_id, const char *path, const char *name, const char *base_dir,
-      span<const AttrInfoSqlNode> attributes, const vector<string> &primary_keys, StorageFormat storage_format,
+  RC create(Db* db, int32_t table_id, const char* path, const char* name, const char* base_dir,
+      span<const AttrInfoSqlNode> attributes, const vector<string>& primary_keys, StorageFormat storage_format,
       StorageEngine storage_engine);
 
   /**
@@ -68,7 +68,7 @@ public:
    * @param meta_file 保存表元数据的文件完整路径
    * @param base_dir 表所在的文件夹，表记录数据文件、索引数据文件存放位置
    */
-  RC open(Db *db, const char *meta_file, const char *base_dir);
+  RC open(Db* db, const char* meta_file, const char* base_dir);
 
   /**
    * @brief 根据给定的字段生成一个记录/行
@@ -77,29 +77,29 @@ public:
    * @param values    每个字段的值
    * @param record    生成的记录数据
    */
-  RC make_record(int value_num, const Value *values, Record &record);
+  RC make_record(int value_num, const Value* values, Record& record);
 
   /**
    * @brief 在当前的表中插入一条记录
    * @details 在表文件和索引中插入关联数据。这里只管在表中插入数据，不关心事务相关操作。
    * @param record[in/out] 传入的数据包含具体的数据，插入成功会通过此字段返回RID
    */
-  RC insert_record(Record &record);
+  RC insert_record(Record& record);
 
-  RC insert_chunk(const Chunk &chunk);
-  RC delete_record(const Record &record);
+  RC insert_chunk(const Chunk& chunk);
+  RC delete_record(const Record& record);
 
-  RC insert_record_with_trx(Record &record, Trx *trx);
-  RC delete_record_with_trx(const Record &record, Trx *trx);
-  RC update_record_with_trx(const Record &old_record, const Record &new_record, Trx *trx);
-  RC get_record(const RID &rid, Record &record);
+  RC insert_record_with_trx(Record& record, Trx* trx);
+  RC delete_record_with_trx(const Record& record, Trx* trx);
+  RC update_record_with_trx(const Record& old_record, const Record& new_record, Trx* trx);
+  RC get_record(const RID& rid, Record& record);
 
   // TODO refactor
-  RC create_index(Trx *trx, const FieldMeta *field_meta, const char *index_name);
+  RC create_index(Trx* trx, const FieldMeta* field_meta, const char* index_name);
 
-  RC get_record_scanner(RecordScanner *&scanner, Trx *trx, ReadWriteMode mode);
+  RC get_record_scanner(RecordScanner*& scanner, Trx* trx, ReadWriteMode mode);
 
-  RC get_chunk_scanner(ChunkFileScanner &scanner, Trx *trx, ReadWriteMode mode);
+  RC get_chunk_scanner(ChunkFileScanner& scanner, Trx* trx, ReadWriteMode mode);
 
   /**
    * @brief 可以在页面锁保护的情况下访问记录
@@ -108,36 +108,36 @@ public:
    * @param visitor
    * @return RC
    */
-  RC visit_record(const RID &rid, function<bool(Record &)> visitor);
+  RC visit_record(const RID& rid, function<bool(Record&)> visitor);
 
 public:
   int32_t     table_id() const { return table_meta_.table_id(); }
-  const char *name() const;
+  const char* name() const;
 
-  Db *db() const { return db_; }
+  Db* db() const { return db_; }
 
-  const TableMeta &table_meta() const;
+  const TableMeta& table_meta() const;
 
-  LobFileHandler *lob_handler() const { return lob_handler_; }
+  LobFileHandler* lob_handler() const { return lob_handler_; }
 
   RC sync();
 
 private:
-  RC set_value_to_record(char *record_data, const Value &value, const FieldMeta *field);
+  RC set_value_to_record(char* record_data, const Value& value, const FieldMeta* field);
 
 private:
   // RC init_record_handler(const char *base_dir);
 
 public:
-  Index *find_index(const char *index_name) const;
-  Index *find_index_by_field(const char *field_name) const;
+  Index* find_index(const char* index_name) const;
+  Index* find_index_by_field(const char* field_name) const;
 
 private:
-  Db       *db_ = nullptr;
+  Db*       db_ = nullptr;
   TableMeta table_meta_;
   // DiskBufferPool    *data_buffer_pool_ = nullptr;  /// 数据文件关联的buffer pool
   // RecordFileHandler *record_handler_   = nullptr;  /// 记录操作
   // vector<Index *>    indexes_;
   unique_ptr<TableEngine> engine_      = nullptr;
-  LobFileHandler         *lob_handler_ = nullptr;
+  LobFileHandler*         lob_handler_ = nullptr;
 };

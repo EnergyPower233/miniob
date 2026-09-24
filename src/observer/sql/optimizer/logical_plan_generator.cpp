@@ -41,36 +41,36 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-RC LogicalPlanGenerator::create(Stmt *stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create(Stmt* stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
   RC rc = RC::SUCCESS;
   switch (stmt->type()) {
     case StmtType::CALC: {
-      CalcStmt *calc_stmt = static_cast<CalcStmt *>(stmt);
+      CalcStmt* calc_stmt = static_cast<CalcStmt*>(stmt);
 
       rc = create_plan(calc_stmt, logical_operator);
     } break;
 
     case StmtType::SELECT: {
-      SelectStmt *select_stmt = static_cast<SelectStmt *>(stmt);
+      SelectStmt* select_stmt = static_cast<SelectStmt*>(stmt);
 
       rc = create_plan(select_stmt, logical_operator);
     } break;
 
     case StmtType::INSERT: {
-      InsertStmt *insert_stmt = static_cast<InsertStmt *>(stmt);
+      InsertStmt* insert_stmt = static_cast<InsertStmt*>(stmt);
 
       rc = create_plan(insert_stmt, logical_operator);
     } break;
 
     case StmtType::DELETE: {
-      DeleteStmt *delete_stmt = static_cast<DeleteStmt *>(stmt);
+      DeleteStmt* delete_stmt = static_cast<DeleteStmt*>(stmt);
 
       rc = create_plan(delete_stmt, logical_operator);
     } break;
 
     case StmtType::EXPLAIN: {
-      ExplainStmt *explain_stmt = static_cast<ExplainStmt *>(stmt);
+      ExplainStmt* explain_stmt = static_cast<ExplainStmt*>(stmt);
 
       rc = create_plan(explain_stmt, logical_operator);
     } break;
@@ -81,15 +81,15 @@ RC LogicalPlanGenerator::create(Stmt *stmt, unique_ptr<LogicalOperator> &logical
   return rc;
 }
 
-RC LogicalPlanGenerator::create_plan(CalcStmt *calc_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(CalcStmt* calc_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
   logical_operator.reset(new CalcLogicalOperator(std::move(calc_stmt->expressions())));
   return RC::SUCCESS;
 }
 
-RC LogicalPlanGenerator::create_plan(SelectStmt *select_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(SelectStmt* select_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
-  unique_ptr<LogicalOperator> *last_oper = nullptr;
+  unique_ptr<LogicalOperator>* last_oper = nullptr;
 
   unique_ptr<LogicalOperator> table_oper(nullptr);
   last_oper = &table_oper;
@@ -101,20 +101,19 @@ RC LogicalPlanGenerator::create_plan(SelectStmt *select_stmt, unique_ptr<Logical
     return rc;
   }
 
-  const vector<Table *> &tables = select_stmt->tables();
-  for (Table *table : tables) {
+  const vector<Table*>& tables = select_stmt->tables();
+  for (Table* table : tables) {
 
     unique_ptr<LogicalOperator> table_get_oper(new TableGetLogicalOperator(table, ReadWriteMode::READ_ONLY));
     if (table_oper == nullptr) {
       table_oper = std::move(table_get_oper);
     } else {
-      JoinLogicalOperator *join_oper = new JoinLogicalOperator;
+      JoinLogicalOperator* join_oper = new JoinLogicalOperator;
       join_oper->add_child(std::move(table_oper));
       join_oper->add_child(std::move(table_get_oper));
       table_oper = unique_ptr<LogicalOperator>(join_oper);
     }
   }
-
 
   if (predicate_oper) {
     if (*last_oper) {
@@ -139,7 +138,8 @@ RC LogicalPlanGenerator::create_plan(SelectStmt *select_stmt, unique_ptr<Logical
     last_oper = &group_by_oper;
   }
 
-  unique_ptr<LogicalOperator> project_oper = make_unique<ProjectLogicalOperator>(std::move(select_stmt->query_expressions()));
+  unique_ptr<LogicalOperator> project_oper =
+      make_unique<ProjectLogicalOperator>(std::move(select_stmt->query_expressions()));
   if (*last_oper) {
     project_oper->add_child(std::move(*last_oper));
   }
@@ -150,33 +150,32 @@ RC LogicalPlanGenerator::create_plan(SelectStmt *select_stmt, unique_ptr<Logical
   return RC::SUCCESS;
 }
 
-RC LogicalPlanGenerator::create_plan(FilterStmt *filter_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(FilterStmt* filter_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
-  RC                                  rc = RC::SUCCESS;
+  RC                             rc = RC::SUCCESS;
   vector<unique_ptr<Expression>> cmp_exprs;
-  const vector<FilterUnit *>    &filter_units = filter_stmt->filter_units();
-  for (const FilterUnit *filter_unit : filter_units) {
-    const FilterObj &filter_obj_left  = filter_unit->left();
-    const FilterObj &filter_obj_right = filter_unit->right();
+  const vector<FilterUnit*>&     filter_units = filter_stmt->filter_units();
+  for (const FilterUnit* filter_unit : filter_units) {
+    const FilterObj& filter_obj_left  = filter_unit->left();
+    const FilterObj& filter_obj_right = filter_unit->right();
 
     unique_ptr<Expression> left(filter_obj_left.is_attr
-                                    ? static_cast<Expression *>(new FieldExpr(filter_obj_left.field))
-                                    : static_cast<Expression *>(new ValueExpr(filter_obj_left.value)));
+                                    ? static_cast<Expression*>(new FieldExpr(filter_obj_left.field))
+                                    : static_cast<Expression*>(new ValueExpr(filter_obj_left.value)));
 
     unique_ptr<Expression> right(filter_obj_right.is_attr
-                                     ? static_cast<Expression *>(new FieldExpr(filter_obj_right.field))
-                                     : static_cast<Expression *>(new ValueExpr(filter_obj_right.value)));
+                                     ? static_cast<Expression*>(new FieldExpr(filter_obj_right.field))
+                                     : static_cast<Expression*>(new ValueExpr(filter_obj_right.value)));
 
     if (left->value_type() != right->value_type()) {
       auto left_to_right_cost = implicit_cast_cost(left->value_type(), right->value_type());
       auto right_to_left_cost = implicit_cast_cost(right->value_type(), left->value_type());
       if (left_to_right_cost <= right_to_left_cost && left_to_right_cost != INT32_MAX) {
         ExprType left_type = left->type();
-        auto cast_expr = make_unique<CastExpr>(std::move(left), right->value_type());
+        auto     cast_expr = make_unique<CastExpr>(std::move(left), right->value_type());
         if (left_type == ExprType::VALUE) {
           Value left_val;
-          if (OB_FAIL(rc = cast_expr->try_get_value(left_val)))
-          {
+          if (OB_FAIL(rc = cast_expr->try_get_value(left_val))) {
             LOG_WARN("failed to get value from left child", strrc(rc));
             return rc;
           }
@@ -186,11 +185,10 @@ RC LogicalPlanGenerator::create_plan(FilterStmt *filter_stmt, unique_ptr<Logical
         }
       } else if (right_to_left_cost < left_to_right_cost && right_to_left_cost != INT32_MAX) {
         ExprType right_type = right->type();
-        auto cast_expr = make_unique<CastExpr>(std::move(right), left->value_type());
+        auto     cast_expr  = make_unique<CastExpr>(std::move(right), left->value_type());
         if (right_type == ExprType::VALUE) {
           Value right_val;
-          if (OB_FAIL(rc = cast_expr->try_get_value(right_val)))
-          {
+          if (OB_FAIL(rc = cast_expr->try_get_value(right_val))) {
             LOG_WARN("failed to get value from right child", strrc(rc));
             return rc;
           }
@@ -206,7 +204,7 @@ RC LogicalPlanGenerator::create_plan(FilterStmt *filter_stmt, unique_ptr<Logical
       }
     }
 
-    ComparisonExpr *cmp_expr = new ComparisonExpr(filter_unit->comp(), std::move(left), std::move(right));
+    ComparisonExpr* cmp_expr = new ComparisonExpr(filter_unit->comp(), std::move(left), std::move(right));
     cmp_exprs.emplace_back(cmp_expr);
   }
 
@@ -228,20 +226,20 @@ int LogicalPlanGenerator::implicit_cast_cost(AttrType from, AttrType to)
   return DataType::type_instance(from)->cast_cost(to);
 }
 
-RC LogicalPlanGenerator::create_plan(InsertStmt *insert_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(InsertStmt* insert_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
-  Table        *table = insert_stmt->table();
+  Table*        table = insert_stmt->table();
   vector<Value> values(insert_stmt->values(), insert_stmt->values() + insert_stmt->value_amount());
 
-  InsertLogicalOperator *insert_operator = new InsertLogicalOperator(table, values);
+  InsertLogicalOperator* insert_operator = new InsertLogicalOperator(table, values);
   logical_operator.reset(insert_operator);
   return RC::SUCCESS;
 }
 
-RC LogicalPlanGenerator::create_plan(DeleteStmt *delete_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(DeleteStmt* delete_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
-  Table                      *table       = delete_stmt->table();
-  FilterStmt                 *filter_stmt = delete_stmt->filter_stmt();
+  Table*                      table       = delete_stmt->table();
+  FilterStmt*                 filter_stmt = delete_stmt->filter_stmt();
   unique_ptr<LogicalOperator> table_get_oper(new TableGetLogicalOperator(table, ReadWriteMode::READ_WRITE));
 
   unique_ptr<LogicalOperator> predicate_oper;
@@ -264,11 +262,11 @@ RC LogicalPlanGenerator::create_plan(DeleteStmt *delete_stmt, unique_ptr<Logical
   return rc;
 }
 
-RC LogicalPlanGenerator::create_plan(ExplainStmt *explain_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_plan(ExplainStmt* explain_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
   unique_ptr<LogicalOperator> child_oper;
 
-  Stmt *child_stmt = explain_stmt->child();
+  Stmt* child_stmt = explain_stmt->child();
 
   RC rc = create(child_stmt, child_oper);
   if (rc != RC::SUCCESS) {
@@ -281,12 +279,12 @@ RC LogicalPlanGenerator::create_plan(ExplainStmt *explain_stmt, unique_ptr<Logic
   return rc;
 }
 
-RC LogicalPlanGenerator::create_group_by_plan(SelectStmt *select_stmt, unique_ptr<LogicalOperator> &logical_operator)
+RC LogicalPlanGenerator::create_group_by_plan(SelectStmt* select_stmt, unique_ptr<LogicalOperator>& logical_operator)
 {
-  vector<unique_ptr<Expression>> &group_by_expressions = select_stmt->group_by();
-  vector<Expression *> aggregate_expressions;
-  vector<unique_ptr<Expression>> &query_expressions = select_stmt->query_expressions();
-  function<RC(unique_ptr<Expression>&)> collector = [&](unique_ptr<Expression> &expr) -> RC {
+  vector<unique_ptr<Expression>>&       group_by_expressions = select_stmt->group_by();
+  vector<Expression*>                   aggregate_expressions;
+  vector<unique_ptr<Expression>>&       query_expressions = select_stmt->query_expressions();
+  function<RC(unique_ptr<Expression>&)> collector         = [&](unique_ptr<Expression>& expr) -> RC {
     RC rc = RC::SUCCESS;
     if (expr->type() == ExprType::AGGREGATION) {
       expr->set_pos(aggregate_expressions.size() + group_by_expressions.size());
@@ -296,10 +294,10 @@ RC LogicalPlanGenerator::create_group_by_plan(SelectStmt *select_stmt, unique_pt
     return rc;
   };
 
-  function<RC(unique_ptr<Expression>&)> bind_group_by_expr = [&](unique_ptr<Expression> &expr) -> RC {
+  function<RC(unique_ptr<Expression>&)> bind_group_by_expr = [&](unique_ptr<Expression>& expr) -> RC {
     RC rc = RC::SUCCESS;
     for (size_t i = 0; i < group_by_expressions.size(); i++) {
-      auto &group_by = group_by_expressions[i];
+      auto& group_by = group_by_expressions[i];
       if (expr->type() == ExprType::AGGREGATION) {
         break;
       } else if (expr->equal(*group_by)) {
@@ -312,8 +310,8 @@ RC LogicalPlanGenerator::create_group_by_plan(SelectStmt *select_stmt, unique_pt
     return rc;
   };
 
- bool found_unbound_column = false;
-  function<RC(unique_ptr<Expression>&)> find_unbound_column = [&](unique_ptr<Expression> &expr) -> RC {
+  bool                                  found_unbound_column = false;
+  function<RC(unique_ptr<Expression>&)> find_unbound_column  = [&](unique_ptr<Expression>& expr) -> RC {
     RC rc = RC::SUCCESS;
     if (expr->type() == ExprType::AGGREGATION) {
       // do nothing
@@ -321,23 +319,22 @@ RC LogicalPlanGenerator::create_group_by_plan(SelectStmt *select_stmt, unique_pt
       // do nothing
     } else if (expr->type() == ExprType::FIELD) {
       found_unbound_column = true;
-    }else {
+    } else {
       rc = ExpressionIterator::iterate_child_expr(*expr, find_unbound_column);
     }
     return rc;
   };
-  
 
-  for (unique_ptr<Expression> &expression : query_expressions) {
+  for (unique_ptr<Expression>& expression : query_expressions) {
     bind_group_by_expr(expression);
   }
 
-  for (unique_ptr<Expression> &expression : query_expressions) {
+  for (unique_ptr<Expression>& expression : query_expressions) {
     find_unbound_column(expression);
   }
 
   // collect all aggregate expressions
-  for (unique_ptr<Expression> &expression : query_expressions) {
+  for (unique_ptr<Expression>& expression : query_expressions) {
     collector(expression);
   }
 
@@ -353,8 +350,8 @@ RC LogicalPlanGenerator::create_group_by_plan(SelectStmt *select_stmt, unique_pt
 
   // 如果只需要聚合，但是没有group by 语句，需要生成一个空的group by 语句
 
-  auto group_by_oper = make_unique<GroupByLogicalOperator>(std::move(group_by_expressions),
-                                                           std::move(aggregate_expressions));
+  auto group_by_oper =
+      make_unique<GroupByLogicalOperator>(std::move(group_by_expressions), std::move(aggregate_expressions));
   logical_operator = std::move(group_by_oper);
   return RC::SUCCESS;
 }

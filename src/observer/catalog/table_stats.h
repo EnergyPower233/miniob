@@ -25,9 +25,9 @@ public:
 
   TableStats() = default;
 
-  TableStats(const TableStats &other) { row_nums = other.row_nums; }
+  TableStats(const TableStats& other) { row_nums = other.row_nums; }
 
-  TableStats &operator=(const TableStats &other)
+  TableStats& operator=(const TableStats& other)
   {
     row_nums = other.row_nums;
     return *this;

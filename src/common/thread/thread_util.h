@@ -23,6 +23,6 @@ namespace common {
  * @param name 线程的名字。按照linux手册中描述，包括\0在内，不要超过16个字符
  * @return int 设置成功返回0
  */
-int thread_set_name(const char *name);
+int thread_set_name(const char* name);
 
 }  // namespace common

@@ -32,24 +32,24 @@ public:
   TableMeta()          = default;
   virtual ~TableMeta() = default;
 
-  TableMeta(const TableMeta &other);
+  TableMeta(const TableMeta& other);
 
-  void swap(TableMeta &other) noexcept;
+  void swap(TableMeta& other) noexcept;
 
-  RC init(int32_t table_id, const char *name, const vector<FieldMeta> *trx_fields,
-      span<const AttrInfoSqlNode> attributes, const vector<string> &primary_keys, StorageFormat storage_format,
+  RC init(int32_t table_id, const char* name, const vector<FieldMeta>* trx_fields,
+      span<const AttrInfoSqlNode> attributes, const vector<string>& primary_keys, StorageFormat storage_format,
       StorageEngine storage_engine);
 
-  RC add_index(const IndexMeta &index);
+  RC add_index(const IndexMeta& index);
 
 public:
   int32_t             table_id() const { return table_id_; }
-  const char         *name() const;
-  const FieldMeta    *trx_field() const;
-  const FieldMeta    *field(int index) const;
-  const FieldMeta    *field(const char *name) const;
-  const FieldMeta    *find_field_by_offset(int offset) const;
-  auto                field_metas() const -> const vector<FieldMeta>                *{ return &fields_; }
+  const char*         name() const;
+  const FieldMeta*    trx_field() const;
+  const FieldMeta*    field(int index) const;
+  const FieldMeta*    field(const char* name) const;
+  const FieldMeta*    find_field_by_offset(int offset) const;
+  auto                field_metas() const -> const vector<FieldMeta>* { return &fields_; }
   auto                trx_fields() const -> span<const FieldMeta>;
   const StorageFormat storage_format() const { return storage_format_; }
   const StorageEngine storage_engine() const { return storage_engine_; }
@@ -57,21 +57,21 @@ public:
   int field_num() const;  // sys field included
   int sys_field_num() const;
 
-  const IndexMeta *index(const char *name) const;
-  const IndexMeta *find_index_by_field(const char *field) const;
-  const IndexMeta *index(int i) const;
+  const IndexMeta* index(const char* name) const;
+  const IndexMeta* find_index_by_field(const char* field) const;
+  const IndexMeta* index(int i) const;
   int              index_num() const;
 
-  const vector<string> &primary_keys() const { return primary_keys_; }
+  const vector<string>& primary_keys() const { return primary_keys_; }
 
   int record_size() const;
 
 public:
-  int  serialize(ostream &os) const override;
-  int  deserialize(istream &is) override;
+  int  serialize(ostream& os) const override;
+  int  deserialize(istream& is) override;
   int  get_serial_size() const override;
-  void to_string(string &output) const override;
-  void desc(ostream &os) const;
+  void to_string(string& output) const override;
+  void desc(ostream& os) const;
 
 protected:
   int32_t           table_id_ = -1;

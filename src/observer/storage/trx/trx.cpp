@@ -23,9 +23,9 @@ See the Mulan PSL v2 for more details. */
 #include "storage/trx/trx.h"
 #include "storage/trx/vacuous_trx.h"
 
-TrxKit *TrxKit::create(const char *name, Db* db)
+TrxKit* TrxKit::create(const char* name, Db* db)
 {
-  TrxKit *trx_kit = nullptr;
+  TrxKit* trx_kit = nullptr;
   if (common::is_blank(name) || 0 == strcasecmp(name, "vacuous")) {
     trx_kit = new VacuousTrxKit();
   } else if (0 == strcasecmp(name, "mvcc")) {
@@ -43,6 +43,6 @@ TrxKit *TrxKit::create(const char *name, Db* db)
     delete trx_kit;
     trx_kit = nullptr;
   }
-  
+
   return trx_kit;
 }

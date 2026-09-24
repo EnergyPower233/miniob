@@ -15,10 +15,8 @@ See the Mulan PSL v2 for more details. */
 namespace oceanbase {
 
 // TODO: refactor build with mem_table/iterator logic.
-RC ObSSTableBuilder::build(shared_ptr<ObMemTable> mem_table, const std::string &file_name, uint32_t sst_id)
-{
-  return RC::UNIMPLEMENTED;
-}
+RC ObSSTableBuilder::build(shared_ptr<ObMemTable> mem_table, const std::string& file_name, uint32_t sst_id)
+{ return RC::UNIMPLEMENTED; }
 
 void ObSSTableBuilder::finish_build_block()
 {

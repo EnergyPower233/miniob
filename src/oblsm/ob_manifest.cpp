@@ -18,7 +18,7 @@
 
 namespace oceanbase {
 
-RC ObManifestSSTableInfo::from_json(const Json::Value &v)
+RC ObManifestSSTableInfo::from_json(const Json::Value& v)
 {
   if (v.isMember("sstable_id") && v["sstable_id"].isInt()) {
     sstable_id = v["sstable_id"].asInt();
@@ -40,13 +40,13 @@ Json::Value ObManifestCompaction::to_json() const
   v["record_type"]     = Json::Value{ObManifestCompaction::record_type()};
   v["compaction_type"] = JsonConverter::to_json(compaction_type);
   Json::Value deleted(Json::arrayValue);
-  for (const auto &table : deleted_tables) {
+  for (const auto& table : deleted_tables) {
     deleted.append(JsonConverter::to_json(table));
   }
   v["deleted_tables"] = deleted;
 
   Json::Value added(Json::arrayValue);
-  for (const auto &table : added_tables) {
+  for (const auto& table : added_tables) {
     added.append(JsonConverter::to_json(table));
   }
   v["added_tables"] = added;
@@ -57,7 +57,7 @@ Json::Value ObManifestCompaction::to_json() const
   return v;
 }
 
-RC ObManifestCompaction::from_json(const Json::Value &v)
+RC ObManifestCompaction::from_json(const Json::Value& v)
 {
   RC rc = RC::SUCCESS;
 
@@ -75,7 +75,7 @@ RC ObManifestCompaction::from_json(const Json::Value &v)
   if (!v.isMember("deleted_tables") || !v["deleted_tables"].isArray()) {
     return RC::JSON_MEMBER_MISSING;
   }
-  for (const auto &item : v["deleted_tables"]) {
+  for (const auto& item : v["deleted_tables"]) {
     ObManifestSSTableInfo info;
     rc = JsonConverter::from_json<ObManifestSSTableInfo>(item, info);
     if (rc != RC::SUCCESS) {
@@ -89,7 +89,7 @@ RC ObManifestCompaction::from_json(const Json::Value &v)
   if (!v.isMember("added_tables") || !v["added_tables"].isArray()) {
     return RC::JSON_MEMBER_MISSING;
   }
-  for (const auto &item : v["added_tables"]) {
+  for (const auto& item : v["added_tables"]) {
     ObManifestSSTableInfo info;
     rc = JsonConverter::from_json<ObManifestSSTableInfo>(item, info);
     if (rc != RC::SUCCESS) {
@@ -126,9 +126,9 @@ Json::Value ObManifestSnapshot::to_json() const
   root["compaction_type"] = static_cast<int>(compaction_type);
 
   Json::Value sstables_json(Json::arrayValue);
-  for (const auto &level : sstables) {
+  for (const auto& level : sstables) {
     Json::Value level_array(Json::arrayValue);
-    for (const auto &sst_id : level) {
+    for (const auto& sst_id : level) {
       level_array.append(sst_id);
     }
     sstables_json.append(level_array);
@@ -137,7 +137,7 @@ Json::Value ObManifestSnapshot::to_json() const
   return root;
 }
 
-RC ObManifestSnapshot::from_json(const Json::Value &v)
+RC ObManifestSnapshot::from_json(const Json::Value& v)
 {
   if (!v.isMember("seq") || !v.isMember("sstable_id") || !v.isMember("compaction_type") || !v.isMember("sstables")) {
     return RC::JSON_MEMBER_MISSING;
@@ -146,9 +146,9 @@ RC ObManifestSnapshot::from_json(const Json::Value &v)
   sstable_id      = v["sstable_id"].asUInt64();
   compaction_type = static_cast<CompactionType>(v["compaction_type"].asInt());
   sstables.clear();
-  for (const auto &level_json : v["sstables"]) {
+  for (const auto& level_json : v["sstables"]) {
     std::vector<uint64_t> level;
-    for (const auto &sst_id_json : level_json) {
+    for (const auto& sst_id_json : level_json) {
       level.push_back(sst_id_json.asUInt64());
     }
     sstables.push_back(level);
@@ -164,7 +164,7 @@ Json::Value ObManifestNewMemtable::to_json() const
   return root;
 }
 
-RC ObManifestNewMemtable::from_json(const Json::Value &v)
+RC ObManifestNewMemtable::from_json(const Json::Value& v)
 {
   if (!v.isMember("memtable_id")) {
     return RC::JSON_MEMBER_MISSING;
@@ -237,8 +237,8 @@ RC ObManifest::open()
   return RC::SUCCESS;
 }
 
-RC ObManifest::recover(std::unique_ptr<ObManifestSnapshot> &snapshot_record,
-    std::unique_ptr<ObManifestNewMemtable> &memtbale_record, std::vector<ObManifestCompaction> &records)
+RC ObManifest::recover(std::unique_ptr<ObManifestSnapshot>& snapshot_record,
+    std::unique_ptr<ObManifestNewMemtable>& memtbale_record, std::vector<ObManifestCompaction>& records)
 {
   size_t               len       = 0;
   uint32_t             pos       = 0;
@@ -301,7 +301,7 @@ RC ObManifest::recover(std::unique_ptr<ObManifestSnapshot> &snapshot_record,
   return rc;
 }
 
-RC ObManifest::redirect(const ObManifestSnapshot &snapshot, const ObManifestNewMemtable &memtable)
+RC ObManifest::redirect(const ObManifestSnapshot& snapshot, const ObManifestNewMemtable& memtable)
 {
 
   auto   prev_mf_file = get_manifest_file_path(path_, mf_seq_++);

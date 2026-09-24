@@ -34,14 +34,14 @@ public:
   /**
    * 将页面加入buffer，并且写入磁盘中的共享表空间
    */
-  virtual RC add_page(DiskBufferPool *bp, PageNum page_num, Page &page) = 0;
+  virtual RC add_page(DiskBufferPool* bp, PageNum page_num, Page& page) = 0;
 
-  virtual RC read_page(DiskBufferPool *bp, PageNum page_num, Page &page) = 0;
+  virtual RC read_page(DiskBufferPool* bp, PageNum page_num, Page& page) = 0;
 
   /**
    * @brief 清空所有与指定buffer pool关联的页面
    */
-  virtual RC clear_pages(DiskBufferPool *bp) = 0;
+  virtual RC clear_pages(DiskBufferPool* bp) = 0;
 };
 
 struct DoubleWriteBufferHeader
@@ -57,18 +57,14 @@ struct DoubleWritePageKey
   int32_t buffer_pool_id;
   PageNum page_num;
 
-  bool operator==(const DoubleWritePageKey &other) const
-  {
-    return buffer_pool_id == other.buffer_pool_id && page_num == other.page_num;
-  }
+  bool operator==(const DoubleWritePageKey& other) const
+  { return buffer_pool_id == other.buffer_pool_id && page_num == other.page_num; }
 };
 
 struct DoubleWritePageKeyHash
 {
-  size_t operator()(const DoubleWritePageKey &key) const
-  {
-    return hash<int32_t>()(key.buffer_pool_id) ^ hash<PageNum>()(key.page_num);
-  }
+  size_t operator()(const DoubleWritePageKey& key) const
+  { return hash<int32_t>()(key.buffer_pool_id) ^ hash<PageNum>()(key.page_num); }
 };
 
 /**
@@ -92,13 +88,13 @@ public:
    * @param bp_manager 关联的buffer pool manager
    * @param max_pages  内存中保存的最大页面数
    */
-  DiskDoubleWriteBuffer(BufferPoolManager &bp_manager, int max_pages = 16);
+  DiskDoubleWriteBuffer(BufferPoolManager& bp_manager, int max_pages = 16);
   virtual ~DiskDoubleWriteBuffer();
 
   /**
    * 打开磁盘中的共享表空间文件
    */
-  RC open_file(const char *filename);
+  RC open_file(const char* filename);
 
   /**
    * 将buffer中的页全部写入磁盘，并且清空buffer
@@ -109,14 +105,14 @@ public:
   /**
    * 将页面加入buffer，并且写入磁盘中的共享表空间
    */
-  RC add_page(DiskBufferPool *bp, PageNum page_num, Page &page) override;
+  RC add_page(DiskBufferPool* bp, PageNum page_num, Page& page) override;
 
-  RC read_page(DiskBufferPool *bp, PageNum page_num, Page &page) override;
+  RC read_page(DiskBufferPool* bp, PageNum page_num, Page& page) override;
 
   /**
    * @brief 清空所有与指定buffer pool关联的页面
    */
-  RC clear_pages(DiskBufferPool *bp) override;
+  RC clear_pages(DiskBufferPool* bp) override;
 
   /**
    * 将共享表空间的页读入buffer
@@ -127,14 +123,14 @@ private:
   /**
    * 将buffer中的页面写入对应的磁盘
    */
-  RC write_page(DoubleWritePage *page);
+  RC write_page(DoubleWritePage* page);
 
   /**
    * 将页面写到当前double write buffer文件中
    * @details 每次页面更新都应该写入到磁盘中。保证double write buffer
    * 内存和文件中的数据都是最新的。
    */
-  RC write_page_internal(DoubleWritePage *page);
+  RC write_page_internal(DoubleWritePage* page);
 
   /**
    * @brief 将磁盘文件中的内容加载到内存中。在启动时调用
@@ -145,10 +141,10 @@ private:
   int                     file_desc_ = -1;
   int                     max_pages_ = 0;
   common::Mutex           lock_;
-  BufferPoolManager      &bp_manager_;
+  BufferPoolManager&      bp_manager_;
   DoubleWriteBufferHeader header_;
 
-  unordered_map<DoubleWritePageKey, DoubleWritePage *, DoubleWritePageKeyHash> dblwr_pages_;
+  unordered_map<DoubleWritePageKey, DoubleWritePage*, DoubleWritePageKeyHash> dblwr_pages_;
 };
 
 class VacuousDoubleWriteBuffer : public DoubleWriteBuffer
@@ -159,12 +155,12 @@ public:
   /**
    * 将页面加入buffer，并且写入磁盘中的共享表空间
    */
-  RC add_page(DiskBufferPool *bp, PageNum page_num, Page &page) override;
+  RC add_page(DiskBufferPool* bp, PageNum page_num, Page& page) override;
 
-  RC read_page(DiskBufferPool *bp, PageNum page_num, Page &page) override { return RC::BUFFERPOOL_INVALID_PAGE_NUM; }
+  RC read_page(DiskBufferPool* bp, PageNum page_num, Page& page) override { return RC::BUFFERPOOL_INVALID_PAGE_NUM; }
 
   /**
    * @brief 清空所有与指定buffer pool关联的页面
    */
-  RC clear_pages(DiskBufferPool *bp) override { return RC::SUCCESS; }
+  RC clear_pages(DiskBufferPool* bp) override { return RC::SUCCESS; }
 };

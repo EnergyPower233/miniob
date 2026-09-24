@@ -30,9 +30,9 @@ public:
   HelpExecutor()          = default;
   virtual ~HelpExecutor() = default;
 
-  RC execute(SQLStageEvent *sql_event)
+  RC execute(SQLStageEvent* sql_event)
   {
-    const char *strings[] = {"show tables;",
+    const char* strings[] = {"show tables;",
         "desc `table name`;",
         "create table `table name` (`column name` `column type`, ...);",
         "create index `index name` on `table` (`column`);",
@@ -46,7 +46,7 @@ public:
       oper->append(strings[i]);
     }
 
-    SqlResult *sql_result = sql_event->session_event()->sql_result();
+    SqlResult* sql_result = sql_event->session_event()->sql_result();
 
     TupleSchema schema;
     schema.append_cell("Commands");

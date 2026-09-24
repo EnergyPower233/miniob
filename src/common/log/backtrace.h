@@ -18,6 +18,6 @@ namespace common {
 
 int backtrace_init();
 
-const char *lbt();
+const char* lbt();
 
 }  // namespace common

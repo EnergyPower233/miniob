@@ -27,77 +27,77 @@ public:
 
   virtual ~ProcessParam() {}
 
-  void init_default(string &process_name);
+  void init_default(string& process_name);
 
-  const string &get_std_out() const { return std_out_; }
+  const string& get_std_out() const { return std_out_; }
 
-  void set_std_out(const string &std_out) { ProcessParam::std_out_ = std_out; }
+  void set_std_out(const string& std_out) { ProcessParam::std_out_ = std_out; }
 
-  const string &get_std_err() const { return std_err_; }
+  const string& get_std_err() const { return std_err_; }
 
-  void set_std_err(const string &std_err) { ProcessParam::std_err_ = std_err; }
+  void set_std_err(const string& std_err) { ProcessParam::std_err_ = std_err; }
 
-  const string &get_conf() const { return conf; }
+  const string& get_conf() const { return conf; }
 
-  void set_conf(const string &conf) { ProcessParam::conf = conf; }
+  void set_conf(const string& conf) { ProcessParam::conf = conf; }
 
-  const string &get_process_name() const { return process_name_; }
+  const string& get_process_name() const { return process_name_; }
 
-  void set_process_name(const string &processName) { ProcessParam::process_name_ = processName; }
+  void set_process_name(const string& processName) { ProcessParam::process_name_ = processName; }
 
   bool is_demon() const { return demon; }
 
   void set_demon(bool demon) { ProcessParam::demon = demon; }
 
-  const vector<string> &get_args() const { return args; }
+  const vector<string>& get_args() const { return args; }
 
-  void set_args(const vector<string> &args) { ProcessParam::args = args; }
+  void set_args(const vector<string>& args) { ProcessParam::args = args; }
 
   void set_server_port(int port) { server_port_ = port; }
 
   int get_server_port() const { return server_port_; }
 
-  void set_unix_socket_path(const char *unix_socket_path) { unix_socket_path_ = unix_socket_path; }
+  void set_unix_socket_path(const char* unix_socket_path) { unix_socket_path_ = unix_socket_path; }
 
-  const string &get_unix_socket_path() const { return unix_socket_path_; }
+  const string& get_unix_socket_path() const { return unix_socket_path_; }
 
-  void set_protocol(const char *protocol) { protocol_ = protocol; }
+  void set_protocol(const char* protocol) { protocol_ = protocol; }
 
-  const string &get_protocol() const { return protocol_; }
+  const string& get_protocol() const { return protocol_; }
 
-  void set_trx_kit_name(const char *kit_name)
+  void set_trx_kit_name(const char* kit_name)
   {
     if (kit_name) {
       trx_kit_name_ = kit_name;
     }
   }
 
-  const string &trx_kit_name() const { return trx_kit_name_; }
+  const string& trx_kit_name() const { return trx_kit_name_; }
 
-  void set_storage_engine(const char *storage_engine)
+  void set_storage_engine(const char* storage_engine)
   {
     if (storage_engine) {
       storage_engine_ = storage_engine;
     }
   }
 
-  const string &storage_engine() const { return storage_engine_; }
+  const string& storage_engine() const { return storage_engine_; }
 
-  void set_thread_handling_name(const char *thread_handling_name)
+  void set_thread_handling_name(const char* thread_handling_name)
   {
     if (thread_handling_name) {
       thread_handling_name_ = thread_handling_name;
     }
   }
 
-  const string &thread_handling_name() const { return thread_handling_name_; }
+  const string& thread_handling_name() const { return thread_handling_name_; }
 
   void set_buffer_pool_memory_size(int bytes) { buffer_pool_memory_size_ = bytes; }
 
   int buffer_pool_memory_size() const { return buffer_pool_memory_size_; }
 
-  void          set_durability_mode(const char *mode) { durability_mode_ = mode; }
-  const string &durability_mode() const { return durability_mode_; }
+  void          set_durability_mode(const char* mode) { durability_mode_ = mode; }
+  const string& durability_mode() const { return durability_mode_; }
 
 private:
   string         std_out_;           // The output file
@@ -116,6 +116,6 @@ private:
   string         durability_mode_;
 };
 
-ProcessParam *&the_process_param();
+ProcessParam*& the_process_param();
 
 }  // namespace common

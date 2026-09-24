@@ -15,16 +15,16 @@ See the Mulan PSL v2 for more details. */
 
 using namespace std;
 
-ProjectVecPhysicalOperator::ProjectVecPhysicalOperator(vector<unique_ptr<Expression>> &&expressions)
+ProjectVecPhysicalOperator::ProjectVecPhysicalOperator(vector<unique_ptr<Expression>>&& expressions)
     : expressions_(std::move(expressions))
 {
   int expr_pos = 0;
-  for (auto &expr : expressions_) {
+  for (auto& expr : expressions_) {
     chunk_.add_column(make_unique<Column>(expr->value_type(), expr->value_length()), expr_pos);
     expr_pos++;
   }
 }
-RC ProjectVecPhysicalOperator::open(Trx *trx)
+RC ProjectVecPhysicalOperator::open(Trx* trx)
 {
   if (children_.empty()) {
     return RC::SUCCESS;
@@ -38,7 +38,7 @@ RC ProjectVecPhysicalOperator::open(Trx *trx)
   return RC::SUCCESS;
 }
 
-RC ProjectVecPhysicalOperator::next(Chunk &chunk)
+RC ProjectVecPhysicalOperator::next(Chunk& chunk)
 {
   if (children_.empty()) {
     return RC::RECORD_EOF;
@@ -64,9 +64,9 @@ RC ProjectVecPhysicalOperator::close()
   return RC::SUCCESS;
 }
 
-RC ProjectVecPhysicalOperator::tuple_schema(TupleSchema &schema) const
+RC ProjectVecPhysicalOperator::tuple_schema(TupleSchema& schema) const
 {
-  for (const unique_ptr<Expression> &expression : expressions_) {
+  for (const unique_ptr<Expression>& expression : expressions_) {
     schema.append_cell(expression->name());
   }
   return RC::SUCCESS;

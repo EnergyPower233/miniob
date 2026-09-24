@@ -15,12 +15,12 @@ See the Mulan PSL v2 for more details. */
 class DISABLED_ArithmeticBenchmark : public benchmark::Fixture
 {
 public:
-  void SetUp(const ::benchmark::State &state) override
+  void SetUp(const ::benchmark::State& state) override
   {
     int size = state.range(0);
-    left_    = (float *)malloc(size * sizeof(float));
-    right_   = (float *)malloc(size * sizeof(float));
-    result_  = (float *)malloc(size * sizeof(float));
+    left_    = (float*)malloc(size * sizeof(float));
+    right_   = (float*)malloc(size * sizeof(float));
+    result_  = (float*)malloc(size * sizeof(float));
 
     for (int i = 0; i < size; ++i) {
       left_[i]   = 1.0f;
@@ -29,7 +29,7 @@ public:
     }
   }
 
-  void TearDown(const ::benchmark::State &state) override
+  void TearDown(const ::benchmark::State& state) override
   {
     free(left_);
     left_ = nullptr;
@@ -40,12 +40,12 @@ public:
   }
 
 protected:
-  float *left_   = nullptr;
-  float *right_  = nullptr;
-  float *result_ = nullptr;
+  float* left_   = nullptr;
+  float* right_  = nullptr;
+  float* result_ = nullptr;
 };
 
-BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Add)(benchmark::State &state)
+BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Add)(benchmark::State& state)
 {
   for (auto _ : state) {
     binary_operator<false, false, float, AddOperator>(left_, right_, result_, state.range(0));
@@ -54,7 +54,7 @@ BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Add)(benchmark::State &state)
 
 BENCHMARK_REGISTER_F(DISABLED_ArithmeticBenchmark, Add)->Arg(10)->Arg(1000)->Arg(10000);
 
-BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Sub)(benchmark::State &state)
+BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Sub)(benchmark::State& state)
 {
   for (auto _ : state) {
     binary_operator<false, false, float, SubtractOperator>(left_, right_, result_, state.range(0));
@@ -64,7 +64,7 @@ BENCHMARK_DEFINE_F(DISABLED_ArithmeticBenchmark, Sub)(benchmark::State &state)
 BENCHMARK_REGISTER_F(DISABLED_ArithmeticBenchmark, Sub)->Arg(10)->Arg(1000)->Arg(10000);
 
 #ifdef USE_SIMD
-static void DISABLED_benchmark_sum_simd(benchmark::State &state)
+static void DISABLED_benchmark_sum_simd(benchmark::State& state)
 {
   int              size = state.range(0);
   std::vector<int> data(state.range(0), 1);
@@ -76,7 +76,7 @@ static void DISABLED_benchmark_sum_simd(benchmark::State &state)
 BENCHMARK(DISABLED_benchmark_sum_simd)->RangeMultiplier(2)->Range(1 << 10, 1 << 12);
 #endif
 
-static int sum_scalar(const int *data, int size)
+static int sum_scalar(const int* data, int size)
 {
   int sum = 0;
   for (int i = 0; i < size; i++) {
@@ -85,7 +85,7 @@ static int sum_scalar(const int *data, int size)
   return sum;
 }
 
-static void DISABLED_benchmark_sum_scalar(benchmark::State &state)
+static void DISABLED_benchmark_sum_scalar(benchmark::State& state)
 {
   int              size = state.range(0);
   std::vector<int> data(size, 1);

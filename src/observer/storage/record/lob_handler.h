@@ -27,15 +27,15 @@ public:
 
   ~LobFileHandler() { close_file(); }
 
-  RC create_file(const char *file_name);
+  RC create_file(const char* file_name);
 
-  RC open_file(const char *file_name);
+  RC open_file(const char* file_name);
 
   RC close_file() { return file_.close_file(); }
 
-  RC insert_data(int64_t &offset, int64_t length, const char *data);
+  RC insert_data(int64_t& offset, int64_t length, const char* data);
 
-  RC get_data(int64_t offset, int64_t length, char *data) { return file_.read_at(offset, length, data); }
+  RC get_data(int64_t offset, int64_t length, char* data) { return file_.read_at(offset, length, data); }
 
 private:
   PersistHandler file_;

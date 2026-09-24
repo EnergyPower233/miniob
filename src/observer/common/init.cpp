@@ -33,10 +33,10 @@ See the Mulan PSL v2 for more details. */
 
 using namespace common;
 
-bool *&_get_init()
+bool*& _get_init()
 {
   static bool  util_init   = false;
-  static bool *util_init_p = &util_init;
+  static bool* util_init_p = &util_init;
   return util_init_p;
 }
 
@@ -52,9 +52,9 @@ void sig_handler(int sig)
   LOG_INFO("Receive one signal of %d.", sig);
 }
 
-int init_log(ProcessParam *process_cfg, Ini &properties)
+int init_log(ProcessParam* process_cfg, Ini& properties)
 {
-  const string &proc_name = process_cfg->get_process_name();
+  const string& proc_name = process_cfg->get_process_name();
   try {
     // we had better alloc one lock to do so, but simplify the logic
     if (g_log) {
@@ -113,7 +113,7 @@ int init_log(ProcessParam *process_cfg, Ini &properties)
     }
 
     return 0;
-  } catch (exception &e) {
+  } catch (exception& e) {
     cerr << "Failed to init log for " << proc_name << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
     return errno;
   }
@@ -130,21 +130,18 @@ void cleanup_log()
   }
 }
 
-int prepare_init_seda()
-{
-  return 0;
-}
+int prepare_init_seda() { return 0; }
 
-int init_global_objects(ProcessParam *process_param, Ini &properties)
+int init_global_objects(ProcessParam* process_param, Ini& properties)
 {
   GCTX.handler_ = new DefaultHandler();
 
   int ret = 0;
 
-  RC rc = GCTX.handler_->init("miniob", 
-                              process_param->trx_kit_name().c_str(),
-                              process_param->durability_mode().c_str(),
-                              process_param->storage_engine().c_str());
+  RC rc = GCTX.handler_->init("miniob",
+      process_param->trx_kit_name().c_str(),
+      process_param->durability_mode().c_str(),
+      process_param->storage_engine().c_str());
   if (OB_FAIL(rc)) {
     LOG_ERROR("failed to init handler. rc=%s", strrc(rc));
     return -1;
@@ -160,7 +157,7 @@ int uninit_global_objects()
   return 0;
 }
 
-int init(ProcessParam *process_param)
+int init(ProcessParam* process_param)
 {
   if (get_init()) {
     return 0;

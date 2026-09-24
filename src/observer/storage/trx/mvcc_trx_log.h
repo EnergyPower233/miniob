@@ -110,18 +110,18 @@ struct MvccTrxCommitLogEntry
 class MvccTrxLogHandler final
 {
 public:
-  MvccTrxLogHandler(LogHandler &log_handler);
+  MvccTrxLogHandler(LogHandler& log_handler);
   ~MvccTrxLogHandler();
 
   /**
    * @brief 记录插入一条记录的日志
    */
-  RC insert_record(int32_t trx_id, Table *table, const RID &rid);
+  RC insert_record(int32_t trx_id, Table* table, const RID& rid);
 
   /**
    * @brief 记录删除一条记录的日志
    */
-  RC delete_record(int32_t trx_id, Table *table, const RID &rid);
+  RC delete_record(int32_t trx_id, Table* table, const RID& rid);
 
   /**
    * @brief 记录提交事务的日志
@@ -136,7 +136,7 @@ public:
   RC rollback(int32_t trx_id);
 
 private:
-  LogHandler &log_handler_;
+  LogHandler& log_handler_;
 };
 
 /**
@@ -146,20 +146,20 @@ private:
 class MvccTrxLogReplayer final : public LogReplayer
 {
 public:
-  MvccTrxLogReplayer(Db &db, MvccTrxKit &trx_kit, LogHandler &log_handler);
+  MvccTrxLogReplayer(Db& db, MvccTrxKit& trx_kit, LogHandler& log_handler);
   virtual ~MvccTrxLogReplayer() = default;
 
   //! @copydoc LogReplayer::replay
-  RC replay(const LogEntry &entry) override;
+  RC replay(const LogEntry& entry) override;
 
   //! @copydoc LogReplayer::on_done
   RC on_done() override;
 
 private:
-  Db         &db_;           ///< 所属数据库
-  MvccTrxKit &trx_kit_;      ///< 事务管理器
-  LogHandler &log_handler_;  ///< 日志处理器
+  Db&         db_;           ///< 所属数据库
+  MvccTrxKit& trx_kit_;      ///< 事务管理器
+  LogHandler& log_handler_;  ///< 日志处理器
 
   ///< 事务ID到事务的映射。在重做结束后，如果还有未提交的事务，需要回滚。
-  unordered_map<int32_t, MvccTrx *> trx_map_;
+  unordered_map<int32_t, MvccTrx*> trx_map_;
 };

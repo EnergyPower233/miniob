@@ -42,9 +42,9 @@ public:
   virtual RC await_stop() override;
 
   //! @copydoc ThreadHandler::new_connection
-  virtual RC new_connection(Communicator *communicator) override;
+  virtual RC new_connection(Communicator* communicator) override;
   //! @copydoc ThreadHandler::close_connection
-  virtual RC close_connection(Communicator *communicator) override;
+  virtual RC close_connection(Communicator* communicator) override;
 
 public:
   /**
@@ -52,7 +52,7 @@ public:
    *
    * @param ag 处理消息回调时的参数，比如libevent的event、连接等
    */
-  void handle_event(EventCallbackAg *ag);
+  void handle_event(EventCallbackAg* ag);
 
   /**
    * @brief libevent监听连接消息事件的回调函数
@@ -61,10 +61,10 @@ public:
   void event_loop_thread();
 
 private:
-  mutex                                  lock_;
-  struct event_base                     *event_base_ = nullptr;  /// libevent 的event_base
-  common::ThreadPoolExecutor             executor_;              /// 线程池
-  map<Communicator *, EventCallbackAg *> event_map_;             /// 每个连接与它关联的数据
+  mutex                                lock_;
+  struct event_base*                   event_base_ = nullptr;  /// libevent 的event_base
+  common::ThreadPoolExecutor           executor_;              /// 线程池
+  map<Communicator*, EventCallbackAg*> event_map_;             /// 每个连接与它关联的数据
 
   SqlTaskHandler sql_task_handler_;  /// SQL请求处理器
 };

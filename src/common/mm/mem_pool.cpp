@@ -57,8 +57,8 @@ void MemPoolItem::cleanup()
   frees.clear();
   this->size = 0;
 
-  for (list<void *>::iterator iter = pools.begin(); iter != pools.end(); iter++) {
-    void *pool = *iter;
+  for (list<void*>::iterator iter = pools.begin(); iter != pools.end(); iter++) {
+    void* pool = *iter;
 
     ::free(pool);
   }
@@ -75,7 +75,7 @@ int MemPoolItem::extend()
   }
 
   MUTEX_LOCK(&this->mutex);
-  void *pool = malloc(static_cast<size_t>(item_num_per_pool) * item_size);
+  void* pool = malloc(static_cast<size_t>(item_num_per_pool) * item_size);
   if (pool == nullptr) {
     MUTEX_UNLOCK(&this->mutex);
     LOG_ERROR("Failed to extend memory pool, this->size:%d, item_num_per_pool:%d, this->name:%s.",
@@ -88,8 +88,8 @@ int MemPoolItem::extend()
   pools.push_back(pool);
   this->size += item_num_per_pool;
   for (int i = 0; i < item_num_per_pool; i++) {
-    char *item = (char *)pool + i * item_size;
-    frees.push_back((void *)item);
+    char* item = (char*)pool + i * item_size;
+    frees.push_back((void*)item);
   }
   MUTEX_UNLOCK(&this->mutex);
 
@@ -101,7 +101,7 @@ int MemPoolItem::extend()
   return 0;
 }
 
-void *MemPoolItem::alloc()
+void* MemPoolItem::alloc()
 {
   MUTEX_LOCK(&this->mutex);
   if (frees.empty() == true) {
@@ -115,7 +115,7 @@ void *MemPoolItem::alloc()
       return nullptr;
     }
   }
-  void *buffer = frees.front();
+  void* buffer = frees.front();
   frees.pop_front();
 
   used.insert(buffer);
@@ -128,12 +128,12 @@ void *MemPoolItem::alloc()
 
 MemPoolItem::item_unique_ptr MemPoolItem::alloc_unique_ptr()
 {
-  void *item    = this->alloc();
-  auto  deleter = [this](void *p) { this->free(p); };
+  void* item    = this->alloc();
+  auto  deleter = [this](void* p) { this->free(p); };
   return MemPoolItem::item_unique_ptr(item, deleter);
 }
 
-void MemPoolItem::free(void *buf)
+void MemPoolItem::free(void* buf)
 {
   MUTEX_LOCK(&this->mutex);
 

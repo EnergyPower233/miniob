@@ -35,10 +35,10 @@ public:
   LogFileReader()  = default;
   ~LogFileReader() = default;
 
-  RC open(const char *filename);
+  RC open(const char* filename);
   RC close();
 
-  RC iterate(function<RC(LogEntry &)> callback, LSN start_lsn = 0);
+  RC iterate(function<RC(LogEntry&)> callback, LSN start_lsn = 0);
 
 private:
   /**
@@ -68,13 +68,13 @@ public:
    * @param filename 日志文件名
    * @param end_lsn 当前日志文件允许的最大LSN（包含）
    */
-  RC open(const char *filename, int end_lsn);
+  RC open(const char* filename, int end_lsn);
 
   /// @brief 关闭当前文件
   RC close();
 
   /// @brief 写入一条日志
-  RC write(LogEntry &entry);
+  RC write(LogEntry& entry);
 
   /**
    * @brief 当前文件是否已经打开
@@ -88,7 +88,7 @@ public:
 
   string to_string() const;
 
-  const char *filename() const { return filename_.c_str(); }
+  const char* filename() const { return filename_.c_str(); }
 
 private:
   string filename_;       /// 日志文件名
@@ -115,7 +115,7 @@ public:
    * @param directory 日志文件目录
    * @param max_entry_number_per_file 一个文件最多存储多少条日志
    */
-  RC init(const char *directory, int max_entry_number_per_file);
+  RC init(const char* directory, int max_entry_number_per_file);
 
   /**
    * @brief 列出所有的日志文件，第一个日志文件包含大于等于start_lsn最小的日志
@@ -123,30 +123,30 @@ public:
    * @param files 满足条件的所有日志文件名
    * @param start_lsn 想要查找的日志的最小LSN
    */
-  RC list_files(vector<string> &files, LSN start_lsn);
+  RC list_files(vector<string>& files, LSN start_lsn);
 
   /**
    * @brief 获取最新的一个日志文件名
    * @details 如果当前有文件就获取最后一个日志文件，否则创建一个日志文件，也就是第一个日志文件
    */
-  RC last_file(LogFileWriter &file_writer);
+  RC last_file(LogFileWriter& file_writer);
 
   /**
    * @brief 获取一个新的日志文件名
    * @details 获取下一个日志文件名。通常是上一个日志文件写满了，通过这个接口生成下一个日志文件
    */
-  RC next_file(LogFileWriter &file_writer);
+  RC next_file(LogFileWriter& file_writer);
 
 private:
   /**
    * @brief 从文件名称中获取LSN
    * @details 如果日志文件名不符合要求，就返回失败
    */
-  static RC get_lsn_from_filename(const string &filename, LSN &lsn);
+  static RC get_lsn_from_filename(const string& filename, LSN& lsn);
 
 private:
-  static constexpr const char *file_prefix_ = "clog_";
-  static constexpr const char *file_suffix_ = ".log";
+  static constexpr const char* file_prefix_ = "clog_";
+  static constexpr const char* file_suffix_ = ".log";
 
   filesystem::path directory_;                  /// 日志文件存放的目录
   int              max_entry_number_per_file_;  /// 一个文件最大允许存放多少条日志

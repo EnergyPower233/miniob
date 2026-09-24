@@ -38,7 +38,7 @@ public:
   Id      id() const { return id_; }
   int32_t index() const { return static_cast<int32_t>(id_); }
 
-  const char *name() const
+  const char* name() const
   {
     switch (id_) {
       case Id::BUFFER_POOL: return "BUFFER_POOL";

@@ -18,7 +18,7 @@ See the Mulan PSL v2 for more details. */
 #include "sql/operator/logical_operator.h"
 #include "sql/operator/table_get_logical_operator.h"
 
-RC PredicatePushdownRewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made)
+RC PredicatePushdownRewriter::rewrite(unique_ptr<LogicalOperator>& oper, bool& change_made)
 {
   RC rc = RC::SUCCESS;
   if (oper->type() != LogicalOperatorType::PREDICATE) {
@@ -29,19 +29,19 @@ RC PredicatePushdownRewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &c
     return rc;
   }
 
-  unique_ptr<LogicalOperator> &child_oper = oper->children().front();
+  unique_ptr<LogicalOperator>& child_oper = oper->children().front();
   if (child_oper->type() != LogicalOperatorType::TABLE_GET) {
     return rc;
   }
 
-  auto table_get_oper = static_cast<TableGetLogicalOperator *>(child_oper.get());
+  auto table_get_oper = static_cast<TableGetLogicalOperator*>(child_oper.get());
 
-  vector<unique_ptr<Expression>> &predicate_oper_exprs = oper->expressions();
+  vector<unique_ptr<Expression>>& predicate_oper_exprs = oper->expressions();
   if (predicate_oper_exprs.size() != 1) {
     return rc;
   }
 
-  unique_ptr<Expression>             &predicate_expr = predicate_oper_exprs.front();
+  unique_ptr<Expression>&        predicate_expr = predicate_oper_exprs.front();
   vector<unique_ptr<Expression>> pushdown_exprs;
   rc = get_exprs_can_pushdown(predicate_expr, pushdown_exprs);
   if (rc != RC::SUCCESS) {
@@ -65,7 +65,7 @@ RC PredicatePushdownRewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &c
   return rc;
 }
 
-bool PredicatePushdownRewriter::is_empty_predicate(unique_ptr<Expression> &expr)
+bool PredicatePushdownRewriter::is_empty_predicate(unique_ptr<Expression>& expr)
 {
   bool bool_ret = false;
   if (!expr) {
@@ -73,7 +73,7 @@ bool PredicatePushdownRewriter::is_empty_predicate(unique_ptr<Expression> &expr)
   }
 
   if (expr->type() == ExprType::CONJUNCTION) {
-    ConjunctionExpr *conjunction_expr = static_cast<ConjunctionExpr *>(expr.get());
+    ConjunctionExpr* conjunction_expr = static_cast<ConjunctionExpr*>(expr.get());
     if (conjunction_expr->children().empty()) {
       bool_ret = true;
     }
@@ -89,11 +89,11 @@ bool PredicatePushdownRewriter::is_empty_predicate(unique_ptr<Expression> &expr)
  *                       pushdown_exprs 只会增加，不要做清理操作
  */
 RC PredicatePushdownRewriter::get_exprs_can_pushdown(
-    unique_ptr<Expression> &expr, vector<unique_ptr<Expression>> &pushdown_exprs)
+    unique_ptr<Expression>& expr, vector<unique_ptr<Expression>>& pushdown_exprs)
 {
   RC rc = RC::SUCCESS;
   if (expr->type() == ExprType::CONJUNCTION) {
-    ConjunctionExpr *conjunction_expr = static_cast<ConjunctionExpr *>(expr.get());
+    ConjunctionExpr* conjunction_expr = static_cast<ConjunctionExpr*>(expr.get());
     // 或 操作的比较，太复杂，现在不考虑
     if (conjunction_expr->conjunction_type() == ConjunctionExpr::Type::OR) {
       LOG_WARN("unsupported or operation");
@@ -101,7 +101,7 @@ RC PredicatePushdownRewriter::get_exprs_can_pushdown(
       return rc;
     }
 
-    vector<unique_ptr<Expression>> &child_exprs = conjunction_expr->children();
+    vector<unique_ptr<Expression>>& child_exprs = conjunction_expr->children();
     for (auto iter = child_exprs.begin(); iter != child_exprs.end();) {
       // 对每个子表达式，判断是否可以下放到table get 算子
       // 如果可以的话，就从当前孩子节点中删除他

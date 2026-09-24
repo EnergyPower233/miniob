@@ -44,9 +44,9 @@ TEST(BplusTreeLogEntry, init_header_page_log_entry)
 
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  InitHeaderPageLogEntryHandler *init_header_page_entry2 = dynamic_cast<InitHeaderPageLogEntryHandler *>(handler.get());
+  InitHeaderPageLogEntryHandler* init_header_page_entry2 = dynamic_cast<InitHeaderPageLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, init_header_page_entry2);
-  const IndexFileHeader &file_header2 = init_header_page_entry2->file_header();
+  const IndexFileHeader& file_header2 = init_header_page_entry2->file_header();
   ASSERT_EQ(file_header.root_page, file_header2.root_page);
   ASSERT_EQ(file_header.internal_max_size, file_header2.internal_max_size);
   ASSERT_EQ(file_header.leaf_max_size, file_header2.leaf_max_size);
@@ -71,7 +71,7 @@ TEST(BplusTreeLogEntry, update_root_page_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  UpdateRootPageLogEntryHandler *entry2 = dynamic_cast<UpdateRootPageLogEntryHandler *>(handler.get());
+  UpdateRootPageLogEntryHandler* entry2 = dynamic_cast<UpdateRootPageLogEntryHandler*>(handler.get());
   ASSERT_EQ(root_page_num, entry2->root_page_num());
 }
 
@@ -91,7 +91,7 @@ TEST(BplusTreeLogEntry, set_parent_page_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  SetParentPageLogEntryHandler *entry2 = dynamic_cast<SetParentPageLogEntryHandler *>(handler.get());
+  SetParentPageLogEntryHandler* entry2 = dynamic_cast<SetParentPageLogEntryHandler*>(handler.get());
   ASSERT_EQ(parent_page_num, entry2->parent_page_num());
 }
 
@@ -113,7 +113,7 @@ TEST(BplusTreeLogEntry, normal_operation_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<NormalOperationLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<NormalOperationLogEntryHandler*>(handler.get());
   ASSERT_EQ(operation.type(), entry2->operation_type().type());
   ASSERT_EQ(insert_index, entry2->index());
   ASSERT_EQ(item_num, entry2->item_num());
@@ -135,7 +135,7 @@ TEST(BplusTreeLogEntry, leaf_init_empty_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<LeafInitEmptyLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<LeafInitEmptyLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, entry2);
 }
 
@@ -155,7 +155,7 @@ TEST(BplusTreeLogEntry, leaf_set_next_page_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<LeafSetNextPageLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<LeafSetNextPageLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, entry2);
   ASSERT_EQ(next_page_num, entry2->new_page_num());
 }
@@ -174,7 +174,7 @@ TEST(BplusTreeLogEntry, internal_init_empty_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<InternalInitEmptyLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<InternalInitEmptyLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, entry2);
 }
 
@@ -195,7 +195,7 @@ TEST(BplusTreeLogEntry, internal_create_new_root_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<InternalCreateNewRootLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<InternalCreateNewRootLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, entry2);
   ASSERT_EQ(first_page_num, entry2->first_page_num());
   ASSERT_EQ(page_num, entry2->page_num());
@@ -220,14 +220,14 @@ TEST(BplusTreeLogEntry, internal_update_key_log_entry)
   unique_ptr<LogEntryHandler> handler;
   ASSERT_EQ(RC::SUCCESS, LogEntryHandler::from_buffer(deserializer, handler));
 
-  auto entry2 = dynamic_cast<InternalUpdateKeyLogEntryHandler *>(handler.get());
+  auto entry2 = dynamic_cast<InternalUpdateKeyLogEntryHandler*>(handler.get());
   ASSERT_NE(nullptr, entry2);
   ASSERT_EQ(update_index, entry2->index());
   ASSERT_EQ(key.size(), entry2->key_bytes());
   ASSERT_EQ(0, memcmp(key.data(), entry2->key(), key.size()));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

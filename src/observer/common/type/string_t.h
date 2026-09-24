@@ -24,11 +24,11 @@ public:
 
   explicit string_t(uint32_t len) { value.inlined.length = len; }
 
-  string_t(const char *data, uint32_t len) { init(data, len); }
+  string_t(const char* data, uint32_t len) { init(data, len); }
 
   ~string_t() { reset(); }
 
-  void init(const char *data, uint32_t len)
+  void init(const char* data, uint32_t len)
   {
     value.inlined.length = len;
     if (is_inlined()) {
@@ -38,7 +38,7 @@ public:
       }
       memcpy(value.inlined.inlined, data, size());
     } else {
-      value.pointer.ptr = (char *)data;
+      value.pointer.ptr = (char*)data;
     }
   }
 
@@ -52,14 +52,14 @@ public:
     value.inlined.length = 0;
   }
 
-  string_t(const char *data) : string_t(data, strlen(data)) {}
-  string_t(const string &value) : string_t(value.c_str(), value.size()) {}
+  string_t(const char* data) : string_t(data, strlen(data)) {}
+  string_t(const string& value) : string_t(value.c_str(), value.size()) {}
 
   bool is_inlined() const { return size() <= INLINE_LENGTH; }
 
-  const char *data() const { return is_inlined() ? value.inlined.inlined : value.pointer.ptr; }
+  const char* data() const { return is_inlined() ? value.inlined.inlined : value.pointer.ptr; }
 
-  char *get_data_writeable() const { return is_inlined() ? (char *)value.inlined.inlined : value.pointer.ptr; }
+  char* get_data_writeable() const { return is_inlined() ? (char*)value.inlined.inlined : value.pointer.ptr; }
 
   int size() const { return value.inlined.length; }
 
@@ -67,7 +67,7 @@ public:
 
   string get_string() const { return string(data(), size()); }
 
-  bool operator==(const string_t &r) const
+  bool operator==(const string_t& r) const
   {
     if (this->size() != r.size()) {
       return false;
@@ -75,9 +75,9 @@ public:
     return (memcmp(this->data(), r.data(), this->size()) == 0);
   }
 
-  bool operator!=(const string_t &r) const { return !(*this == r); }
+  bool operator!=(const string_t& r) const { return !(*this == r); }
 
-  bool operator>(const string_t &r) const
+  bool operator>(const string_t& r) const
   {
     const uint32_t left_length  = this->size();
     const uint32_t right_length = r.size();
@@ -86,7 +86,7 @@ public:
     auto memcmp_res = memcmp(this->data(), r.data(), min_length);
     return memcmp_res > 0 || (memcmp_res == 0 && left_length > right_length);
   }
-  bool operator<(const string_t &r) const { return r > *this; }
+  bool operator<(const string_t& r) const { return r > *this; }
 
   struct Inlined
   {
@@ -98,7 +98,7 @@ public:
     struct
     {
       uint32_t length;
-      char    *ptr;
+      char*    ptr;
     } pointer;
     Inlined inlined;
   } value;

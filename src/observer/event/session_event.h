@@ -28,20 +28,20 @@ class Communicator;
 class SessionEvent
 {
 public:
-  SessionEvent(Communicator *client);
+  SessionEvent(Communicator* client);
   virtual ~SessionEvent();
 
-  Communicator *get_communicator() const;
-  Session      *session() const;
+  Communicator* get_communicator() const;
+  Session*      session() const;
 
-  void set_query(const string &query) { query_ = query; }
+  void set_query(const string& query) { query_ = query; }
 
-  const string &query() const { return query_; }
-  SqlResult    *sql_result() { return &sql_result_; }
-  SqlDebug     &sql_debug() { return sql_debug_; }
+  const string& query() const { return query_; }
+  SqlResult*    sql_result() { return &sql_result_; }
+  SqlDebug&     sql_debug() { return sql_debug_; }
 
 private:
-  Communicator *communicator_ = nullptr;  ///< 与客户端通讯的对象
+  Communicator* communicator_ = nullptr;  ///< 与客户端通讯的对象
   SqlResult     sql_result_;              ///< SQL执行结果
   SqlDebug      sql_debug_;               ///< SQL调试信息
   string        query_;                   ///< SQL语句

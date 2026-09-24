@@ -33,7 +33,7 @@ public:
 
   virtual string Name() const = 0;
 
-  virtual void SetUp(const State &state)
+  virtual void SetUp(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -49,7 +49,7 @@ public:
              this->Name().c_str(), state.threads(), state.thread_index());
   }
 
-  virtual void TearDown(const State &state)
+  virtual void TearDown(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -73,7 +73,7 @@ public:
     }
   }
 
-  uint32_t GetRangeMax(const State &state) const
+  uint32_t GetRangeMax(const State& state) const
   {
     uint32_t max = static_cast<uint32_t>(state.range(0) * 3);
     if (max <= 0) {
@@ -101,7 +101,7 @@ public:
   }
 
 protected:
-  oceanbase::ObLsm *oblsm_ = nullptr;
+  oceanbase::ObLsm* oblsm_ = nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ struct DISABLED_MixtureBenchmark : public BenchmarkBase
   string Name() const override { return "mixture"; }
 };
 
-BENCHMARK_DEFINE_F(DISABLED_MixtureBenchmark, Mixture)(State &state)
+BENCHMARK_DEFINE_F(DISABLED_MixtureBenchmark, Mixture)(State& state)
 {
   pair<uint32_t, uint32_t> insert_range{GetRangeMax(state) + 1, GetRangeMax(state) * 2};
   pair<uint32_t, uint32_t> scan_range{1, 100};

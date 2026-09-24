@@ -18,9 +18,7 @@ See the Mulan PSL v2 for more details. */
 namespace common {
 
 TimeoutInfo::TimeoutInfo(time_t deadLine) : deadline_(deadLine), is_timed_out_(false), ref_cnt_(0)
-{
-  MUTEX_INIT(&mutex_, NULL);
-}
+{ MUTEX_INIT(&mutex_, NULL); }
 
 TimeoutInfo::~TimeoutInfo()
 {

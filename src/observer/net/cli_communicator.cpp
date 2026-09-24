@@ -27,7 +27,7 @@ using common::MiniobLineReader;
 
 const std::string LINE_HISTORY_FILE = "./.miniob.history";
 
-RC CliCommunicator::init(int fd, unique_ptr<Session> session, const string &addr)
+RC CliCommunicator::init(int fd, unique_ptr<Session> session, const string& addr)
 {
   RC rc = PlainCommunicator::init(fd, std::move(session), addr);
   if (OB_FAIL(rc)) {
@@ -53,10 +53,10 @@ RC CliCommunicator::init(int fd, unique_ptr<Session> session, const string &addr
   return rc;
 }
 
-RC CliCommunicator::read_event(SessionEvent *&event)
+RC CliCommunicator::read_event(SessionEvent*& event)
 {
   event                  = nullptr;
-  const char *prompt_str = "miniob > ";
+  const char* prompt_str = "miniob > ";
   std::string command    = MiniobLineReader::instance().my_readline(prompt_str);
   if (command.empty()) {
     return RC::SUCCESS;
@@ -76,7 +76,7 @@ RC CliCommunicator::read_event(SessionEvent *&event)
   return RC::SUCCESS;
 }
 
-RC CliCommunicator::write_result(SessionEvent *event, bool &need_disconnect)
+RC CliCommunicator::write_result(SessionEvent* event, bool& need_disconnect)
 {
   RC rc = PlainCommunicator::write_result(event, need_disconnect);
 

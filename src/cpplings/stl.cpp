@@ -78,14 +78,14 @@ int main()
   vec1.push_back(20);
   vec1.push_back(30);
   std::cout << "Vector after push_back: ";
-  for (const auto &elem : vec1) {
+  for (const auto& elem : vec1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
 
   vec1.pop_back();  // 删除最后一个元素
   std::cout << "Vector after pop_back: ";
-  for (const auto &elem : vec1) {
+  for (const auto& elem : vec1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -93,14 +93,14 @@ int main()
   // 插入和擦除
   vec3.insert(vec3.begin() + 2, 42);  // 在索引2处插入值42
   std::cout << "Vector after insertion: ";
-  for (const auto &elem : vec3) {
+  for (const auto& elem : vec3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
 
   vec3.erase(vec3.begin() + 2);  // 删除索引2处的元素
   std::cout << "Vector after erasure: ";
-  for (const auto &elem : vec3) {
+  for (const auto& elem : vec3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -108,7 +108,7 @@ int main()
   // 调整大小
   vec1.resize(5, 99);  // 调整为5个元素，新元素为99
   std::cout << "Vector after resizing: ";
-  for (const auto &elem : vec1) {
+  for (const auto& elem : vec1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -139,7 +139,7 @@ int main()
   list1.push_back(20);
   list1.push_front(5);  // 在链表前端添加元素
   std::cout << "List after adding elements: ";
-  for (const auto &elem : list1) {
+  for (const auto& elem : list1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -147,7 +147,7 @@ int main()
   list1.pop_back();
   list1.pop_front();
   std::cout << "List after removing front and back elements: ";
-  for (const auto &elem : list1) {
+  for (const auto& elem : list1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -157,7 +157,7 @@ int main()
   std::advance(it, 2);  // 移动迭代器到第三个位置
   list3.insert(it, 42);
   std::cout << "List after insertion: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -166,7 +166,7 @@ int main()
   std::advance(it, 2);
   list3.erase(it);
   std::cout << "List after erasure: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -175,28 +175,28 @@ int main()
   std::list<int> list4 = {10, 20, 30, 40};
   list3.splice(list3.end(), list4);  // 将list4的所有元素移动到list3末尾
   std::cout << "List3 after splicing: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
 
   list3.sort();  // 链表排序
   std::cout << "List after sorting: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
 
   list3.unique();  // 移除连续的重复元素
   std::cout << "List after removing duplicates: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
 
   list3.reverse();  // 反转链表
   std::cout << "List after reversing: ";
-  for (const auto &elem : list3) {
+  for (const auto& elem : list3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -220,7 +220,7 @@ int main()
 
   // 遍历映射
   std::cout << "Map1 contents: \n";
-  for (const auto &pair : map1) {
+  for (const auto& pair : map1) {
     std::cout << pair.first << " => " << pair.second << std::endl;
   }
 
@@ -245,7 +245,7 @@ int main()
   umap["yellow"] = 4;
 
   std::cout << "Unordered map contents: \n";
-  for (const auto &pair : umap) {
+  for (const auto& pair : umap) {
     std::cout << pair.first << " => " << pair.second << std::endl;
   }
 
@@ -269,7 +269,7 @@ int main()
 
   // 遍历集合
   std::cout << "Set2 contents (auto-sorted): ";
-  for (const auto &elem : set2) {
+  for (const auto& elem : set2) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -286,7 +286,7 @@ int main()
   // 删除
   set1.erase(10);
   std::cout << "Set1 contents after erasure: ";
-  for (const auto &elem : set1) {
+  for (const auto& elem : set1) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -299,7 +299,7 @@ int main()
   uset.insert("fish");
 
   std::cout << "Unordered set contents (unordered): ";
-  for (const auto &elem : uset) {
+  for (const auto& elem : uset) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -315,7 +315,7 @@ int main()
   deq.push_back(4);
 
   std::cout << "Deque contents: ";
-  for (const auto &elem : deq) {
+  for (const auto& elem : deq) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -419,7 +419,7 @@ int main()
   std::copy(vec.begin(), vec.end(), std::back_inserter(dest));
 
   std::cout << "Destination vector after copy with back_inserter: ";
-  for (const auto &elem : dest) {
+  for (const auto& elem : dest) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -441,7 +441,7 @@ int main()
   // 排序
   std::sort(alg_vec.begin(), alg_vec.end());
   std::cout << "Vector after sorting: ";
-  for (const auto &elem : alg_vec) {
+  for (const auto& elem : alg_vec) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -466,7 +466,7 @@ int main()
   // 复制
   std::copy(alg_vec.begin(), alg_vec.end(), alg_vec2.begin());
   std::cout << "alg_vec2 after copy: ";
-  for (const auto &elem : alg_vec2) {
+  for (const auto& elem : alg_vec2) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -474,7 +474,7 @@ int main()
   // 填充
   std::fill(alg_vec2.begin() + 3, alg_vec2.begin() + 6, 99);
   std::cout << "alg_vec2 after fill: ";
-  for (const auto &elem : alg_vec2) {
+  for (const auto& elem : alg_vec2) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -482,7 +482,7 @@ int main()
   // 替换
   std::replace(alg_vec.begin(), alg_vec.end(), 4, 44);
   std::cout << "alg_vec after replace: ";
-  for (const auto &elem : alg_vec) {
+  for (const auto& elem : alg_vec) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -491,7 +491,7 @@ int main()
   std::vector<int> alg_vec3(alg_vec.size());
   std::transform(alg_vec.begin(), alg_vec.end(), alg_vec3.begin(), [](int n) { return n * 2; });
   std::cout << "alg_vec3 after transform (each element * 2): ";
-  for (const auto &elem : alg_vec3) {
+  for (const auto& elem : alg_vec3) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
@@ -526,7 +526,7 @@ int main()
   std::vector<int> sums(alg_vec.size());
   std::partial_sum(alg_vec.begin(), alg_vec.end(), sums.begin());
   std::cout << "Partial sums of alg_vec: ";
-  for (const auto &elem : sums) {
+  for (const auto& elem : sums) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;

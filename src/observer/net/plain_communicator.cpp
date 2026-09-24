@@ -28,7 +28,7 @@ PlainCommunicator::PlainCommunicator()
   debug_message_prefix_[1] = ' ';
 }
 
-RC PlainCommunicator::read_event(SessionEvent *&event)
+RC PlainCommunicator::read_event(SessionEvent*& event)
 {
   RC rc = RC::SUCCESS;
 
@@ -92,14 +92,14 @@ RC PlainCommunicator::read_event(SessionEvent *&event)
   return rc;
 }
 
-RC PlainCommunicator::write_state(SessionEvent *event, bool &need_disconnect)
+RC PlainCommunicator::write_state(SessionEvent* event, bool& need_disconnect)
 {
-  SqlResult    *sql_result   = event->sql_result();
+  SqlResult*    sql_result   = event->sql_result();
   const int     buf_size     = 2048;
-  char         *buf          = new char[buf_size];
-  const string &state_string = sql_result->state_string();
+  char*         buf          = new char[buf_size];
+  const string& state_string = sql_result->state_string();
   if (state_string.empty()) {
-    const char *result = RC::SUCCESS == sql_result->return_code() ? "SUCCESS" : "FAILURE";
+    const char* result = RC::SUCCESS == sql_result->return_code() ? "SUCCESS" : "FAILURE";
     snprintf(buf, buf_size, "%s\n", result);
   } else {
     snprintf(buf, buf_size, "%s > %s\n", strrc(sql_result->return_code()), state_string.c_str());
@@ -119,16 +119,16 @@ RC PlainCommunicator::write_state(SessionEvent *event, bool &need_disconnect)
   return RC::SUCCESS;
 }
 
-RC PlainCommunicator::write_debug(SessionEvent *request, bool &need_disconnect)
+RC PlainCommunicator::write_debug(SessionEvent* request, bool& need_disconnect)
 {
   if (!session_->sql_debug_on()) {
     return RC::SUCCESS;
   }
 
-  SqlDebug &sql_debug = request->sql_debug();
+  SqlDebug& sql_debug = request->sql_debug();
 
-  const list<string> &debug_infos = sql_debug.get_debug_infos();
-  for (auto &debug_info : debug_infos) {
+  const list<string>& debug_infos = sql_debug.get_debug_infos();
+  for (auto& debug_info : debug_infos) {
     RC rc = writer_->writen(debug_message_prefix_.data(), debug_message_prefix_.size());
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to send data to client. err=%s", strerror(errno));
@@ -157,7 +157,7 @@ RC PlainCommunicator::write_debug(SessionEvent *request, bool &need_disconnect)
   return RC::SUCCESS;
 }
 
-RC PlainCommunicator::write_result(SessionEvent *event, bool &need_disconnect)
+RC PlainCommunicator::write_result(SessionEvent* event, bool& need_disconnect)
 {
   RC rc = write_result_internal(event, need_disconnect);
   if (!need_disconnect) {
@@ -178,13 +178,13 @@ RC PlainCommunicator::write_result(SessionEvent *event, bool &need_disconnect)
   return rc;
 }
 
-RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disconnect)
+RC PlainCommunicator::write_result_internal(SessionEvent* event, bool& need_disconnect)
 {
   RC rc = RC::SUCCESS;
 
   need_disconnect = true;
 
-  SqlResult *sql_result = event->sql_result();
+  SqlResult* sql_result = event->sql_result();
 
   if (RC::SUCCESS != sql_result->return_code() || !sql_result->has_operator()) {
     return write_state(event, need_disconnect);
@@ -197,15 +197,15 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
     return write_state(event, need_disconnect);
   }
 
-  const TupleSchema &schema   = sql_result->tuple_schema();
+  const TupleSchema& schema   = sql_result->tuple_schema();
   const int          cell_num = schema.cell_num();
 
   for (int i = 0; i < cell_num; i++) {
-    const TupleCellSpec &spec  = schema.cell_at(i);
-    const char          *alias = spec.alias();
+    const TupleCellSpec& spec  = schema.cell_at(i);
+    const char*          alias = spec.alias();
     if (nullptr != alias || alias[0] != 0) {
       if (0 != i) {
-        const char *delim = " | ";
+        const char* delim = " | ";
 
         rc = writer_->writen(delim, strlen(delim));
         if (OB_FAIL(rc)) {
@@ -237,8 +237,7 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
   }
 
   rc = RC::SUCCESS;
-  if (event->session()->get_execution_mode() == ExecutionMode::CHUNK_ITERATOR
-      && event->session()->used_chunk_mode()) {
+  if (event->session()->get_execution_mode() == ExecutionMode::CHUNK_ITERATOR && event->session()->used_chunk_mode()) {
     rc = write_chunk_result(sql_result);
   } else {
     rc = write_tuple_result(sql_result);
@@ -270,17 +269,17 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
   return rc;
 }
 
-RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
+RC PlainCommunicator::write_tuple_result(SqlResult* sql_result)
 {
-  RC rc = RC::SUCCESS;
-  Tuple *tuple = nullptr;
+  RC     rc    = RC::SUCCESS;
+  Tuple* tuple = nullptr;
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
 
     int cell_num = tuple->cell_num();
     for (int i = 0; i < cell_num; i++) {
       if (i != 0) {
-        const char *delim = " | ";
+        const char* delim = " | ";
 
         rc = writer_->writen(delim, strlen(delim));
         if (OB_FAIL(rc)) {
@@ -324,16 +323,16 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
   return rc;
 }
 
-RC PlainCommunicator::write_chunk_result(SqlResult *sql_result)
+RC PlainCommunicator::write_chunk_result(SqlResult* sql_result)
 {
-  RC rc = RC::SUCCESS;
+  RC    rc = RC::SUCCESS;
   Chunk chunk;
   while (RC::SUCCESS == (rc = sql_result->next_chunk(chunk))) {
     int col_num = chunk.column_num();
     for (int row_idx = 0; row_idx < chunk.rows(); row_idx++) {
       for (int col_idx = 0; col_idx < col_num; col_idx++) {
         if (col_idx != 0) {
-          const char *delim = " | ";
+          const char* delim = " | ";
 
           rc = writer_->writen(delim, strlen(delim));
           if (OB_FAIL(rc)) {

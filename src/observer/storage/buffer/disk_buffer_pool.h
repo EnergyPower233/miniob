@@ -89,7 +89,7 @@ struct BPFileHeader
 class BPFrameManager
 {
 public:
-  BPFrameManager(const char *tag);
+  BPFrameManager(const char* tag);
 
   RC init(int pool_num);
   RC cleanup();
@@ -101,7 +101,7 @@ public:
    * @param page_num  页面号
    * @return Frame* 页帧指针
    */
-  Frame *get(int buffer_pool_id, PageNum page_num);
+  Frame* get(int buffer_pool_id, PageNum page_num);
 
   /**
    * @brief 列出所有指定文件的页面
@@ -109,7 +109,7 @@ public:
    * @param buffer_pool_id buffer Pool标识
    * @return list<Frame *> 页帧列表
    */
-  list<Frame *> find_list(int buffer_pool_id);
+  list<Frame*> find_list(int buffer_pool_id);
 
   /**
    * @brief 分配一个新的页面
@@ -118,13 +118,13 @@ public:
    * @param page_num 页面编号
    * @return Frame* 页帧指针
    */
-  Frame *alloc(int buffer_pool_id, PageNum page_num);
+  Frame* alloc(int buffer_pool_id, PageNum page_num);
 
   /**
    * 尽管frame中已经包含了buffer_pool_id和page_num，但是依然要求
    * 传入，因为frame可能忘记初始化或者没有初始化
    */
-  RC free(int buffer_pool_id, PageNum page_num, Frame *frame);
+  RC free(int buffer_pool_id, PageNum page_num, Frame* frame);
 
   /**
    * 如果不能从空闲链表中分配新的页面，就使用这个接口，
@@ -133,7 +133,7 @@ public:
    * @param purger 需要在释放frame之前，对页面做些什么操作。当前是刷新脏数据到磁盘
    * @return 返回本次清理了多少个页面
    */
-  int purge_frames(int count, function<RC(Frame *frame)> purger);
+  int purge_frames(int count, function<RC(Frame* frame)> purger);
 
   size_t frame_num() const { return frames_.count(); }
 
@@ -143,17 +143,17 @@ public:
   size_t total_frame_num() const { return allocator_.get_size(); }
 
 private:
-  Frame *get_internal(const FrameId &frame_id);
-  RC     free_internal(const FrameId &frame_id, Frame *frame);
+  Frame* get_internal(const FrameId& frame_id);
+  RC     free_internal(const FrameId& frame_id, Frame* frame);
 
 private:
   class BPFrameIdHasher
   {
   public:
-    size_t operator()(const FrameId &frame_id) const { return frame_id.hash(); }
+    size_t operator()(const FrameId& frame_id) const { return frame_id.hash(); }
   };
 
-  using FrameLruCache  = common::LruCache<FrameId, Frame *, BPFrameIdHasher>;
+  using FrameLruCache  = common::LruCache<FrameId, Frame*, BPFrameIdHasher>;
   using FrameAllocator = common::MemPoolSimple<Frame>;
 
   mutex          lock_;
@@ -171,7 +171,7 @@ public:
   BufferPoolIterator();
   ~BufferPoolIterator();
 
-  RC      init(DiskBufferPool &bp, PageNum start_page = 0);
+  RC      init(DiskBufferPool& bp, PageNum start_page = 0);
   bool    has_next();
   PageNum next();
   RC      reset();
@@ -190,14 +190,14 @@ private:
 class DiskBufferPool final
 {
 public:
-  DiskBufferPool(BufferPoolManager &bp_manager, BPFrameManager &frame_manager, DoubleWriteBuffer &dblwr_manager,
-      LogHandler &log_handler);
+  DiskBufferPool(BufferPoolManager& bp_manager, BPFrameManager& frame_manager, DoubleWriteBuffer& dblwr_manager,
+      LogHandler& log_handler);
   ~DiskBufferPool();
 
   /**
    * 根据文件名打开一个分页文件
    */
-  RC open_file(const char *file_name);
+  RC open_file(const char* file_name);
 
   /**
    * 关闭分页文件
@@ -207,14 +207,14 @@ public:
   /**
    * 根据文件ID和页号获取指定页面到缓冲区，返回页面句柄指针。
    */
-  RC get_this_page(PageNum page_num, Frame **frame);
+  RC get_this_page(PageNum page_num, Frame** frame);
 
   /**
    * @brief 在指定文件中分配一个新的页面，并将其放入缓冲区，返回页面句柄指针。
    * @details 分配页面时，如果文件中有空闲页，就直接分配一个空闲页；
    * 如果文件中没有空闲页，则扩展文件规模来增加新的空闲页。
    */
-  RC allocate_page(Frame **frame);
+  RC allocate_page(Frame** frame);
 
   /**
    * @brief 释放某个页面，将此页面设置为未分配状态
@@ -237,7 +237,7 @@ public:
    * 该页面被设置为驻留缓冲区状态，以防止其在处理过程中被置换出去，
    * 因此在该页面使用完之后应调用此函数解除该限制，使得该页面此后可以正常地被淘汰出缓冲区
    */
-  RC unpin_page(Frame *frame);
+  RC unpin_page(Frame* frame);
 
   /**
    * 检查是否所有页面都是pin count == 0状态(除了第1个页面)
@@ -250,7 +250,7 @@ public:
   /**
    * 如果页面是脏的，就将数据刷新到double write buffer
    */
-  RC flush_page(Frame &frame);
+  RC flush_page(Frame& frame);
 
   /**
    * 刷新所有页面到double write buffer，即使pin count不是0
@@ -265,7 +265,7 @@ public:
   /**
    * 刷新页面到磁盘
    */
-  RC write_page(PageNum page_num, Page &page);
+  RC write_page(PageNum page_num, Page& page);
 
   RC redo_allocate_page(LSN lsn, PageNum page_num);
   RC redo_deallocate_page(LSN lsn, PageNum page_num);
@@ -273,38 +273,38 @@ public:
 public:
   int32_t id() const { return buffer_pool_id_; }
 
-  const char *filename() const { return file_name_.c_str(); }
+  const char* filename() const { return file_name_.c_str(); }
 
 protected:
-  RC allocate_frame(PageNum page_num, Frame **buf);
+  RC allocate_frame(PageNum page_num, Frame** buf);
 
   /**
    * 刷新指定页面到磁盘(flush)，并且释放关联的Frame
    */
-  RC purge_frame(PageNum page_num, Frame *used_frame);
+  RC purge_frame(PageNum page_num, Frame* used_frame);
   RC check_page_num(PageNum page_num);
 
   /**
    * 加载指定页面的数据到内存中
    */
-  RC load_page(PageNum page_num, Frame *frame);
+  RC load_page(PageNum page_num, Frame* frame);
 
   /**
    * 如果页面是脏的，就将数据刷新到磁盘
    */
-  RC flush_page_internal(Frame &frame);
+  RC flush_page_internal(Frame& frame);
 
 private:
-  BufferPoolManager   &bp_manager_;     /// BufferPool 管理器
-  BPFrameManager      &frame_manager_;  /// Frame 管理器
-  DoubleWriteBuffer   &dblwr_manager_;  /// Double Write Buffer 管理器
+  BufferPoolManager&   bp_manager_;     /// BufferPool 管理器
+  BPFrameManager&      frame_manager_;  /// Frame 管理器
+  DoubleWriteBuffer&   dblwr_manager_;  /// Double Write Buffer 管理器
   BufferPoolLogHandler log_handler_;    /// BufferPool 日志处理器
 
   int file_desc_ = -1;  /// 文件描述符
   /// 由于在最开始打开文件时，没有正确的buffer pool id不能加载header frame，所以单独从文件中读取此标识
   int32_t       buffer_pool_id_ = -1;
-  Frame        *hdr_frame_      = nullptr;  /// 文件头页面
-  BPFileHeader *file_header_    = nullptr;  /// 文件头
+  Frame*        hdr_frame_      = nullptr;  /// 文件头页面
+  BPFileHeader* file_header_    = nullptr;  /// 文件头
   set<PageNum>  disposed_pages_;            /// 已经释放的页面
 
   string file_name_;  /// 文件名
@@ -328,14 +328,14 @@ public:
 
   RC init(unique_ptr<DoubleWriteBuffer> dblwr_buffer);
 
-  RC create_file(const char *file_name);
-  RC open_file(LogHandler &log_handler, const char *file_name, DiskBufferPool *&bp);
-  RC close_file(const char *file_name);
+  RC create_file(const char* file_name);
+  RC open_file(LogHandler& log_handler, const char* file_name, DiskBufferPool*& bp);
+  RC close_file(const char* file_name);
 
-  RC flush_page(Frame &frame);
+  RC flush_page(Frame& frame);
 
-  BPFrameManager    &get_frame_manager() { return frame_manager_; }
-  DoubleWriteBuffer *get_dblwr_buffer() { return dblwr_buffer_.get(); }
+  BPFrameManager&    get_frame_manager() { return frame_manager_; }
+  DoubleWriteBuffer* get_dblwr_buffer() { return dblwr_buffer_.get(); }
 
   /**
    * @brief 根据ID获取对应的BufferPool对象
@@ -343,15 +343,15 @@ public:
    * @param id buffer pool id
    * @param bp buffer pool 对象
    */
-  RC get_buffer_pool(int32_t id, DiskBufferPool *&bp);
+  RC get_buffer_pool(int32_t id, DiskBufferPool*& bp);
 
 private:
   BPFrameManager frame_manager_{"BufPool"};
 
   unique_ptr<DoubleWriteBuffer> dblwr_buffer_;
 
-  common::Mutex                            lock_;
-  unordered_map<string, DiskBufferPool *>  buffer_pools_;
-  unordered_map<int32_t, DiskBufferPool *> id_to_buffer_pools_;
-  atomic<int32_t>                          next_buffer_pool_id_{1};  // 系统启动时，会打开所有的表，这样就可以知道当前系统最大的ID是多少了
+  common::Mutex                           lock_;
+  unordered_map<string, DiskBufferPool*>  buffer_pools_;
+  unordered_map<int32_t, DiskBufferPool*> id_to_buffer_pools_;
+  atomic<int32_t> next_buffer_pool_id_{1};  // 系统启动时，会打开所有的表，这样就可以知道当前系统最大的ID是多少了
 };

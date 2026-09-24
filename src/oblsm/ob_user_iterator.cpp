@@ -22,7 +22,7 @@ namespace oceanbase {
 class ObUserIterator : public ObLsmIterator
 {
 public:
-  ObUserIterator(ObLsmIterator *iter, uint64_t seq) : iter_(iter), seq_(seq), valid_(false) {}
+  ObUserIterator(ObLsmIterator* iter, uint64_t seq) : iter_(iter), seq_(seq), valid_(false) {}
 
   ~ObUserIterator() override = default;
 
@@ -41,7 +41,7 @@ public:
   // TODO: implement seek_to_last
   void seek_to_last() override { valid_ = false; }
 
-  void seek(const string_view &target) override
+  void seek(const string_view& target) override
   {
     put_numeric<uint64_t>(&lookup_key_, target.size() + SEQ_SIZE);
     lookup_key_.append(target.data(), target.size());
@@ -68,7 +68,7 @@ public:
 
   // skipping indicated if to skip current entry.
   // skip indicated current user key.
-  void find_next_user_entry(bool skipping, std::string *skip)
+  void find_next_user_entry(bool skipping, std::string* skip)
   {
     do {
       size_t      curr_seq = extract_sequence(iter_->key());
@@ -108,6 +108,6 @@ private:
   ObDefaultComparator       user_comparator_;
 };
 
-ObLsmIterator *new_user_iterator(ObLsmIterator *iter, uint64_t seq) { return new ObUserIterator(iter, seq); }
+ObLsmIterator* new_user_iterator(ObLsmIterator* iter, uint64_t seq) { return new ObUserIterator(iter, seq); }
 
 }  // namespace oceanbase

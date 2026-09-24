@@ -59,7 +59,7 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_small_amount_of_data)
   filesystem::create_directory("oblsm_tmp");
   ObLsmOptions options;
   options.force_sync_new_log = false;
-  ObLsm *lsm                 = nullptr;
+  ObLsm* lsm                 = nullptr;
   RC     rc                  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
@@ -93,7 +93,7 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_single_thread)
   filesystem::create_directory("oblsm_tmp");
   ObLsmOptions options;
   options.force_sync_new_log = false;
-  ObLsm *lsm                 = nullptr;
+  ObLsm* lsm                 = nullptr;
   RC     rc                  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
@@ -128,8 +128,8 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_concurrent_put_no_sync)
   ObLsmOptions options;
   options.force_sync_new_log = false;
 
-  ObLsm *lsm                 = nullptr;
-  RC     rc                  = ObLsm::open(options, "oblsm_tmp", &lsm);
+  ObLsm* lsm = nullptr;
+  RC     rc  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
   const int                kv_count     = 10000;
@@ -146,7 +146,7 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_concurrent_put_no_sync)
     });
   }
 
-  for (auto& thread: threads) {
+  for (auto& thread : threads) {
     thread.join();
   }
 
@@ -176,8 +176,8 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_concurrent_put_sync)
   ObLsmOptions options;
   options.force_sync_new_log = true;
 
-  ObLsm *lsm                 = nullptr;
-  RC     rc                  = ObLsm::open(options, "oblsm_tmp", &lsm);
+  ObLsm* lsm = nullptr;
+  RC     rc  = ObLsm::open(options, "oblsm_tmp", &lsm);
   EXPECT_EQ(rc, RC::SUCCESS);
 
   const int                kv_count     = 10000;
@@ -194,7 +194,7 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_concurrent_put_sync)
     });
   }
 
-  for (auto& thread: threads) {
+  for (auto& thread : threads) {
     thread.join();
   }
 
@@ -217,7 +217,7 @@ TEST(oblsm_wal_test, DISABLED_oblsm_recover_with_concurrent_put_sync)
   delete lsm;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

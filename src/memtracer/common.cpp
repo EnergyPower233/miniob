@@ -13,7 +13,7 @@ See the Mulan PSL v2 for more details. */
 #include "memtracer/common.h"
 
 namespace memtracer {
-void log_stderr(const char *format, ...)
+void log_stderr(const char* format, ...)
 {
   va_list vl;
   va_start(vl, format);

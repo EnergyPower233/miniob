@@ -15,12 +15,12 @@ See the Mulan PSL v2 for more details. */
 namespace memtracer {
 #define mt_visible __attribute__((visibility("default")))
 
-using malloc_func_t = void *(*)(size_t);
-using free_func_t   = void (*)(void *);
-using mmap_func_t   = void *(*)(void *, size_t, int, int, int, off_t);
-using munmap_func_t = int (*)(void *, size_t);
+using malloc_func_t = void* (*)(size_t);
+using free_func_t   = void (*)(void*);
+using mmap_func_t   = void* (*)(void*, size_t, int, int, int, off_t);
+using munmap_func_t = int (*)(void*, size_t);
 
-void log_stderr(const char *format, ...);
+void log_stderr(const char* format, ...);
 
 #define MEMTRACER_LOG(format, ...)     \
   do {                                 \

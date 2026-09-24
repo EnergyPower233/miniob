@@ -86,7 +86,7 @@ public:
    * @param filename The name of the WAL file to write logs.
    * @return `RC::SUCCESS` if the file was successfully opened, or an error code if it failed.
    */
-  RC open(const std::string &filename) { return RC::UNIMPLEMENTED; }
+  RC open(const std::string& filename) { return RC::UNIMPLEMENTED; }
 
   /**
    * @brief Recovers data from a specified WAL file.
@@ -98,7 +98,7 @@ public:
    * @param wal_records A reference to a vector where the WalRecord objects will be stored.
    * @return `RC::SUCCESS` if recovery is successful, or an error code if it fails.
    */
-  RC recover(const std::string &wal_file, std::vector<WalRecord> &wal_records);
+  RC recover(const std::string& wal_file, std::vector<WalRecord>& wal_records);
 
   /**
    * @brief Writes a key-value pair to the WAL.
@@ -120,7 +120,7 @@ public:
    */
   RC sync() { return RC::UNIMPLEMENTED; }
 
-  const string &filename() const { return filename_; }
+  const string& filename() const { return filename_; }
 
 private:
   string filename_;

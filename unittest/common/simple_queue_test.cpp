@@ -96,7 +96,7 @@ TEST(SimpleQueue, test_unique_ptr)
   // 不做pop，检查内存是否释放(ASAN会检查)
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

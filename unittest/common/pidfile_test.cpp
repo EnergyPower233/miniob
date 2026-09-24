@@ -25,12 +25,12 @@ int main()
 {
   long long pid = (long long)getpid();
 
-  const char *programName = "test";
+  const char* programName = "test";
   writePidFile(programName);
 
   string pidFile = getPidPath();
 
-  char  *p    = NULL;
+  char*  p    = NULL;
   size_t size = 0;
   readFromFile(pidFile, p, size);
 

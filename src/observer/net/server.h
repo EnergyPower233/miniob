@@ -28,7 +28,7 @@ class ThreadHandler;
 class Server
 {
 public:
-  Server(const ServerParam &input_server_param) : server_param_(input_server_param) {}
+  Server(const ServerParam& input_server_param) : server_param_(input_server_param) {}
   virtual ~Server() {}
 
   virtual int  serve()    = 0;
@@ -41,7 +41,7 @@ protected:
 class NetServer : public Server
 {
 public:
-  NetServer(const ServerParam &input_server_param);
+  NetServer(const ServerParam& input_server_param);
   virtual ~NetServer();
 
 public:
@@ -83,13 +83,13 @@ private:
   int server_socket_ = -1;  ///< 监听套接字，是一个描述符
 
   CommunicatorFactory communicator_factory_;  ///< 通过这个对象创建新的Communicator对象
-  ThreadHandler      *thread_handler_ = nullptr;
+  ThreadHandler*      thread_handler_ = nullptr;
 };
 
 class CliServer : public Server
 {
 public:
-  CliServer(const ServerParam &input_server_param);
+  CliServer(const ServerParam& input_server_param);
   virtual ~CliServer();
 
   int  serve() override;

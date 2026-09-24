@@ -39,9 +39,9 @@ int find_first_setted(char byte, int start)
 int bytes(int size) { return size % 8 == 0 ? size / 8 : size / 8 + 1; }
 
 Bitmap::Bitmap() : bitmap_(nullptr), size_(0) {}
-Bitmap::Bitmap(char *bitmap, int size) : bitmap_(bitmap), size_(size) {}
+Bitmap::Bitmap(char* bitmap, int size) : bitmap_(bitmap), size_(size) {}
 
-void Bitmap::init(char *bitmap, int size)
+void Bitmap::init(char* bitmap, int size)
 {
   bitmap_ = bitmap;
   size_   = size;
@@ -55,13 +55,13 @@ bool Bitmap::get_bit(int index)
 
 void Bitmap::set_bit(int index)
 {
-  char &bits = bitmap_[index / 8];
+  char& bits = bitmap_[index / 8];
   bits |= (1 << (index % 8));
 }
 
 void Bitmap::clear_bit(int index)
 {
-  char &bits = bitmap_[index / 8];
+  char& bits = bitmap_[index / 8];
   bits &= ~(1 << (index % 8));
 }
 

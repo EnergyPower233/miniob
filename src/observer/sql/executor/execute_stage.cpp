@@ -25,18 +25,18 @@ See the Mulan PSL v2 for more details. */
 
 using namespace common;
 
-RC ExecuteStage::handle_request(SQLStageEvent *sql_event)
+RC ExecuteStage::handle_request(SQLStageEvent* sql_event)
 {
   RC rc = RC::SUCCESS;
 
-  const unique_ptr<PhysicalOperator> &physical_operator = sql_event->physical_operator();
+  const unique_ptr<PhysicalOperator>& physical_operator = sql_event->physical_operator();
   if (physical_operator != nullptr) {
     return handle_request_with_physical_operator(sql_event);
   }
 
-  SessionEvent *session_event = sql_event->session_event();
+  SessionEvent* session_event = sql_event->session_event();
 
-  Stmt *stmt = sql_event->stmt();
+  Stmt* stmt = sql_event->stmt();
   if (stmt != nullptr) {
     CommandExecutor command_executor;
     rc = command_executor.execute(sql_event);
@@ -47,14 +47,14 @@ RC ExecuteStage::handle_request(SQLStageEvent *sql_event)
   return rc;
 }
 
-RC ExecuteStage::handle_request_with_physical_operator(SQLStageEvent *sql_event)
+RC ExecuteStage::handle_request_with_physical_operator(SQLStageEvent* sql_event)
 {
   RC rc = RC::SUCCESS;
 
-  unique_ptr<PhysicalOperator> &physical_operator = sql_event->physical_operator();
+  unique_ptr<PhysicalOperator>& physical_operator = sql_event->physical_operator();
   ASSERT(physical_operator != nullptr, "physical operator should not be null");
 
-  SqlResult *sql_result = sql_event->session_event()->sql_result();
+  SqlResult* sql_result = sql_event->session_event()->sql_result();
   sql_result->set_operator(std::move(physical_operator));
   return rc;
 }

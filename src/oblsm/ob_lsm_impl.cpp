@@ -27,7 +27,7 @@ See the Mulan PSL v2 for more details. */
 #include "oblsm/ob_lsm_define.h"
 
 namespace oceanbase {
-ObLsmImpl::ObLsmImpl(const ObLsmOptions &options, const string &path)
+ObLsmImpl::ObLsmImpl(const ObLsmOptions& options, const string& path)
     : options_(options), path_(path), mu_(), mem_table_(nullptr), imem_tables_(), manifest_(path)
 {
   mem_table_ = make_shared<ObMemTable>();
@@ -92,16 +92,16 @@ RC ObLsmImpl::recover()
   return RC::SUCCESS;
 }
 
-RC ObLsm::open(const ObLsmOptions &options, const string &path, ObLsm **dbptr)
+RC ObLsm::open(const ObLsmOptions& options, const string& path, ObLsm** dbptr)
 {
   RC         rc  = RC::SUCCESS;
-  ObLsmImpl *lsm = new ObLsmImpl(options, path);
+  ObLsmImpl* lsm = new ObLsmImpl(options, path);
   *dbptr         = lsm;
   rc             = lsm->recover();
   return rc;
 }
 
-RC ObLsmImpl::put(const string_view &key, const string_view &value)
+RC ObLsmImpl::put(const string_view& key, const string_view& value)
 {
   // TODO: if put rate is too high, slow down writes is needed.
   // currently, the writes is stopped when the memtable is full.
@@ -149,9 +149,9 @@ RC ObLsmImpl::put(const string_view &key, const string_view &value)
   return rc;
 }
 
-RC ObLsmImpl::batch_put(const vector<pair<string, string>> &kvs) { return RC::UNIMPLEMENTED; }
+RC ObLsmImpl::batch_put(const vector<pair<string, string>>& kvs) { return RC::UNIMPLEMENTED; }
 
-RC ObLsmImpl::remove(const string_view &key) { return RC::UNIMPLEMENTED; }
+RC ObLsmImpl::remove(const string_view& key) { return RC::UNIMPLEMENTED; }
 
 RC ObLsmImpl::try_freeze_memtable()
 {
@@ -227,8 +227,8 @@ void ObLsmImpl::try_major_compaction()
   lock.lock();
   size_t levels_size        = sstables_->size();
   bool   insert_new_sstable = false;
-  auto   find_sstable       = [](const vector<shared_ptr<ObSSTable>> &picked, const shared_ptr<ObSSTable> &sstable) {
-    for (auto &p : picked) {
+  auto   find_sstable       = [](const vector<shared_ptr<ObSSTable>>& picked, const shared_ptr<ObSSTable>& sstable) {
+    for (auto& p : picked) {
       if (p->sst_id() == sstable->sst_id()) {
         return true;
       }
@@ -238,15 +238,15 @@ void ObLsmImpl::try_major_compaction()
 
   vector<shared_ptr<ObSSTable>> picked_sstables;
   picked_sstables      = picked->inputs(0);
-  const auto &level_i1 = picked->inputs(1);
+  const auto& level_i1 = picked->inputs(1);
   if (level_i1.size() > 0) {
     picked_sstables.insert(picked_sstables.end(), level_i1.begin(), level_i1.end());
   }
   // TODO: unify the new sstables logic in all compaction type
   if (options_.type == CompactionType::TIRED) {
     for (int i = levels_size - 1; i >= 0; --i) {
-      const vector<shared_ptr<ObSSTable>> &level_i = sstables_->at(i);
-      for (auto &sstable : level_i) {
+      const vector<shared_ptr<ObSSTable>>& level_i = sstables_->at(i);
+      for (auto& sstable : level_i) {
         if (find_sstable(picked_sstables, sstable)) {
           if (!insert_new_sstable) {
             new_sstables->insert(new_sstables->begin(), results);
@@ -266,7 +266,7 @@ void ObLsmImpl::try_major_compaction()
   lock.unlock();
 
   // remove from disk
-  for (auto &sstable : picked_sstables) {
+  for (auto& sstable : picked_sstables) {
     sstable->remove();
   }
 
@@ -276,7 +276,7 @@ void ObLsmImpl::try_major_compaction()
   try_major_compaction();
 }
 
-vector<shared_ptr<ObSSTable>> ObLsmImpl::do_compaction(ObCompaction *picked) { return {}; }
+vector<shared_ptr<ObSSTable>> ObLsmImpl::do_compaction(ObCompaction* picked) { return {}; }
 
 void ObLsmImpl::build_sstable(shared_ptr<ObMemTable> imem)
 {
@@ -304,16 +304,12 @@ void ObLsmImpl::build_sstable(shared_ptr<ObMemTable> imem)
 }
 
 string ObLsmImpl::get_sstable_path(uint64_t sstable_id)
-{
-  return filesystem::path(path_) / (to_string(sstable_id) + SSTABLE_SUFFIX);
-}
+{ return filesystem::path(path_) / (to_string(sstable_id) + SSTABLE_SUFFIX); }
 
 string ObLsmImpl::get_wal_path(uint64_t memtable_id)
-{
-  return filesystem::path(path_) / (to_string(memtable_id) + WAL_SUFFIX);
-}
+{ return filesystem::path(path_) / (to_string(memtable_id) + WAL_SUFFIX); }
 
-RC ObLsmImpl::get(const string_view &key, string *value)
+RC ObLsmImpl::get(const string_view& key, string* value)
 {
   RC                 rc = RC::SUCCESS;
   unique_lock<mutex> lock(mu_);
@@ -331,7 +327,7 @@ RC ObLsmImpl::get(const string_view &key, string *value)
   return rc;
 }
 
-ObLsmIterator *ObLsmImpl::new_iterator(ObLsmReadOptions options)
+ObLsmIterator* ObLsmImpl::new_iterator(ObLsmReadOptions options)
 {
   unique_lock<mutex>     lock(mu_);
   shared_ptr<ObMemTable> mem = mem_table_;
@@ -341,7 +337,7 @@ ObLsmIterator *ObLsmImpl::new_iterator(ObLsmReadOptions options)
     imm = imem_tables_.back();
   }
   vector<shared_ptr<ObSSTable>> sstables;
-  for (auto &level : *sstables_) {
+  for (auto& level : *sstables_) {
     sstables.insert(sstables.end(), level.begin(), level.end());
   }
   lock.unlock();
@@ -350,7 +346,7 @@ ObLsmIterator *ObLsmImpl::new_iterator(ObLsmReadOptions options)
   if (imm != nullptr) {
     iters.emplace_back(imm->new_iterator());
   }
-  for (const auto &sst : sstables) {
+  for (const auto& sst : sstables) {
     iters.emplace_back(sst->new_iterator());
   }
 
@@ -358,7 +354,7 @@ ObLsmIterator *ObLsmImpl::new_iterator(ObLsmReadOptions options)
       new_merging_iterator(&internal_key_comparator_, std::move(iters)), options.seq == -1 ? seq_.load() : options.seq);
 }
 
-ObLsmTransaction *ObLsmImpl::begin_transaction() { return new ObLsmTransaction(this, seq_.load()); }
+ObLsmTransaction* ObLsmImpl::begin_transaction() { return new ObLsmTransaction(this, seq_.load()); }
 
 void ObLsmImpl::dump_sstables()
 {
@@ -367,7 +363,7 @@ void ObLsmImpl::dump_sstables()
   for (int i = 0; i < level; i++) {
     cout << "level " << i << endl;
     int level_size = 0;
-    for (auto &sst : sstables_->at(i)) {
+    for (auto& sst : sstables_->at(i)) {
       cout << sst->sst_id() << ": " << sst->size() << ";";
       level_size += sst->size();
     }
@@ -375,25 +371,25 @@ void ObLsmImpl::dump_sstables()
   }
 }
 
-RC ObLsmImpl::recover_from_manifest_records(const std::vector<ObManifestCompaction> &records)
+RC ObLsmImpl::recover_from_manifest_records(const std::vector<ObManifestCompaction>& records)
 {
   std::vector<std::vector<uint64_t>> tmp_sstables;
   for (size_t i = 0; i < options_.default_levels; i++) {
     tmp_sstables.emplace_back();
   }
-  for (auto &record : records) {
+  for (auto& record : records) {
     // assert(sstable_id_ < record.sstable_sequence_id);
     sstable_id_ = record.sstable_sequence_id;
     seq_        = record.seq_id;
     // Added tables
-    for (auto &info : record.added_tables) {
+    for (auto& info : record.added_tables) {
       uint32_t level      = info.level;
       uint64_t sstable_id = info.sstable_id;
       ASSERT(level < options_.default_levels, "level shouldn't greater than or equal to default level size");
       tmp_sstables[level].push_back(sstable_id);
     }
     // Deleted tables
-    for (auto &info : record.deleted_tables) {
+    for (auto& info : record.deleted_tables) {
       uint32_t level = info.level;
       uint32_t sid   = info.sstable_id;
       ASSERT(level < options_.default_levels, "level shouldn't greater than or equal to default level size");
@@ -410,7 +406,7 @@ RC ObLsmImpl::recover_from_manifest_records(const std::vector<ObManifestCompacti
   return RC::SUCCESS;
 }
 
-RC ObLsmImpl::load_manifest_snapshot(const ObManifestSnapshot &snapshot)
+RC ObLsmImpl::load_manifest_snapshot(const ObManifestSnapshot& snapshot)
 {
   seq_        = snapshot.seq;
   sstable_id_ = snapshot.sstable_id;
@@ -418,13 +414,13 @@ RC ObLsmImpl::load_manifest_snapshot(const ObManifestSnapshot &snapshot)
   return rc;
 }
 
-RC ObLsmImpl::load_manifest_sstable(const std::vector<std::vector<uint64_t>> &sstables)
+RC ObLsmImpl::load_manifest_sstable(const std::vector<std::vector<uint64_t>>& sstables)
 {
   // After Getting the final state of lsm tree, recovering the system's state from tmp_sstables
   size_t cur_level_idx = 0;
-  for (auto &sst_ids : sstables) {
-    auto &cur_level = sstables_->at(cur_level_idx++);
-    for (auto &sst_id : sst_ids) {
+  for (auto& sst_ids : sstables) {
+    auto& cur_level = sstables_->at(cur_level_idx++);
+    for (auto& sst_id : sst_ids) {
       auto filename = get_sstable_path(sst_id);
       auto sstable  = std::make_shared<ObSSTable>(sst_id, filename, &default_comparator_, block_cache_.get());
       sstable->init();
@@ -444,7 +440,7 @@ RC ObLsmImpl::write_manifest_snapshot()
   snapshot.sstables.resize(sstables_->size());
   new_memtable.memtable_id = memtable_id_.load();
   for (size_t i = 0; i < sstables_->size(); ++i) {
-    auto &level = sstables_->at(i);
+    auto& level = sstables_->at(i);
     for (size_t j = 0; j < level.size(); ++j) {
       snapshot.sstables[i].push_back(level[j]->sst_id());
     }

@@ -30,7 +30,7 @@ namespace memtracer {
 class MemTracer
 {
 public:
-  static MemTracer &get_instance();
+  static MemTracer& get_instance();
 
   MemTracer() = default;
 

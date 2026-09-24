@@ -41,7 +41,7 @@ public:
    * @param filename The name of the file to write to.
    * @param append Whether to open the file in append mode (default: `false`).
    */
-  ObFileWriter(const string &filename, bool append = false) : filename_(filename), append_(append) {}
+  ObFileWriter(const string& filename, bool append = false) : filename_(filename), append_(append) {}
 
   ~ObFileWriter();
 
@@ -72,7 +72,7 @@ public:
    * @param data The data to write to the file, provided as a `string_view`.
    * @return An RC (return code) indicating the success or failure of the operation.
    */
-  RC write(const string_view &data);
+  RC write(const string_view& data);
 
   /**
    * @brief Flushes buffered data to disk.
@@ -108,7 +108,7 @@ public:
    * @param append Whether to open the file in append mode (default: `false`).
    * @return A `unique_ptr` to the created `ObFileWriter` object.
    */
-  static unique_ptr<ObFileWriter> create_file_writer(const string &filename, bool append);
+  static unique_ptr<ObFileWriter> create_file_writer(const string& filename, bool append);
 
 private:
   /**

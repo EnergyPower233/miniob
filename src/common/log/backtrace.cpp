@@ -23,20 +23,20 @@ namespace common {
 
 struct ProcMapSegment
 {
-  uint64_t  start_address;
-  uint64_t  end_address;
+  uint64_t start_address;
+  uint64_t end_address;
 };
 
 class ProcMap
 {
 public:
-  ProcMap() = default;
+  ProcMap()  = default;
   ~ProcMap() = default;
 
   int parse();
-  int parse_file(const char *file_name);
+  int parse_file(const char* file_name);
 
-  const ProcMapSegment *get_segment(const uint64_t address) const;
+  const ProcMapSegment* get_segment(const uint64_t address) const;
 
   uint64_t get_offset(const uint64_t address) const;
 
@@ -46,33 +46,41 @@ private:
 
 int ProcMap::parse()
 {
-  const char *file_name = "/proc/self/maps";
+  const char* file_name = "/proc/self/maps";
   return parse_file(file_name);
 }
 
-int ProcMap::parse_file(const char *file_name)
+int ProcMap::parse_file(const char* file_name)
 {
-  FILE *fp = fopen(file_name, "r");
+  FILE* fp = fopen(file_name, "r");
   if (fp == nullptr) {
     return -1;
   }
 
   ProcMapSegment segment;
-  char line[1024] = {0};
-  uint64_t start, end, inode, offset, major, minor;
-  char perms[8];
-  char path[257];
+  char           line[1024] = {0};
+  uint64_t       start, end, inode, offset, major, minor;
+  char           perms[8];
+  char           path[257];
 
   while (fgets(line, sizeof(line), fp) != nullptr) {
-    
-    int ret = sscanf(line, "%" PRIx64 "-%" PRIx64 " %4s %" PRIx64 " %" PRIx64 ":%" PRIx64 "%" PRIu64 "%255s",
-                     &start, &end, perms, &offset, &major, &minor, &inode, path);
+
+    int ret = sscanf(line,
+        "%" PRIx64 "-%" PRIx64 " %4s %" PRIx64 " %" PRIx64 ":%" PRIx64 "%" PRIu64 "%255s",
+        &start,
+        &end,
+        perms,
+        &offset,
+        &major,
+        &minor,
+        &inode,
+        path);
     if (ret < 8 || perms[2] != 'x') {
       continue;
     }
 
     segment.start_address = start;
-    segment.end_address = end;
+    segment.end_address   = end;
 
     segments_.push_back(segment);
   }
@@ -81,9 +89,9 @@ int ProcMap::parse_file(const char *file_name)
   return 0;
 }
 
-const ProcMapSegment *ProcMap::get_segment(const uint64_t address) const
+const ProcMapSegment* ProcMap::get_segment(const uint64_t address) const
 {
-  for (const auto &segment : segments_) {
+  for (const auto& segment : segments_) {
     if (address >= segment.start_address && address < segment.end_address) {
       return &segment;
     }
@@ -94,7 +102,7 @@ const ProcMapSegment *ProcMap::get_segment(const uint64_t address) const
 
 uint64_t ProcMap::get_offset(const uint64_t address) const
 {
-  const ProcMapSegment *segment = get_segment(address);
+  const ProcMapSegment* segment = get_segment(address);
   if (segment == nullptr) {
     return address;
   }
@@ -104,22 +112,19 @@ uint64_t ProcMap::get_offset(const uint64_t address) const
 
 //////////////////////////////////////////////////////////////////////////
 static ProcMap g_proc_map;
-int backtrace_init()
-{
-  return g_proc_map.parse();
-}
+int            backtrace_init() { return g_proc_map.parse(); }
 
-const char *lbt()
+const char* lbt()
 {
   constexpr int buffer_size = 100;
-  void         *buffer[buffer_size];
+  void*         buffer[buffer_size];
 
   constexpr int     bt_buffer_size = 8192;
   thread_local char backtrace_buffer[bt_buffer_size];
 
   int size = backtrace(buffer, buffer_size);
 
-  char **symbol_array = nullptr;
+  char** symbol_array = nullptr;
 #ifdef LBT_SYMBOLS
   /* 有些环境下，使用addr2line 无法根据地址输出符号 */
   symbol_array = backtrace_symbols(buffer, size);
@@ -127,9 +132,9 @@ const char *lbt()
 
   int offset = 0;
   for (int i = 0; i < size && offset < bt_buffer_size - 1; i++) {
-    uint64_t address = reinterpret_cast<uint64_t>(buffer[i]);
-    address = g_proc_map.get_offset(address);
-    const char *format = (0 == i) ? "0x%lx" : " 0x%lx";
+    uint64_t address   = reinterpret_cast<uint64_t>(buffer[i]);
+    address            = g_proc_map.get_offset(address);
+    const char* format = (0 == i) ? "0x%lx" : " 0x%lx";
     offset += snprintf(backtrace_buffer + offset, sizeof(backtrace_buffer) - offset, format, address);
 
     if (symbol_array != nullptr) {
@@ -143,4 +148,4 @@ const char *lbt()
   return backtrace_buffer;
 }
 
-} // namespace common
+}  // namespace common

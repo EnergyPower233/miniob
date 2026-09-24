@@ -46,32 +46,32 @@ public:
    * it support load multiple ini configuration files
    * @return, 0 means success, others means failed
    */
-  int load(const string &ini_file);
+  int load(const string& ini_file);
 
   /**
    * get the map of the section
    * if the section doesn't exist, return one empty section
    */
-  const map<string, string> &get(const string &section = DEFAULT_SECTION);
+  const map<string, string>& get(const string& section = DEFAULT_SECTION);
 
   /**
    * get the value of the key in the section,
    * if the key-value doesn't exist,
    * use the input default_value
    */
-  string get(const string &key, const string &default_value, const string &section = DEFAULT_SECTION);
+  string get(const string& key, const string& default_value, const string& section = DEFAULT_SECTION);
 
   /**
    * put the key-value pair to the section
    * if the key-value already exist, just replace it
    * if the section doesn't exist, it will create this section
    */
-  int put(const string &key, const string &value, const string &section = DEFAULT_SECTION);
+  int put(const string& key, const string& value, const string& section = DEFAULT_SECTION);
 
   /**
    * output all configuration to one string
    */
-  void to_string(string &output_str);
+  void to_string(string& output_str);
 
   static const string DEFAULT_SECTION;
 
@@ -95,20 +95,20 @@ protected:
   /**
    * insert one empty session to sections_
    */
-  void insert_session(const string &session_name);
+  void insert_session(const string& session_name);
 
   /**
    * switch session according to the session_name
    * if the section doesn't exist, it will create one
    */
-  map<string, string> *switch_session(const string &session_name);
+  map<string, string>* switch_session(const string& session_name);
 
   /**
    * insert one entry to session_map
    * line's format is "key=value"
    *
    */
-  int insert_entry(map<string, string> *session_map, const string &line);
+  int insert_entry(map<string, string>* session_map, const string& line);
 
   typedef map<string, map<string, string>> SessionsMap;
 
@@ -122,7 +122,7 @@ private:
 /**
  * Global configurate propertis
  */
-Ini *&get_properties();
+Ini*& get_properties();
 //********************************************************************
 
 }  // namespace common

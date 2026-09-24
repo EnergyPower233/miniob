@@ -55,24 +55,24 @@ public:
    */
   explicit ObSkipList(ObComparator cmp);
 
-  ObSkipList(const ObSkipList &)            = delete;
-  ObSkipList &operator=(const ObSkipList &) = delete;
+  ObSkipList(const ObSkipList&)            = delete;
+  ObSkipList& operator=(const ObSkipList&) = delete;
   ~ObSkipList();
 
   /**
    * @brief Insert key into the list.
    * REQUIRES: nothing that compares equal to key is currently in the list
    */
-  void insert(const Key &key);
+  void insert(const Key& key);
 
-  void insert_concurrently(const Key &key);
+  void insert_concurrently(const Key& key);
 
   /**
    * @brief Returns true if an entry that compares equal to key is in the list.
    *  @param [in] key
    *  @return true if found, false otherwise
    */
-  bool contains(const Key &key) const;
+  bool contains(const Key& key) const;
 
   /**
    * @brief Iteration over the contents of a skip list
@@ -84,7 +84,7 @@ public:
      * @brief Initialize an iterator over the specified list.
      * @return The returned iterator is not valid.
      */
-    explicit Iterator(const ObSkipList *list);
+    explicit Iterator(const ObSkipList* list);
 
     /**
      * @brief Returns true iff the iterator is positioned at a valid node.
@@ -95,7 +95,7 @@ public:
      * @brief Returns the key at the current position.
      * REQUIRES: valid()
      */
-    const Key &key() const;
+    const Key& key() const;
 
     /**
      * @brief Advance to the next entry in the list.
@@ -112,7 +112,7 @@ public:
     /**
      * @brief Advance to the first entry with a key >= target
      */
-    void seek(const Key &target);
+    void seek(const Key& target);
 
     /**
      * @brief Position at the first entry in list.
@@ -127,8 +127,8 @@ public:
     void seek_to_last();
 
   private:
-    const ObSkipList *list_;
-    Node             *node_;
+    const ObSkipList* list_;
+    Node*             node_;
   };
 
 private:
@@ -139,29 +139,29 @@ private:
 
   inline int get_max_height() const { return max_height_.load(std::memory_order_relaxed); }
 
-  Node *new_node(const Key &key, int height);
+  Node* new_node(const Key& key, int height);
   int   random_height();
-  bool  equal(const Key &a, const Key &b) const { return (compare_(a, b) == 0); }
+  bool  equal(const Key& a, const Key& b) const { return (compare_(a, b) == 0); }
 
   // Return the earliest node that comes at or after key.
   // Return nullptr if there is no such node.
   //
   // If prev is non-null, fills prev[level] with pointer to previous
   // node at "level" for every level in [0..max_height_-1].
-  Node *find_greater_or_equal(const Key &key, Node **prev) const;
+  Node* find_greater_or_equal(const Key& key, Node** prev) const;
 
   // Return the latest node with a key < key.
   // Return head_ if there is no such node.
-  Node *find_less_than(const Key &key) const;
+  Node* find_less_than(const Key& key) const;
 
   // Return the last node in the list.
   // Return head_ if list is empty.
-  Node *find_last() const;
+  Node* find_last() const;
 
   // Immutable after construction
   ObComparator const compare_;
 
-  Node *const head_;
+  Node* const head_;
 
   // Modified only by insert().  Read racily by readers, but stale
   // values are ok.
@@ -177,20 +177,20 @@ common::RandomGenerator ObSkipList<Key, ObComparator>::rnd = common::RandomGener
 template <typename Key, class ObComparator>
 struct ObSkipList<Key, ObComparator>::Node
 {
-  explicit Node(const Key &k) : key(k) {}
+  explicit Node(const Key& k) : key(k) {}
 
   Key const key;
 
   // Accessors/mutators for links.  Wrapped in methods so we can
   // add the appropriate barriers as necessary.
-  Node *next(int n)
+  Node* next(int n)
   {
     ASSERT(n >= 0, "n >= 0");
     // Use an 'acquire load' so that we observe a fully initialized
     // version of the returned Node.
     return next_[n].load(std::memory_order_acquire);
   }
-  void set_next(int n, Node *x)
+  void set_next(int n, Node* x)
   {
     ASSERT(n >= 0, "n >= 0");
     // Use a 'release store' so that anybody who reads through this
@@ -199,18 +199,18 @@ struct ObSkipList<Key, ObComparator>::Node
   }
 
   // No-barrier variants that can be safely used in a few locations.
-  Node *nobarrier_next(int n)
+  Node* nobarrier_next(int n)
   {
     ASSERT(n >= 0, "n >= 0");
     return next_[n].load(std::memory_order_relaxed);
   }
-  void nobarrier_set_next(int n, Node *x)
+  void nobarrier_set_next(int n, Node* x)
   {
     ASSERT(n >= 0, "n >= 0");
     next_[n].store(x, std::memory_order_relaxed);
   }
 
-  bool cas_next(int n, Node *expected, Node *x)
+  bool cas_next(int n, Node* expected, Node* x)
   {
     ASSERT(n >= 0, "n >= 0");
     return next_[n].compare_exchange_strong(expected, x);
@@ -218,18 +218,18 @@ struct ObSkipList<Key, ObComparator>::Node
 
 private:
   // Array of length equal to the node height.  next_[0] is lowest level link.
-  atomic<Node *> next_[1];
+  atomic<Node*> next_[1];
 };
 
 template <typename Key, class ObComparator>
-typename ObSkipList<Key, ObComparator>::Node *ObSkipList<Key, ObComparator>::new_node(const Key &key, int height)
+typename ObSkipList<Key, ObComparator>::Node* ObSkipList<Key, ObComparator>::new_node(const Key& key, int height)
 {
-  char *const node_memory = reinterpret_cast<char *>(malloc(sizeof(Node) + sizeof(atomic<Node *>) * (height - 1)));
+  char* const node_memory = reinterpret_cast<char*>(malloc(sizeof(Node) + sizeof(atomic<Node*>) * (height - 1)));
   return new (node_memory) Node(key);
 }
 
 template <typename Key, class ObComparator>
-inline ObSkipList<Key, ObComparator>::Iterator::Iterator(const ObSkipList *list)
+inline ObSkipList<Key, ObComparator>::Iterator::Iterator(const ObSkipList* list)
 {
   list_ = list;
   node_ = nullptr;
@@ -237,12 +237,10 @@ inline ObSkipList<Key, ObComparator>::Iterator::Iterator(const ObSkipList *list)
 
 template <typename Key, class ObComparator>
 inline bool ObSkipList<Key, ObComparator>::Iterator::valid() const
-{
-  return node_ != nullptr;
-}
+{ return node_ != nullptr; }
 
 template <typename Key, class ObComparator>
-inline const Key &ObSkipList<Key, ObComparator>::Iterator::key() const
+inline const Key& ObSkipList<Key, ObComparator>::Iterator::key() const
 {
   ASSERT(valid(), "valid");
   return node_->key;
@@ -268,16 +266,12 @@ inline void ObSkipList<Key, ObComparator>::Iterator::prev()
 }
 
 template <typename Key, class ObComparator>
-inline void ObSkipList<Key, ObComparator>::Iterator::seek(const Key &target)
-{
-  node_ = list_->find_greater_or_equal(target, nullptr);
-}
+inline void ObSkipList<Key, ObComparator>::Iterator::seek(const Key& target)
+{ node_ = list_->find_greater_or_equal(target, nullptr); }
 
 template <typename Key, class ObComparator>
 inline void ObSkipList<Key, ObComparator>::Iterator::seek_to_first()
-{
-  node_ = list_->head_->next(0);
-}
+{ node_ = list_->head_->next(0); }
 
 template <typename Key, class ObComparator>
 inline void ObSkipList<Key, ObComparator>::Iterator::seek_to_last()
@@ -303,21 +297,21 @@ int ObSkipList<Key, ObComparator>::random_height()
 }
 
 template <typename Key, class ObComparator>
-typename ObSkipList<Key, ObComparator>::Node *ObSkipList<Key, ObComparator>::find_greater_or_equal(
-    const Key &key, Node **prev) const
+typename ObSkipList<Key, ObComparator>::Node* ObSkipList<Key, ObComparator>::find_greater_or_equal(
+    const Key& key, Node** prev) const
 {
   // your code here
   return nullptr;
 }
 
 template <typename Key, class ObComparator>
-typename ObSkipList<Key, ObComparator>::Node *ObSkipList<Key, ObComparator>::find_less_than(const Key &key) const
+typename ObSkipList<Key, ObComparator>::Node* ObSkipList<Key, ObComparator>::find_less_than(const Key& key) const
 {
-  Node *x     = head_;
+  Node* x     = head_;
   int   level = get_max_height() - 1;
   while (true) {
     ASSERT(x == head_ || compare_(x->key, key) < 0, "x == head_ || compare_(x->key, key) < 0");
-    Node *next = x->next(level);
+    Node* next = x->next(level);
     if (next == nullptr || compare_(next->key, key) >= 0) {
       if (level == 0) {
         return x;
@@ -332,12 +326,12 @@ typename ObSkipList<Key, ObComparator>::Node *ObSkipList<Key, ObComparator>::fin
 }
 
 template <typename Key, class ObComparator>
-typename ObSkipList<Key, ObComparator>::Node *ObSkipList<Key, ObComparator>::find_last() const
+typename ObSkipList<Key, ObComparator>::Node* ObSkipList<Key, ObComparator>::find_last() const
 {
-  Node *x     = head_;
+  Node* x     = head_;
   int   level = get_max_height() - 1;
   while (true) {
-    Node *next = x->next(level);
+    Node* next = x->next(level);
     if (next == nullptr) {
       if (level == 0) {
         return x;
@@ -363,9 +357,9 @@ ObSkipList<Key, ObComparator>::ObSkipList(ObComparator cmp)
 template <typename Key, class ObComparator>
 ObSkipList<Key, ObComparator>::~ObSkipList()
 {
-  typename std::vector<Node *> nodes;
+  typename std::vector<Node*> nodes;
   nodes.reserve(max_height_.load(std::memory_order_relaxed));
-  for (Node *x = head_; x != nullptr; x = x->next(0)) {
+  for (Node* x = head_; x != nullptr; x = x->next(0)) {
     nodes.push_back(x);
   }
   for (auto node : nodes) {
@@ -375,19 +369,19 @@ ObSkipList<Key, ObComparator>::~ObSkipList()
 }
 
 template <typename Key, class ObComparator>
-void ObSkipList<Key, ObComparator>::insert(const Key &key)
+void ObSkipList<Key, ObComparator>::insert(const Key& key)
 {}
 
 template <typename Key, class ObComparator>
-void ObSkipList<Key, ObComparator>::insert_concurrently(const Key &key)
+void ObSkipList<Key, ObComparator>::insert_concurrently(const Key& key)
 {
   // your code here
 }
 
 template <typename Key, class ObComparator>
-bool ObSkipList<Key, ObComparator>::contains(const Key &key) const
+bool ObSkipList<Key, ObComparator>::contains(const Key& key) const
 {
-  Node *x = find_greater_or_equal(key, nullptr);
+  Node* x = find_greater_or_equal(key, nullptr);
   if (x != nullptr && equal(key, x->key)) {
     return true;
   } else {

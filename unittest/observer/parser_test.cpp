@@ -22,11 +22,11 @@ TEST(ParserTest, DISABLED_aggregation_test)
 {
   ParsedSqlResult result;
   {
-    const char *sql = "select sum(a), sum(b) from tab";
+    const char* sql = "select sum(a), sum(b) from tab";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select sum(a+b*c+d/e-f*(g-h)) from tab";
+    const char* sql = "select sum(a+b*c+d/e-f*(g-h)) from tab";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
 }
@@ -35,36 +35,36 @@ TEST(ParserTest, DISABLED_group_by_test)
 {
   ParsedSqlResult result;
   {
-    const char *sql = "select a, sum(b) from tab group by a";
+    const char* sql = "select a, sum(b) from tab group by a";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select sum(a+b*c+d/e-f*(g+1)) from tab group by c+d-e";
+    const char* sql = "select sum(a+b*c+d/e-f*(g+1)) from tab group by c+d-e";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select a,b,sum(a+b*c+d/e-f*(g+1)),e,f,d from tab group by c+d-e";
+    const char* sql = "select a,b,sum(a+b*c+d/e-f*(g+1)),e,f,d from tab group by c+d-e";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select a,b,sum(a+b*c+d/e-f*(g+1)),e,f,d from tab where a>1 and b< 10 and c='abc' group by c+d-e";
+    const char* sql = "select a,b,sum(a+b*c+d/e-f*(g+1)),e,f,d from tab where a>1 and b< 10 and c='abc' group by c+d-e";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select t.a,s.c,sum(u.rr) from t,s,u where t.a<10 and t.b!='vfdv' and u.c='abc' group by s.c+u.q";
+    const char* sql = "select t.a,s.c,sum(u.rr) from t,s,u where t.a<10 and t.b!='vfdv' and u.c='abc' group by s.c+u.q";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select a+a,sum(b+b)+sum(b) from tab group by a";
+    const char* sql = "select a+a,sum(b+b)+sum(b) from tab group by a";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
   {
-    const char *sql = "select a+a,sum(b+b)+sum(b) from tab group by a+a";
+    const char* sql = "select a+a,sum(b+b)+sum(b) from tab group by a+a";
     ASSERT_EQ(parse(sql, &result), RC::SUCCESS);
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

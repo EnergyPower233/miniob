@@ -10,7 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 #include "sql/optimizer/cascade/memo.h"
 
-GroupExpr *Memo::insert_expression(GroupExpr *gexpr, int target_group)
+GroupExpr* Memo::insert_expression(GroupExpr* gexpr, int target_group)
 {
   gexpr->set_group_id(target_group);
   auto it = group_expressions_.find(gexpr);
@@ -31,12 +31,12 @@ GroupExpr *Memo::insert_expression(GroupExpr *gexpr, int target_group)
     group_id = target_group;
   }
 
-  Group *group = get_group_by_id(group_id);
+  Group* group = get_group_by_id(group_id);
   group->add_expr(gexpr);
   return gexpr;
 }
 
-int Memo::add_new_group(GroupExpr *gexpr)
+int Memo::add_new_group(GroupExpr* gexpr)
 {
   auto new_group_id = int(groups_.size());
 
@@ -47,7 +47,7 @@ int Memo::add_new_group(GroupExpr *gexpr)
 void Memo::dump() const
 {
   LOG_TRACE("Memo has %lu groups", groups_.size());
-  for (const auto &group : groups_) {
+  for (const auto& group : groups_) {
     group->dump();
   }
 }

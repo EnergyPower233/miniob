@@ -14,8 +14,8 @@ See the Mulan PSL v2 for more details. */
 #include "sql/optimizer/cascade/rules.h"
 #include "sql/optimizer/cascade/memo.h"
 
-Memo &CascadeTask::get_memo() const {return context_->get_memo(); }
+Memo& CascadeTask::get_memo() const { return context_->get_memo(); }
 
-RuleSet &CascadeTask::get_rule_set() const { return context_->get_rule_set(); }
+RuleSet& CascadeTask::get_rule_set() const { return context_->get_rule_set(); }
 
-void CascadeTask::push_task(CascadeTask *task) { context_->push_task(task); }
+void CascadeTask::push_task(CascadeTask* task) { context_->push_task(task); }

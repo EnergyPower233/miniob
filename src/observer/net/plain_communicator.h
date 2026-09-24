@@ -30,15 +30,15 @@ public:
   PlainCommunicator();
   virtual ~PlainCommunicator() = default;
 
-  RC read_event(SessionEvent *&event) override;
-  RC write_result(SessionEvent *event, bool &need_disconnect) override;
+  RC read_event(SessionEvent*& event) override;
+  RC write_result(SessionEvent* event, bool& need_disconnect) override;
 
 private:
-  RC write_state(SessionEvent *event, bool &need_disconnect);
-  RC write_debug(SessionEvent *event, bool &need_disconnect);
-  RC write_result_internal(SessionEvent *event, bool &need_disconnect);
-  RC write_tuple_result(SqlResult *sql_result);
-  RC write_chunk_result(SqlResult *sql_result);
+  RC write_state(SessionEvent* event, bool& need_disconnect);
+  RC write_debug(SessionEvent* event, bool& need_disconnect);
+  RC write_result_internal(SessionEvent* event, bool& need_disconnect);
+  RC write_tuple_result(SqlResult* sql_result);
+  RC write_chunk_result(SqlResult* sql_result);
 
 protected:
   vector<char> send_message_delimiter_;  ///< 发送消息分隔符

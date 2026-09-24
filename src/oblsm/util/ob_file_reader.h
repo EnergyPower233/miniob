@@ -40,7 +40,7 @@ public:
    *
    * @param filename The name of the file to be read.
    */
-  ObFileReader(const string &filename) : filename_(filename) {}
+  ObFileReader(const string& filename) : filename_(filename) {}
 
   ~ObFileReader();
 
@@ -92,7 +92,7 @@ public:
    * @param filename The name of the file to be read.
    * @return A `unique_ptr` to the created `ObFileReader` object.
    */
-  static unique_ptr<ObFileReader> create_file_reader(const string &filename);
+  static unique_ptr<ObFileReader> create_file_reader(const string& filename);
 
 private:
   /**

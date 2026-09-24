@@ -19,7 +19,7 @@ namespace oceanbase {
 class ObMergingIterator : public ObLsmIterator
 {
 public:
-  ObMergingIterator(const ObComparator *comparator, vector<unique_ptr<ObLsmIterator>> &&children)
+  ObMergingIterator(const ObComparator* comparator, vector<unique_ptr<ObLsmIterator>>&& children)
       : comparator_(comparator), children_(std::move(children)), current_(nullptr)
   {}
 
@@ -43,7 +43,7 @@ public:
     find_largest();
   }
 
-  void seek(const string_view &target) override
+  void seek(const string_view& target) override
   {
     for (size_t i = 0; i < children_.size(); i++) {
       children_[i]->seek(target);
@@ -68,16 +68,16 @@ private:
   // We might want to use a heap in case there are lots of children.
   // For now we use a simple array since we expect a very small number
   // of children.
-  const ObComparator *              comparator_;
+  const ObComparator*               comparator_;
   vector<unique_ptr<ObLsmIterator>> children_;
-  ObLsmIterator *                   current_;
+  ObLsmIterator*                    current_;
 };
 
 void ObMergingIterator::find_smallest()
 {
-  ObLsmIterator *smallest = nullptr;
+  ObLsmIterator* smallest = nullptr;
   for (size_t i = 0; i < children_.size(); i++) {
-    ObLsmIterator *child = children_[i].get();
+    ObLsmIterator* child = children_[i].get();
     if (child->valid()) {
       if (smallest == nullptr) {
         smallest = child;
@@ -91,9 +91,9 @@ void ObMergingIterator::find_smallest()
 
 void ObMergingIterator::find_largest()
 {
-  ObLsmIterator *largest = nullptr;
+  ObLsmIterator* largest = nullptr;
   for (size_t i = 0; i < children_.size(); i++) {
-    ObLsmIterator *child = children_[i].get();
+    ObLsmIterator* child = children_[i].get();
     if (child->valid()) {
       if (largest == nullptr) {
         largest = child;
@@ -105,7 +105,7 @@ void ObMergingIterator::find_largest()
   current_ = largest;
 }
 
-ObLsmIterator *new_merging_iterator(const ObComparator *comparator, vector<unique_ptr<ObLsmIterator>> &&children)
+ObLsmIterator* new_merging_iterator(const ObComparator* comparator, vector<unique_ptr<ObLsmIterator>>&& children)
 {
   if (children.size() == 0) {
     return nullptr;

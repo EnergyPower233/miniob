@@ -18,28 +18,25 @@ See the Mulan PSL v2 for more details. */
 #include "storage/common/codec.h"
 #include "storage/trx/lsm_mvcc_trx.h"
 
-RC LsmTableEngine::insert_record(Record &record)
+RC LsmTableEngine::insert_record(Record& record)
 {
   RC rc = RC::SUCCESS;
   // TODO: set auto increment id, and keep durability.
   // TODO: support set primary key as a part of lsm_key.
   bytes lsm_key;
   Codec::encode(table_->table_id(), inc_id_.fetch_add(1), lsm_key);
-  rc = lsm_->put(string_view((char *)lsm_key.data(), lsm_key.size()), string_view(record.data(), record.len()));
+  rc = lsm_->put(string_view((char*)lsm_key.data(), lsm_key.size()), string_view(record.data(), record.len()));
   return rc;
 }
 
-RC LsmTableEngine::get_record_scanner(RecordScanner *&scanner, Trx *trx, ReadWriteMode mode)
+RC LsmTableEngine::get_record_scanner(RecordScanner*& scanner, Trx* trx, ReadWriteMode mode)
 {
   scanner = new LsmRecordScanner(table_, db_->lsm(), trx);
-  RC rc = scanner->open_scan();
+  RC rc   = scanner->open_scan();
   if (rc != RC::SUCCESS) {
     LOG_ERROR("failed to open scanner. rc=%s", strrc(rc));
   }
   return rc;
 }
 
-RC LsmTableEngine::open()
-{
-  return RC::UNIMPLEMENTED;
-}
+RC LsmTableEngine::open() { return RC::UNIMPLEMENTED; }

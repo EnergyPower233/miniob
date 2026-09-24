@@ -45,17 +45,17 @@ namespace common {
 class LockTrace
 {
 public:
-  static void check(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
-  static void lock(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
-  static void tryLock(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
-  static void unlock(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
+  static void check(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
+  static void lock(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
+  static void tryLock(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
+  static void unlock(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
 
-  static void toString(string &result);
+  static void toString(string& result);
 
   class LockID
   {
   public:
-    LockID(const long long threadId, const char *file, const int line) : mFile(file), mThreadId(threadId), mLine(line)
+    LockID(const long long threadId, const char* file, const int line) : mFile(file), mThreadId(threadId), mLine(line)
     {}
     LockID() : mFile(), mThreadId(0), mLine(0) {}
 
@@ -74,26 +74,26 @@ public:
     int             mLine;
   };
 
-  static void foundDeadLock(LockID &current, LockID &other, pthread_mutex_t *otherWaitMutex);
+  static void foundDeadLock(LockID& current, LockID& other, pthread_mutex_t* otherWaitMutex);
 
-  static bool deadlockCheck(LockID &current, set<pthread_mutex_t *> &ownMutexs, LockID &other, int recusiveNum);
+  static bool deadlockCheck(LockID& current, set<pthread_mutex_t*>& ownMutexs, LockID& other, int recusiveNum);
 
-  static bool deadlockCheck(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
+  static bool deadlockCheck(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
 
-  static bool checkLockTimes(pthread_mutex_t *mutex, const char *file, const int line);
+  static bool checkLockTimes(pthread_mutex_t* mutex, const char* file, const int line);
 
-  static void insertLock(pthread_mutex_t *mutex, const long long threadId, const char *file, const int line);
+  static void insertLock(pthread_mutex_t* mutex, const long long threadId, const char* file, const int line);
 
   static void setMaxBlockThreads(int blockNum) { mMaxBlockTids = blockNum; }
 
 public:
-  static set<pthread_mutex_t *> mEnableRecurisives;
+  static set<pthread_mutex_t*> mEnableRecurisives;
 
 protected:
-  static map<pthread_mutex_t *, LockID>         mLocks;
-  static map<pthread_mutex_t *, int>            mWaitTimes;
-  static map<long long, pthread_mutex_t *>      mWaitLocks;
-  static map<long long, set<pthread_mutex_t *>> mOwnLocks;
+  static map<pthread_mutex_t*, LockID>         mLocks;
+  static map<pthread_mutex_t*, int>            mWaitTimes;
+  static map<long long, pthread_mutex_t*>      mWaitLocks;
+  static map<long long, set<pthread_mutex_t*>> mOwnLocks;
 
   static pthread_rwlock_t mMapMutex;
   static int              mMaxBlockTids;
@@ -126,7 +126,7 @@ protected:
 
 #define MUTEX_INIT(lock, attr)                      \
   ({                                                \
-    LOG_INFO("pthread_mutex_init %p", lock);        \
+    LOG_INFO("pthread_mutex_init %p", lock);         \
     if (attr != NULL) {                             \
       int type;                                     \
       pthread_mutexattr_gettype(attr, &type);       \
@@ -142,7 +142,7 @@ protected:
 
 #define MUTEX_INIT(lock, attr)                      \
   ({                                                \
-    LOG_INFO("pthread_mutex_init %p", lock);        \
+    LOG_INFO("pthread_mutex_init %p", lock);         \
     if (attr != NULL) {                             \
       int type;                                     \
       pthread_mutexattr_gettype(attr, &type);       \
@@ -155,23 +155,23 @@ protected:
   })
 #endif
 
-#define MUTEX_DESTROY(lock)                     \
-  ({                                            \
-    LockTrace::mEnableRecurisives.erase(lock);  \
-    int result = pthread_mutex_destroy(lock);   \
+#define MUTEX_DESTROY(lock)                    \
+  ({                                           \
+    LockTrace::mEnableRecurisives.erase(lock); \
+    int result = pthread_mutex_destroy(lock);  \
     LOG_INFO("pthread_mutex_destroy %p", lock); \
-    result;                                     \
+    result;                                    \
   })
 
-#define MUTEX_LOCK(mutex)                                                      \
-  ({                                                                           \
-    LockTrace::check(mutex, gettid(), __FILE__, __LINE__);                     \
-    int result = pthread_mutex_lock(mutex);                                    \
-    LockTrace::lock(mutex, gettid(), __FILE__, __LINE__);                      \
-    if (result) {                                                              \
+#define MUTEX_LOCK(mutex)                                                   \
+  ({                                                                        \
+    LockTrace::check(mutex, gettid(), __FILE__, __LINE__);                  \
+    int result = pthread_mutex_lock(mutex);                                 \
+    LockTrace::lock(mutex, gettid(), __FILE__, __LINE__);                   \
+    if (result) {                                                           \
       LOG_ERROR("Failed to lock %p, rc %d:%s", mutex, errno, strerror(errno)); \
-    }                                                                          \
-    result;                                                                    \
+    }                                                                       \
+    result;                                                                 \
   })
 
 #define MUTEX_TRYLOCK(mutex)                                \
@@ -184,15 +184,15 @@ protected:
     result;                                                 \
   })
 
-#define MUTEX_UNLOCK(lock)                                                      \
-  ({                                                                            \
-    int result = pthread_mutex_unlock(lock);                                    \
-    LockTrace::unlock(lock, gettid(), __FILE__, __LINE__);                      \
-    MUTEX_LOG("mutex:%p has been ulocked", lock);                               \
-    if (result) {                                                               \
+#define MUTEX_UNLOCK(lock)                                                   \
+  ({                                                                         \
+    int result = pthread_mutex_unlock(lock);                                 \
+    LockTrace::unlock(lock, gettid(), __FILE__, __LINE__);                   \
+    MUTEX_LOG("mutex:%p has been ulocked", lock);                            \
+    if (result) {                                                            \
       LOG_ERROR("Failed to unlock %p, rc %d:%s", lock, errno, strerror(errno)); \
-    }                                                                           \
-    result;                                                                     \
+    }                                                                        \
+    result;                                                                  \
   })
 
 #define COND_INIT(cond, attr)                   \

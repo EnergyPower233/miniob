@@ -50,12 +50,12 @@ public:
   /**
    * @brief 由于日志数据是一个比较消耗内存的对象，所以尽量使用move语义
    */
-  LogEntry(LogEntry &&other);
+  LogEntry(LogEntry&& other);
 
-  LogEntry &operator=(LogEntry &&other);
+  LogEntry& operator=(LogEntry&& other);
 
-  LogEntry(const LogEntry &)            = delete;
-  LogEntry &operator=(const LogEntry &) = delete;
+  LogEntry(const LogEntry&)            = delete;
+  LogEntry& operator=(const LogEntry&) = delete;
 
 public:
   /**
@@ -68,11 +68,11 @@ public:
   static int32_t max_payload_size() { return max_size() - LogHeader::SIZE; }
 
 public:
-  RC init(LSN lsn, LogModule::Id module_id, vector<char> &&data);
-  RC init(LSN lsn, LogModule module, vector<char> &&data);
+  RC init(LSN lsn, LogModule::Id module_id, vector<char>&& data);
+  RC init(LSN lsn, LogModule module, vector<char>&& data);
 
-  const LogHeader &header() const { return header_; }
-  const char      *data() const { return data_.data(); }
+  const LogHeader& header() const { return header_; }
+  const char*      data() const { return data_.data(); }
   int32_t          payload_size() const { return header_.size; }
   int32_t          total_size() const { return LogHeader::SIZE + header_.size; }
 

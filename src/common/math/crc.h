@@ -15,4 +15,4 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 
 /// 计算buffer的crc校验码
-unsigned int crc32(const char *buffer, unsigned int size);
+unsigned int crc32(const char* buffer, unsigned int size);

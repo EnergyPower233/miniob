@@ -23,7 +23,7 @@ void OptimizeExpression::perform()
   // Construct valid transformation rules from rule set
   // TODO: add transformation rules
   auto phys_rules = get_rule_set().get_rules_by_name(RuleSetName::PHYSICAL_IMPLEMENTATION);
-  for (auto &rule : phys_rules) {
+  for (auto& rule : phys_rules) {
     // check if we can apply the rule
     bool already_explored = group_expr_->rule_explored(rule);
     if (already_explored) {
@@ -46,12 +46,12 @@ void OptimizeExpression::perform()
   LOG_TRACE("OptimizeExpression::perform() op {%d}, valid rules : {%d}",
                       static_cast<int>(group_expr_->get_op()->get_op_type()), valid_rules.size());
   // apply the rule
-  for (auto &r : valid_rules) {
+  for (auto& r : valid_rules) {
     push_task(new ApplyRule(group_expr_, r.get_rule(), context_));
     int child_group_idx = 0;
-    for (auto &child_pattern : r.get_rule()->get_match_pattern()->children()) {
+    for (auto& child_pattern : r.get_rule()->get_match_pattern()->children()) {
       if (child_pattern->get_child_patterns_size() > 0) {
-        Group *group = get_memo().get_group_by_id(group_expr_->get_child_group_ids()[child_group_idx]);
+        Group* group = get_memo().get_group_by_id(group_expr_->get_child_group_ids()[child_group_idx]);
         push_task(new ExploreGroup(group, context_));
       }
 

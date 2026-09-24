@@ -27,7 +27,7 @@ private:
 
 public:
   // TODO: support user-defined
-  CostModel(){};
+  CostModel() {};
 
   inline double cpu_op() { return CPU_OP; }
 
@@ -43,5 +43,5 @@ public:
   ///< i/o cost
   inline double io() { return IO; }
 
-  double calculate_cost(Memo *memo, GroupExpr *gexpr);
+  double calculate_cost(Memo* memo, GroupExpr* gexpr);
 };

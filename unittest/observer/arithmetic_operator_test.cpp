@@ -107,7 +107,7 @@ TEST(ArithmeticTest, arithmetic_test)
 #endif
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

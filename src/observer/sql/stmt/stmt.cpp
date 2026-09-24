@@ -45,7 +45,7 @@ bool stmt_type_ddl(StmtType type)
     }
   }
 }
-RC Stmt::create_stmt(Db *db, ParsedSqlNode &sql_node, Stmt *&stmt)
+RC Stmt::create_stmt(Db* db, ParsedSqlNode& sql_node, Stmt*& stmt)
 {
   stmt = nullptr;
 
@@ -76,7 +76,7 @@ RC Stmt::create_stmt(Db *db, ParsedSqlNode &sql_node, Stmt *&stmt)
       return DescTableStmt::create(db, sql_node.desc_table, stmt);
     }
 
-    case SCF_ANALYZE_TABLE: { 
+    case SCF_ANALYZE_TABLE: {
       return AnalyzeTableStmt::create(db, sql_node.analyze_table, stmt);
     }
 

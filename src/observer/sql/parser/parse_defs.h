@@ -332,7 +332,7 @@ class ParsedSqlResult
 public:
   void add_sql_node(unique_ptr<ParsedSqlNode> sql_node);
 
-  vector<unique_ptr<ParsedSqlNode>> &sql_nodes() { return sql_nodes_; }
+  vector<unique_ptr<ParsedSqlNode>>& sql_nodes() { return sql_nodes_; }
 
 private:
   vector<unique_ptr<ParsedSqlNode>> sql_nodes_;  ///< 这里记录SQL命令。虽然看起来支持多个，但是当前仅处理一个

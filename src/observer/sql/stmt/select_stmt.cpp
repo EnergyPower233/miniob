@@ -31,7 +31,7 @@ SelectStmt::~SelectStmt()
   }
 }
 
-RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
+RC SelectStmt::create(Db* db, SelectSqlNode& select_sql, Stmt*& stmt)
 {
   if (nullptr == db) {
     LOG_WARN("invalid argument. db is null");
@@ -41,16 +41,16 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
   BinderContext binder_context;
 
   // collect tables in `from` statement
-  vector<Table *>                tables;
-  unordered_map<string, Table *> table_map;
+  vector<Table*>                tables;
+  unordered_map<string, Table*> table_map;
   for (size_t i = 0; i < select_sql.relations.size(); i++) {
-    const char *table_name = select_sql.relations[i].c_str();
+    const char* table_name = select_sql.relations[i].c_str();
     if (nullptr == table_name) {
       LOG_WARN("invalid argument. relation name is null. index=%d", i);
       return RC::INVALID_ARGUMENT;
     }
 
-    Table *table = db->find_table(table_name);
+    Table* table = db->find_table(table_name);
     if (nullptr == table) {
       LOG_WARN("no such table. db=%s, table_name=%s", db->name(), table_name);
       return RC::SCHEMA_TABLE_NOT_EXIST;
@@ -63,9 +63,9 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
 
   // collect query fields in `select` statement
   vector<unique_ptr<Expression>> bound_expressions;
-  ExpressionBinder expression_binder(binder_context);
-  
-  for (unique_ptr<Expression> &expression : select_sql.expressions) {
+  ExpressionBinder               expression_binder(binder_context);
+
+  for (unique_ptr<Expression>& expression : select_sql.expressions) {
     RC rc = expression_binder.bind_expression(expression, bound_expressions);
     if (OB_FAIL(rc)) {
       LOG_INFO("bind expression failed. rc=%s", strrc(rc));
@@ -74,7 +74,7 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
   }
 
   vector<unique_ptr<Expression>> group_by_expressions;
-  for (unique_ptr<Expression> &expression : select_sql.group_by) {
+  for (unique_ptr<Expression>& expression : select_sql.group_by) {
     RC rc = expression_binder.bind_expression(expression, group_by_expressions);
     if (OB_FAIL(rc)) {
       LOG_INFO("bind expression failed. rc=%s", strrc(rc));
@@ -82,13 +82,13 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
     }
   }
 
-  Table *default_table = nullptr;
+  Table* default_table = nullptr;
   if (tables.size() == 1) {
     default_table = tables[0];
   }
 
   // create filter statement in `where` statement
-  FilterStmt *filter_stmt = nullptr;
+  FilterStmt* filter_stmt = nullptr;
   RC          rc          = FilterStmt::create(db,
       default_table,
       &table_map,
@@ -101,12 +101,12 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
   }
 
   // everything alright
-  SelectStmt *select_stmt = new SelectStmt();
+  SelectStmt* select_stmt = new SelectStmt();
 
   select_stmt->tables_.swap(tables);
   select_stmt->query_expressions_.swap(bound_expressions);
   select_stmt->filter_stmt_ = filter_stmt;
   select_stmt->group_by_.swap(group_by_expressions);
-  stmt                      = select_stmt;
+  stmt = select_stmt;
   return RC::SUCCESS;
 }

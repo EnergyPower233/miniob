@@ -23,14 +23,14 @@ using namespace std;
 
 namespace common {
 
-int ThreadPoolExecutor::init(const char *name, int core_pool_size, int max_pool_size, long keep_alive_time_ms)
+int ThreadPoolExecutor::init(const char* name, int core_pool_size, int max_pool_size, long keep_alive_time_ms)
 {
   unique_ptr<Queue<unique_ptr<Runnable>>> queue_ptr(new (nothrow) SimpleQueue<unique_ptr<Runnable>>());
   return init(name, core_pool_size, max_pool_size, keep_alive_time_ms, std::move(queue_ptr));
 }
 
-int ThreadPoolExecutor::init(const char *name, int core_pool_size, int max_pool_size, long keep_alive_time_ms,
-    unique_ptr<Queue<unique_ptr<Runnable>>> &&work_queue)
+int ThreadPoolExecutor::init(const char* name, int core_pool_size, int max_pool_size, long keep_alive_time_ms,
+    unique_ptr<Queue<unique_ptr<Runnable>>>&& work_queue)
 {
   if (state_ != State::NEW) {
     LOG_ERROR("invalid state. state=%d", state_);
@@ -80,13 +80,13 @@ int ThreadPoolExecutor::shutdown()
   return 0;
 }
 
-int ThreadPoolExecutor::execute(const function<void()> &callable)
+int ThreadPoolExecutor::execute(const function<void()>& callable)
 {
   unique_ptr<Runnable> task_ptr(new RunnableAdaptor(callable));
   return this->execute(std::move(task_ptr));
 }
 
-int ThreadPoolExecutor::execute(unique_ptr<Runnable> &&task)
+int ThreadPoolExecutor::execute(unique_ptr<Runnable>&& task)
 {
   if (state_ != State::RUNNING) {
     LOG_WARN("[%s] cannot submit task. state=%d", pool_name_.c_str(), state_);
@@ -128,7 +128,7 @@ void ThreadPoolExecutor::thread_func()
     LOG_WARN("[%s] cannot find thread state of %lx", pool_name_.c_str(), this_thread::get_id());
     return;
   }
-  ThreadData &thread_data = iter->second;
+  ThreadData& thread_data = iter->second;
   lock_.unlock();
 
   using Clock = chrono::steady_clock;
@@ -184,7 +184,7 @@ int ThreadPoolExecutor::create_thread(bool core_thread)
 
 int ThreadPoolExecutor::create_thread_locked(bool core_thread)
 {
-  thread *thread_ptr = new (nothrow) thread(&ThreadPoolExecutor::thread_func, this);
+  thread* thread_ptr = new (nothrow) thread(&ThreadPoolExecutor::thread_func, this);
   if (thread_ptr == nullptr) {
     LOG_ERROR("create thread failed");
     return -1;

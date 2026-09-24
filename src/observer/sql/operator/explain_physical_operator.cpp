@@ -18,7 +18,7 @@ See the Mulan PSL v2 for more details. */
 
 using namespace std;
 
-RC ExplainPhysicalOperator::open(Trx *)
+RC ExplainPhysicalOperator::open(Trx*)
 {
   ASSERT(children_.size() == 1, "explain must has 1 child");
   return RC::SUCCESS;
@@ -46,19 +46,18 @@ RC ExplainPhysicalOperator::next()
   return RC::SUCCESS;
 }
 
-RC ExplainPhysicalOperator::next(Chunk &chunk)
+RC ExplainPhysicalOperator::next(Chunk& chunk)
 {
   if (!physical_plan_.empty()) {
     return RC::RECORD_EOF;
   }
   generate_physical_plan();
 
-  Value         cell(physical_plan_.c_str());
-  auto column = make_unique<Column>();
+  Value cell(physical_plan_.c_str());
+  auto  column = make_unique<Column>();
   column->init(cell, chunk.rows());
   chunk.add_column(std::move(column), 0);
   return RC::SUCCESS;
 }
 
-Tuple *ExplainPhysicalOperator::current_tuple() { return &tuple_; }
-
+Tuple* ExplainPhysicalOperator::current_tuple() { return &tuple_; }

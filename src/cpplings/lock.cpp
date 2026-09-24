@@ -31,16 +31,16 @@ scoped_lock 不支持手动锁定和解锁，也不支持条件变量。
 struct Node
 {
   int   value;
-  Node *next;
+  Node* next;
 };
 
-Node *list_head(nullptr);
+Node* list_head(nullptr);
 
 // 向 `list_head` 中添加一个 value 为 `val` 的 Node 节点。
 void append_node(int val)
 {
-  Node *old_head = list_head;
-  Node *new_node = new Node{val, old_head};
+  Node* old_head = list_head;
+  Node* new_node = new Node{val, old_head};
 
   // TODO: 使用 scoped_lock/unique_lock 来使这段代码线程安全。
   list_head = new_node;
@@ -52,12 +52,12 @@ int main()
   int                      thread_num = 50;
   for (int i = 0; i < thread_num; ++i)
     threads.push_back(std::thread(append_node, i));
-  for (auto &th : threads)
+  for (auto& th : threads)
     th.join();
 
   // 注意：在 `append_node` 函数是线程安全的情况下，`list_head` 中将包含 50 个 Node 节点。
   int cnt = 0;
-  for (Node *it = list_head; it != nullptr; it = it->next) {
+  for (Node* it = list_head; it != nullptr; it = it->next) {
     std::cout << ' ' << it->value;
     cnt++;
   }
@@ -65,7 +65,7 @@ int main()
   assert(cnt == thread_num);
   std::cout << cnt << std::endl;
 
-  Node *it;
+  Node* it;
   while ((it = list_head)) {
     list_head = it->next;
     delete it;

@@ -39,9 +39,9 @@ public:
   virtual ~SimpleQueue() {}
 
   //! @copydoc Queue::emplace
-  int push(value_type &&value) override;
+  int push(value_type&& value) override;
   //! @copydoc Queue::pop
-  int pop(value_type &value) override;
+  int pop(value_type& value) override;
   //! @copydoc Queue::size
   int size() const override;
 

@@ -67,7 +67,7 @@ TEST(test_bitmap, test_bitmap)
   ASSERT_EQ(16, bitmap3.next_setted_bit(8));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   // 分析gtest程序的命令行参数
   testing::InitGoogleTest(&argc, argv);

@@ -45,7 +45,7 @@ public:
    * @param db A pointer to the `ObLsm` database on which this transaction operates.
    * @param ts The timestamp for the transaction.
    */
-  ObLsmTransaction(ObLsm *db, uint64_t ts);
+  ObLsmTransaction(ObLsm* db, uint64_t ts);
 
   ~ObLsmTransaction() = default;
 
@@ -55,12 +55,12 @@ public:
    * @param key The key to look up within the database.
    * @param value A pointer to a string where the associated value will be stored, if found.
    */
-  RC get(const string_view &key, string *value);
+  RC get(const string_view& key, string* value);
 
   /**
    * @brief Adds or updates a key-value pair within the transaction's in-memory store.
    */
-  RC put(const string_view &key, const string_view &value);
+  RC put(const string_view& key, const string_view& value);
 
   /**
    * @brief Removes a key from the database within the transaction's scope.
@@ -68,7 +68,7 @@ public:
    * This method marks the specified key for removal, but it is not persisted to the database until the transaction is
    * committed.
    */
-  RC remove(const string_view &key);
+  RC remove(const string_view& key);
 
   /**
    * The iterator allows traversal of keys and values within the database. Options can define
@@ -77,7 +77,7 @@ public:
    * @param options The `ObLsmReadOptions` that define the read behavior of the iterator.
    * @return A pointer to the newly created `ObLsmIterator` object.
    */
-  ObLsmIterator *new_iterator(ObLsmReadOptions options);
+  ObLsmIterator* new_iterator(ObLsmReadOptions options);
 
   /**
    * @brief Commits the transaction, persisting all transaction changes to the database.
@@ -97,7 +97,7 @@ private:
    * This member variable links the transaction to its underlying database, ensuring that
    * all transactional operations target the correct storage layer.
    */
-  ObLsm *db_ = nullptr;
+  ObLsm* db_ = nullptr;
 
   /**
    * @brief The transaction's unique timestamp.

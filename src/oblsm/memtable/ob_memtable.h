@@ -34,7 +34,7 @@ namespace oceanbase {
 class ObMemTable : public enable_shared_from_this<ObMemTable>
 {
 public:
-  ObMemTable() : comparator_(), table_(comparator_){};
+  ObMemTable() : comparator_(), table_(comparator_) {};
 
   ~ObMemTable() = default;
 
@@ -60,7 +60,7 @@ public:
    * @param key The key to be inserted.
    * @param value The value associated with the key.
    */
-  void put(uint64_t seq, const string_view &key, const string_view &value);
+  void put(uint64_t seq, const string_view& key, const string_view& value);
 
   /**
    * @brief Estimates the memory usage of the memtable.
@@ -81,7 +81,7 @@ public:
    *
    * @return A pointer to the newly created `ObLsmIterator` for the memtable.
    */
-  ObLsmIterator *new_iterator();
+  ObLsmIterator* new_iterator();
 
 private:
   friend class ObMemTableIterator;
@@ -102,12 +102,12 @@ private:
   {
     const ObInternalKeyComparator comparator;
     explicit KeyComparator() {}
-    int operator()(const char *a, const char *b) const;
+    int operator()(const char* a, const char* b) const;
   };
 
   // TODO: currently the memtable use skiplist as the underlying data structure,
   // it is possible to use other data structure, for example, hash table.
-  typedef ObSkipList<const char *, KeyComparator> Table;
+  typedef ObSkipList<const char*, KeyComparator> Table;
 
   /**
    * @brief Comparator used for ordering keys in the memtable.
@@ -141,14 +141,14 @@ private:
 class ObMemTableIterator : public ObLsmIterator
 {
 public:
-  explicit ObMemTableIterator(shared_ptr<ObMemTable> mem, ObMemTable::Table *table) : mem_(mem), iter_(table) {}
+  explicit ObMemTableIterator(shared_ptr<ObMemTable> mem, ObMemTable::Table* table) : mem_(mem), iter_(table) {}
 
-  ObMemTableIterator(const ObMemTableIterator &)            = delete;
-  ObMemTableIterator &operator=(const ObMemTableIterator &) = delete;
+  ObMemTableIterator(const ObMemTableIterator&)            = delete;
+  ObMemTableIterator& operator=(const ObMemTableIterator&) = delete;
 
   ~ObMemTableIterator() override = default;
 
-  void seek(const string_view &k) override;
+  void seek(const string_view& k) override;
   void seek_to_first() override { iter_.seek_to_first(); }
   void seek_to_last() override { iter_.seek_to_last(); }
 

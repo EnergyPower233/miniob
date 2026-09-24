@@ -23,7 +23,7 @@ PersistHandler::PersistHandler() {}
 
 PersistHandler::~PersistHandler() { close_file(); }
 
-RC PersistHandler::create_file(const char *file_name)
+RC PersistHandler::create_file(const char* file_name)
 {
   RC rc = RC::SUCCESS;
   if (file_name == nullptr) {
@@ -48,7 +48,7 @@ RC PersistHandler::create_file(const char *file_name)
   return rc;
 }
 
-RC PersistHandler::open_file(const char *file_name)
+RC PersistHandler::open_file(const char* file_name)
 {
   int fd;
   RC  rc = RC::SUCCESS;
@@ -100,7 +100,7 @@ RC PersistHandler::close_file()
   return rc;
 }
 
-RC PersistHandler::remove_file(const char *file_name)
+RC PersistHandler::remove_file(const char* file_name)
 {
   RC rc = RC::SUCCESS;
 
@@ -125,7 +125,7 @@ RC PersistHandler::remove_file(const char *file_name)
   return rc;
 }
 
-RC PersistHandler::write_file(int size, const char *data, int64_t *out_size)
+RC PersistHandler::write_file(int size, const char* data, int64_t* out_size)
 {
   RC rc = RC::SUCCESS;
   if (file_name_.empty()) {
@@ -149,7 +149,7 @@ RC PersistHandler::write_file(int size, const char *data, int64_t *out_size)
   return rc;
 }
 
-RC PersistHandler::write_at(uint64_t offset, int size, const char *data, int64_t *out_size)
+RC PersistHandler::write_at(uint64_t offset, int size, const char* data, int64_t* out_size)
 {
   RC rc = RC::SUCCESS;
   if (file_name_.empty()) {
@@ -179,7 +179,7 @@ RC PersistHandler::write_at(uint64_t offset, int size, const char *data, int64_t
   return rc;
 }
 
-RC PersistHandler::append(int size, const char *data, int64_t *out_size, int64_t *out_offset)
+RC PersistHandler::append(int size, const char* data, int64_t* out_size, int64_t* out_offset)
 {
   RC rc = RC::SUCCESS;
   if (file_name_.empty()) {
@@ -213,7 +213,7 @@ RC PersistHandler::append(int size, const char *data, int64_t *out_size, int64_t
   return rc;
 }
 
-RC PersistHandler::read_file(int size, char *data, int64_t *out_size)
+RC PersistHandler::read_file(int size, char* data, int64_t* out_size)
 {
   RC rc = RC::SUCCESS;
   if (file_name_.empty()) {
@@ -236,7 +236,7 @@ RC PersistHandler::read_file(int size, char *data, int64_t *out_size)
   return rc;
 }
 
-RC PersistHandler::read_at(uint64_t offset, int size, char *data, int64_t *out_size)
+RC PersistHandler::read_at(uint64_t offset, int size, char* data, int64_t* out_size)
 {
   RC rc = RC::SUCCESS;
   if (file_name_.empty()) {

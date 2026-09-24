@@ -24,14 +24,14 @@ class Chunk
 public:
   static const int MAX_ROWS = Column::DEFAULT_CAPACITY;
   Chunk()                   = default;
-  Chunk(const Chunk &other)
+  Chunk(const Chunk& other)
   {
     for (size_t i = 0; i < other.columns_.size(); ++i) {
       columns_.emplace_back(other.columns_[i]->clone());
     }
     column_ids_ = other.column_ids_;
   }
-  Chunk(Chunk &&chunk)
+  Chunk(Chunk&& chunk)
   {
     columns_    = std::move(chunk.columns_);
     column_ids_ = std::move(chunk.column_ids_);
@@ -39,19 +39,19 @@ public:
 
   int column_num() const { return columns_.size(); }
 
-  Column &column(size_t idx)
+  Column& column(size_t idx)
   {
     ASSERT(idx < columns_.size(), "invalid column index");
     return *columns_[idx];
   }
 
-  const Column &column(size_t idx) const
+  const Column& column(size_t idx) const
   {
     ASSERT(idx < columns_.size(), "invalid column index");
     return *columns_[idx];
   }
 
-  Column *column_ptr(size_t idx)
+  Column* column_ptr(size_t idx)
   {
     ASSERT(idx < columns_.size(), "invalid column index");
     return &column(idx);
@@ -65,7 +65,7 @@ public:
 
   void add_column(unique_ptr<Column> col, int col_id);
 
-  RC reference(Chunk &chunk);
+  RC reference(Chunk& chunk);
 
   /**
    * @brief 获取 Chunk 中的行数

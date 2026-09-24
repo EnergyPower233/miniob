@@ -31,7 +31,7 @@ using namespace bplus_tree;
 class LogEntryStringifier
 {
 public:
-  string to_string(const LogEntry &entry) const
+  string to_string(const LogEntry& entry) const
   {
     stringstream ss;
     ss << entry.header().to_string() << ", ";
@@ -41,7 +41,7 @@ public:
           ss << "invalid buffer pool log entry. "
              << "payload size = " << entry.payload_size() << ", expected size = " << sizeof(BufferPoolLogEntry);
         } else {
-          auto *bp_entry = reinterpret_cast<const BufferPoolLogEntry *>(entry.data());
+          auto* bp_entry = reinterpret_cast<const BufferPoolLogEntry*>(entry.data());
           ss << bp_entry->to_string();
         }
       } break;
@@ -50,7 +50,7 @@ public:
           ss << "invalid record log entry. "
              << "payload size = " << entry.payload_size() << ", expected size = " << RecordLogHeader::SIZE;
         } else {
-          auto *record_log_header = reinterpret_cast<const RecordLogHeader *>(entry.data());
+          auto* record_log_header = reinterpret_cast<const RecordLogHeader*>(entry.data());
           ss << record_log_header->to_string();
         }
       } break;
@@ -59,15 +59,15 @@ public:
       } break;
 
       case LogModule::Id::TRANSACTION: {
-        auto *header = reinterpret_cast<const MvccTrxLogHeader *>(entry.data());
+        auto* header = reinterpret_cast<const MvccTrxLogHeader*>(entry.data());
 
         MvccTrxLogOperation operation_type(header->operation_type);
         if (operation_type.type() == MvccTrxLogOperation::Type::INSERT_RECORD ||
             operation_type.type() == MvccTrxLogOperation::Type::DELETE_RECORD) {
-          auto *record_log_header = reinterpret_cast<const MvccTrxRecordLogEntry *>(entry.data());
+          auto* record_log_header = reinterpret_cast<const MvccTrxRecordLogEntry*>(entry.data());
           ss << record_log_header->to_string();
         } else if (operation_type.type() == MvccTrxLogOperation::Type::COMMIT) {
-          auto *commit_log = reinterpret_cast<const MvccTrxCommitLogEntry *>(entry.data());
+          auto* commit_log = reinterpret_cast<const MvccTrxCommitLogEntry*>(entry.data());
           ss << commit_log->to_string();
         } else {
           ss << header->to_string();
@@ -83,7 +83,7 @@ public:
   }
 };
 
-void dump_file(const filesystem::path &filepath)
+void dump_file(const filesystem::path& filepath)
 {
   LogFileReader log_file;
   RC            rc = log_file.open(filepath.c_str());
@@ -96,7 +96,7 @@ void dump_file(const filesystem::path &filepath)
 
   printf("begin dump file %s\n", filepath.c_str());
 
-  rc = log_file.iterate([&stringifier](const LogEntry &entry) -> RC {
+  rc = log_file.iterate([&stringifier](const LogEntry& entry) -> RC {
     printf("%s\n", stringifier.to_string(entry).c_str());
     return RC::SUCCESS;
   });
@@ -111,7 +111,7 @@ void dump_file(const filesystem::path &filepath)
   log_file.close();
 }
 
-void dump_directory(const filesystem::path &directory)
+void dump_directory(const filesystem::path& directory)
 {
   LogFileManager log_file_manager;
   RC             rc = log_file_manager.init(directory.c_str(), 1);
@@ -129,7 +129,7 @@ void dump_directory(const filesystem::path &directory)
 
   LogEntryStringifier stringifier;
 
-  for (const auto &filename : filenames) {
+  for (const auto& filename : filenames) {
     LogFileReader log_file;
     rc = log_file.open(filename.c_str());
     if (OB_FAIL(rc)) {
@@ -139,7 +139,7 @@ void dump_directory(const filesystem::path &directory)
 
     printf("begin dump file %s\n", filename.c_str());
 
-    rc = log_file.iterate([&stringifier](const LogEntry &entry) -> RC {
+    rc = log_file.iterate([&stringifier](const LogEntry& entry) -> RC {
       printf("%s\n", stringifier.to_string(entry).c_str());
       return RC::SUCCESS;
     });
@@ -155,7 +155,7 @@ void dump_directory(const filesystem::path &directory)
   }
 }
 
-void dump(const char *arg)
+void dump(const char* arg)
 {
   filesystem::path path(arg);
   if (filesystem::is_directory(path)) {
@@ -167,7 +167,7 @@ void dump(const char *arg)
   }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   if (argc < 2) {
     printf("please give me a clog file or directory name\n");

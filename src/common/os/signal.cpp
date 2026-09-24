@@ -44,7 +44,7 @@ void set_signal_handler(sighandler_t func)
   signal(SIGPIPE, SIG_IGN);
 }
 
-void block_default_signals(sigset_t *signal_set, sigset_t *old_set)
+void block_default_signals(sigset_t* signal_set, sigset_t* old_set)
 {
   sigemptyset(signal_set);
 #ifndef DEBUG
@@ -56,7 +56,7 @@ void block_default_signals(sigset_t *signal_set, sigset_t *old_set)
   pthread_sigmask(SIG_BLOCK, signal_set, old_set);
 }
 
-void unblock_default_signals(sigset_t *signal_set, sigset_t *old_set)
+void unblock_default_signals(sigset_t* signal_set, sigset_t* old_set)
 {
   sigemptyset(signal_set);
 #ifndef DEBUG
@@ -67,10 +67,10 @@ void unblock_default_signals(sigset_t *signal_set, sigset_t *old_set)
   pthread_sigmask(SIG_UNBLOCK, signal_set, old_set);
 }
 
-void *wait_for_signals(void *args)
+void* wait_for_signals(void* args)
 {
   LOG_INFO("Start thread to wait signals.");
-  sigset_t *signal_set = (sigset_t *)args;
+  sigset_t* signal_set = (sigset_t*)args;
   int       sig_number = -1;
   while (true) {
     errno   = 0;
@@ -83,7 +83,7 @@ void *wait_for_signals(void *args)
   return NULL;
 }
 
-void start_wait_for_signals(sigset_t *signal_set)
+void start_wait_for_signals(sigset_t* signal_set)
 {
   pthread_t      pThread;
   pthread_attr_t pThreadAttrs;
@@ -92,6 +92,6 @@ void start_wait_for_signals(sigset_t *signal_set)
   pthread_attr_init(&pThreadAttrs);
   pthread_attr_setdetachstate(&pThreadAttrs, PTHREAD_CREATE_DETACHED);
 
-  pthread_create(&pThread, &pThreadAttrs, wait_for_signals, (void *)signal_set);
+  pthread_create(&pThread, &pThreadAttrs, wait_for_signals, (void*)signal_set);
 }
 }  // namespace common

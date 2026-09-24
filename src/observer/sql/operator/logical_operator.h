@@ -59,9 +59,9 @@ public:
 
   void        add_child(unique_ptr<LogicalOperator> oper);
   void        add_expressions(unique_ptr<Expression> expr);
-  auto        children() -> vector<unique_ptr<LogicalOperator>>        &{ return children_; }
-  auto        expressions() -> vector<unique_ptr<Expression>>        &{ return expressions_; }
-  static bool can_generate_vectorized_operator(const LogicalOperatorType &type);
+  auto        children() -> vector<unique_ptr<LogicalOperator>>& { return children_; }
+  auto        expressions() -> vector<unique_ptr<Expression>>& { return expressions_; }
+  static bool can_generate_vectorized_operator(const LogicalOperatorType& type);
   // TODO: used by cascade optimizer, tmp function, need to be remove
   void generate_general_child();
 

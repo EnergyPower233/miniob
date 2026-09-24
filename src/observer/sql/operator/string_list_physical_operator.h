@@ -31,21 +31,17 @@ public:
 
   template <typename InputIt>
   void append(InputIt begin, InputIt end)
-  {
-    strings_.emplace_back(begin, end);
-  }
+  { strings_.emplace_back(begin, end); }
 
   void append(initializer_list<string> init) { strings_.emplace_back(init); }
 
   template <typename T>
-  void append(const T &v)
-  {
-    strings_.emplace_back(1, v);
-  }
+  void append(const T& v)
+  { strings_.emplace_back(1, v); }
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::STRING_LIST; }
 
-  RC open(Trx *) override { return RC::SUCCESS; }
+  RC open(Trx*) override { return RC::SUCCESS; }
 
   RC next() override
   {
@@ -64,15 +60,15 @@ public:
     return RC::SUCCESS;
   }
 
-  virtual Tuple *current_tuple() override
+  virtual Tuple* current_tuple() override
   {
     if (iterator_ == strings_.end()) {
       return nullptr;
     }
 
-    const StringList &string_list = *iterator_;
+    const StringList& string_list = *iterator_;
     vector<Value>     cells;
-    for (const string &s : string_list) {
+    for (const string& s : string_list) {
 
       Value value(s.c_str());
       cells.push_back(value);

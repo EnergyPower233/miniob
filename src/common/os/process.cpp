@@ -35,7 +35,7 @@ namespace common {
 
 #define RWRR (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
-string get_process_name(const char *prog_name)
+string get_process_name(const char* prog_name)
 {
   string process_name;
 
@@ -43,7 +43,7 @@ string get_process_name(const char *prog_name)
 
   assert(buf_len);
 
-  char *buf = new char[buf_len + 1];
+  char* buf = new char[buf_len + 1];
   if (buf == NULL) {
     cerr << "Failed to alloc memory for program name." << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
     return "";
@@ -77,7 +77,7 @@ int daemonize_service(bool close_std_streams)
   return rc;
 }
 
-int daemonize_service(const char *std_out_file, const char *std_err_file)
+int daemonize_service(const char* std_out_file, const char* std_err_file)
 {
   int rc = daemonize_service(false);
 
@@ -91,7 +91,7 @@ int daemonize_service(const char *std_out_file, const char *std_err_file)
   return 0;
 }
 
-void sys_log_redirect(const char *std_out_file, const char *std_err_file)
+void sys_log_redirect(const char* std_out_file, const char* std_err_file)
 {
   int rc = 0;
 

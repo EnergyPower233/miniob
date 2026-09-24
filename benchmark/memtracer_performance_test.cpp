@@ -11,22 +11,22 @@ See the Mulan PSL v2 for more details. */
 #include <cstdint>
 #include <benchmark/benchmark.h>
 
-static void BM_MallocFree(benchmark::State &state)
+static void BM_MallocFree(benchmark::State& state)
 {
   size_t size = state.range(0);
   for (auto _ : state) {
-    void *ptr = malloc(size);
+    void* ptr = malloc(size);
     benchmark::DoNotOptimize(ptr);
     free(ptr);
   }
   state.SetBytesProcessed(static_cast<int64_t>(state.iterations() * size));
 }
 
-static void BM_NewDelete(benchmark::State &state)
+static void BM_NewDelete(benchmark::State& state)
 {
   size_t size = state.range(0);
   for (auto _ : state) {
-    char *ptr = new char[size];
+    char* ptr = new char[size];
     benchmark::DoNotOptimize(ptr);
     delete[] ptr;
   }

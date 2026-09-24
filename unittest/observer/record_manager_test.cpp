@@ -36,24 +36,24 @@ TEST(RecordPageHandler, test_record_page_handler)
 {
   VacuousLogHandler log_handler;
 
-  const char *record_manager_file = "record_manager.bp";
+  const char* record_manager_file = "record_manager.bp";
   ::remove(record_manager_file);
 
-  BufferPoolManager *bpm = new BufferPoolManager();
+  BufferPoolManager* bpm = new BufferPoolManager();
   ASSERT_EQ(RC::SUCCESS, bpm->init(make_unique<VacuousDoubleWriteBuffer>()));
-  DiskBufferPool *bp = nullptr;
+  DiskBufferPool* bp = nullptr;
   RC              rc = bpm->create_file(record_manager_file);
   ASSERT_EQ(rc, RC::SUCCESS);
 
   rc = bpm->open_file(log_handler, record_manager_file, bp);
   ASSERT_EQ(rc, RC::SUCCESS);
 
-  Frame *frame = nullptr;
+  Frame* frame = nullptr;
   rc           = bp->allocate_page(&frame);
   ASSERT_EQ(rc, RC::SUCCESS);
 
   const int          record_size        = 8;
-  RecordPageHandler *record_page_handle = new RowRecordPageHandler();
+  RecordPageHandler* record_page_handle = new RowRecordPageHandler();
   rc = record_page_handle->init_empty_page(*bp, log_handler, frame->page_num(), record_size, nullptr);
   ASSERT_EQ(rc, RC::SUCCESS);
 
@@ -127,12 +127,12 @@ TEST(RecordScanner, test_record_file_iterator)
 {
   VacuousLogHandler log_handler;
 
-  const char *record_manager_file = "record_manager.bp";
+  const char* record_manager_file = "record_manager.bp";
   filesystem::remove(record_manager_file);
 
-  BufferPoolManager *bpm = new BufferPoolManager();
+  BufferPoolManager* bpm = new BufferPoolManager();
   ASSERT_EQ(RC::SUCCESS, bpm->init(make_unique<VacuousDoubleWriteBuffer>()));
-  DiskBufferPool *bp = nullptr;
+  DiskBufferPool* bp = nullptr;
   RC              rc = bpm->create_file(record_manager_file);
   ASSERT_EQ(rc, RC::SUCCESS);
 
@@ -143,9 +143,9 @@ TEST(RecordScanner, test_record_file_iterator)
   rc = file_handler.init(*bp, log_handler, nullptr, nullptr);
   ASSERT_EQ(rc, RC::SUCCESS);
 
-  VacuousTrx        trx;
-  int    count = 0;
-  Record record;
+  VacuousTrx       trx;
+  int              count = 0;
+  Record           record;
   const int        record_insert_num = 1000;
   char             record_data[20];
   std::vector<RID> rids;
@@ -236,7 +236,7 @@ TEST(RecordManager, durability)
   ASSERT_EQ(log_handler.replay(log_replayer, 0), RC::SUCCESS);
   ASSERT_EQ(log_handler.start(), RC::SUCCESS);
 
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(bpm.create_file(record_manager_file.c_str()), RC::SUCCESS);
   ASSERT_EQ(bpm.open_file(log_handler, record_manager_file.c_str(), buffer_pool), RC::SUCCESS);
   ASSERT_NE(buffer_pool, nullptr);
@@ -289,7 +289,7 @@ TEST(RecordManager, durability)
               advance(iter, record_random.next());
               RID rid = iter->first;
               ASSERT_EQ(record_file_handler.visit_record(rid,
-                            [&new_record](Record &record) {
+                            [&new_record](Record& record) {
                               memcpy(record.data(), new_record.c_str(), new_record.size());
                               return true;
                             }),
@@ -340,7 +340,7 @@ TEST(RecordManager, durability)
   DiskLogHandler    log_handler2;
   BufferPoolManager bpm2;
   ASSERT_EQ(RC::SUCCESS, bpm2.init(make_unique<VacuousDoubleWriteBuffer>()));
-  DiskBufferPool *buffer_pool2 = nullptr;
+  DiskBufferPool* buffer_pool2 = nullptr;
   filesystem::copy(record_manager_file_copy, record_manager_file);
   ASSERT_EQ(bpm2.open_file(log_handler2, record_manager_file.c_str(), buffer_pool2), RC::SUCCESS);
   ASSERT_NE(buffer_pool2, nullptr);
@@ -352,7 +352,7 @@ TEST(RecordManager, durability)
 
   RecordFileHandler record_file_handler2(StorageFormat::ROW_FORMAT);
   ASSERT_EQ(record_file_handler2.init(*buffer_pool2, log_handler2, nullptr, nullptr), RC::SUCCESS);
-  for (const auto &[rid, record] : record_map) {
+  for (const auto& [rid, record] : record_map) {
     Record record_data;
     ASSERT_EQ(record_file_handler2.get_record(rid, record_data), RC::SUCCESS);
     ASSERT_EQ(memcmp(record_data.data(), record.c_str(), record.size()), 0);
@@ -363,7 +363,7 @@ TEST(RecordManager, durability)
   bpm2.close_file(record_manager_file.c_str());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

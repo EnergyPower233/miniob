@@ -18,12 +18,12 @@ See the Mulan PSL v2 for more details. */
 class OptimizeExpression : public CascadeTask
 {
 public:
-  OptimizeExpression(GroupExpr *group_expr, OptimizerContext *context)
+  OptimizeExpression(GroupExpr* group_expr, OptimizerContext* context)
       : CascadeTask(context, CascadeTaskType::OPTIMIZE_EXPR), group_expr_(group_expr)
   {}
 
   void perform() override;
 
 private:
-  GroupExpr *group_expr_;
+  GroupExpr* group_expr_;
 };

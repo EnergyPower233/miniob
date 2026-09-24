@@ -44,8 +44,8 @@ public:
   /**
    * @brief 在缓冲区中追加一条日志
    */
-  RC append(LSN &lsn, LogModule::Id module_id, vector<char> &&data);
-  RC append(LSN &lsn, LogModule module, vector<char> &&data);
+  RC append(LSN& lsn, LogModule::Id module_id, vector<char>&& data);
+  RC append(LSN& lsn, LogModule module, vector<char>&& data);
 
   /**
    * @brief 刷新缓冲区中的日志到磁盘
@@ -53,7 +53,7 @@ public:
    * @param file_handle 使用它来写文件
    * @param count 刷了多少条日志
    */
-  RC flush(LogFileWriter &file_writer, int &count);
+  RC flush(LogFileWriter& file_writer, int& count);
 
   /**
    * @brief 当前缓冲区中有多少字节的日志
@@ -69,7 +69,7 @@ public:
   LSN flushed_lsn() const { return flushed_lsn_.load(); }
 
 private:
-  mutex           mutex_;  /// 当前数据结构一定会在多线程中访问，所以强制使用有效的锁，而不是有条件生效的common::Mutex
+  mutex           mutex_;    /// 当前数据结构一定会在多线程中访问，所以强制使用有效的锁，而不是有条件生效的common::Mutex
   deque<LogEntry> entries_;  /// 日志缓冲区
   atomic<int64_t> bytes_;    /// 当前缓冲区中的日志数据大小
 

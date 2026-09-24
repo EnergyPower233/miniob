@@ -49,10 +49,10 @@ private:
   // Forbid copy ctor and =() to support ref count
 
   // Copy constructor.
-  TimeoutInfo(const TimeoutInfo &ti);
+  TimeoutInfo(const TimeoutInfo& ti);
 
   // Assignment operator.
-  TimeoutInfo &operator=(const TimeoutInfo &ti);
+  TimeoutInfo& operator=(const TimeoutInfo& ti);
 
 protected:
   // Avoid heap-based \c TimeoutInfo

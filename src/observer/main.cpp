@@ -34,7 +34,7 @@ using namespace common;
 
 #define NET "NET"
 
-static Server *g_server = nullptr;
+static Server* g_server = nullptr;
 
 void usage()
 {
@@ -51,17 +51,17 @@ void usage()
   cout << "-E: storage engine. {heap(default), lsm}" << endl;
 }
 
-void parse_parameter(int argc, char **argv)
+void parse_parameter(int argc, char** argv)
 {
   string process_name = get_process_name(argv[0]);
 
-  ProcessParam *process_param = the_process_param();
+  ProcessParam* process_param = the_process_param();
 
   process_param->init_default(process_name);
 
   // Process args
   int          opt;
-  extern char *optarg;
+  extern char* optarg;
   while ((opt = getopt(argc, argv, "dp:P:s:t:T:f:o:e:E:hn:")) > 0) {
     switch (opt) {
       case 's': process_param->set_unix_socket_path(optarg); break;
@@ -84,11 +84,11 @@ void parse_parameter(int argc, char **argv)
   }
 }
 
-Server *init_server()
+Server* init_server()
 {
   map<string, string> net_section = get_properties()->get(NET);
 
-  ProcessParam *process_param = the_process_param();
+  ProcessParam* process_param = the_process_param();
 
   long listen_addr        = INADDR_ANY;
   long max_connection_num = MAX_CONNECTION_NUM_DEFAULT;
@@ -136,7 +136,7 @@ Server *init_server()
   }
   server_param.thread_handling = process_param->thread_handling_name();
 
-  Server *server = nullptr;
+  Server* server = nullptr;
   if (server_param.use_std_io) {
     server = new CliServer(server_param);
   } else {
@@ -151,7 +151,7 @@ Server *init_server()
  * 那么直接在signal_handler里面处理的话，可能会导致死锁
  * 所以这里单独创建一个线程
  */
-void *quit_thread_func(void *_signum)
+void* quit_thread_func(void* _signum)
 {
   intptr_t signum = (intptr_t)_signum;
   LOG_INFO("Receive signal: %ld", signum);
@@ -168,10 +168,10 @@ void quit_signal_handle(int signum)
   set_signal_handler(nullptr);
 
   pthread_t tid;
-  pthread_create(&tid, nullptr, quit_thread_func, (void *)(intptr_t)signum);
+  pthread_create(&tid, nullptr, quit_thread_func, (void*)(intptr_t)signum);
 }
 
-const char *startup_tips = R"(
+const char* startup_tips = R"(
 Welcome to the OceanBase database implementation course.
 
 Copyright (c) 2021 OceanBase and/or its affiliates.
@@ -181,7 +181,7 @@ Learn more about MiniOB at https://github.com/oceanbase/miniob
 
 )";
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   int rc = STATUS_SUCCESS;
 

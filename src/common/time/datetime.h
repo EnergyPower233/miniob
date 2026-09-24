@@ -95,18 +95,18 @@ struct DateTime
   }
 
   // Construct from the xml datetime format
-  DateTime(string &xml_time);
+  DateTime(string& xml_time);
 
   // check whether a string is valid with a xml datetime format
-  static bool is_valid_xml_datetime(const string &str);
+  static bool is_valid_xml_datetime(const string& str);
 
   // Load the referenced values with the year, month and day
   // portions of the date in a single operation
-  inline void get_ymd(int &year, int &month, int &day) const { get_ymd(m_date, year, month, day); }
+  inline void get_ymd(int& year, int& month, int& day) const { get_ymd(m_date, year, month, day); }
 
   // Load the referenced values with the hour, minute, second and
   // millisecond portions of the time in a single operation
-  inline void get_hms(int &hour, int &minute, int &second, int &millis) const
+  inline void get_hms(int& hour, int& minute, int& second, int& millis) const
   {
     int ticks = m_time / MILLIS_PER_SEC;
     hour      = ticks / SECONDS_PER_HOUR;
@@ -160,7 +160,7 @@ struct DateTime
   }
 
   // Initialize from another DateTime
-  void set(const DateTime &other)
+  void set(const DateTime& other)
   {
     m_date = other.m_date;
     m_time = other.m_time;
@@ -188,7 +188,7 @@ struct DateTime
   string to_xml_date_time();
 
   // Return time_t from XML schema date-time format.
-  time_t str_to_time_t(string &xml_str);
+  time_t str_to_time_t(string& xml_str);
 
   // Return xml time str from time_t.
   string time_t_to_xml_str(time_t timet);
@@ -197,14 +197,12 @@ struct DateTime
   string time_t_to_str(int timet);
 
   // Return time_t string from XML schema date-time format.
-  string str_to_time_t_str(string &xml_str);
+  string str_to_time_t_str(string& xml_str);
 
   // Helper method to convert a broken down time to a number of
   // milliseconds since midnight
   static int make_hms(int hour, int minute, int second, int millis)
-  {
-    return MILLIS_PER_SEC * (SECONDS_PER_HOUR * hour + SECONDS_PER_MIN * minute + second) + millis;
-  }
+  { return MILLIS_PER_SEC * (SECONDS_PER_HOUR * hour + SECONDS_PER_MIN * minute + second) + millis; }
 
   // Return the current wall-clock time as a DateTime
   static DateTime now();
@@ -216,13 +214,13 @@ struct DateTime
   static DateTime from_time_t(time_t t, int millis = 0)
   {
     struct tm tmbuf;
-    tm       *tm = gmtime_r(&t, &tmbuf);
+    tm*       tm = gmtime_r(&t, &tmbuf);
     return from_tm(*tm, millis);
   }
 
   // Convert a tm and optional milliseconds to a DateTime.  \note
   // the tm structure is assumed to contain a date specified in UTC
-  static DateTime from_tm(const tm &tm, int millis = 0)
+  static DateTime from_tm(const tm& tm, int millis = 0)
   {
     return DateTime(
         julian_date(tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday), make_hms(tm.tm_hour, tm.tm_min, tm.tm_sec, millis));
@@ -238,7 +236,7 @@ struct DateTime
   }
 
   // Convert a Julian day number to a year, month and day
-  static void get_ymd(int jday, int &year, int &month, int &day)
+  static void get_ymd(int jday, int& year, int& month, int& day)
   {
     int a = jday + 32044;
     int b = (4 * a + 3) / 146097;
@@ -287,17 +285,15 @@ struct DateTime
   int max_day_in_month_for(int year, int month);
 
   // parse the duration string and convert it to struct tm
-  void parse_duration(string dur_str, struct tm &tm_t);
+  void parse_duration(string dur_str, struct tm& tm_t);
 };
 
-inline bool operator==(const DateTime &lhs, const DateTime &rhs)
-{
-  return lhs.m_date == rhs.m_date && lhs.m_time == rhs.m_time;
-}
+inline bool operator==(const DateTime& lhs, const DateTime& rhs)
+{ return lhs.m_date == rhs.m_date && lhs.m_time == rhs.m_time; }
 
-inline bool operator!=(const DateTime &lhs, const DateTime &rhs) { return !(lhs == rhs); }
+inline bool operator!=(const DateTime& lhs, const DateTime& rhs) { return !(lhs == rhs); }
 
-inline bool operator<(const DateTime &lhs, const DateTime &rhs)
+inline bool operator<(const DateTime& lhs, const DateTime& rhs)
 {
   if (lhs.m_date < rhs.m_date)
     return true;
@@ -308,15 +304,15 @@ inline bool operator<(const DateTime &lhs, const DateTime &rhs)
   return false;
 }
 
-inline bool operator>(const DateTime &lhs, const DateTime &rhs) { return !(lhs == rhs || lhs < rhs); }
+inline bool operator>(const DateTime& lhs, const DateTime& rhs) { return !(lhs == rhs || lhs < rhs); }
 
-inline bool operator<=(const DateTime &lhs, const DateTime &rhs) { return lhs == rhs || lhs < rhs; }
+inline bool operator<=(const DateTime& lhs, const DateTime& rhs) { return lhs == rhs || lhs < rhs; }
 
-inline bool operator>=(const DateTime &lhs, const DateTime &rhs) { return lhs == rhs || lhs > rhs; }
+inline bool operator>=(const DateTime& lhs, const DateTime& rhs) { return lhs == rhs || lhs > rhs; }
 
 // Calculate the difference between two DateTime values and return
 // the result as a number of seconds
-inline int operator-(const DateTime &lhs, const DateTime &rhs)
+inline int operator-(const DateTime& lhs, const DateTime& rhs)
 {
   return (DateTime::SECONDS_PER_DAY * (lhs.m_date - rhs.m_date) +
           // Truncate the millis before subtracting
@@ -332,9 +328,7 @@ public:
 
   // Defaults to the current date
   TimeStamp(int hour, int minute, int second, int millisecond = 0) : DateTime(DateTime::now())
-  {
-    set_hms(hour, minute, second, millisecond);
-  }
+  { set_hms(hour, minute, second, millisecond); }
 
   TimeStamp(int hour, int minute, int second, int date, int month, int year)
       : DateTime(year, month, date, hour, minute, second, 0)
@@ -346,7 +340,7 @@ public:
 
   TimeStamp(time_t time, int millisecond = 0) : DateTime(from_time_t(time, millisecond)) {}
 
-  TimeStamp(const tm *time, int millisecond = 0) : DateTime(from_tm(*time, millisecond)) {}
+  TimeStamp(const tm* time, int millisecond = 0) : DateTime(from_tm(*time, millisecond)) {}
 
   void set_current() { set(DateTime::now()); }
 };
@@ -358,13 +352,13 @@ public:
   // Defaults to the current time
   Time() { set_current(); }
 
-  Time(const DateTime &val) : DateTime(val) { clear_date(); }
+  Time(const DateTime& val) : DateTime(val) { clear_date(); }
 
   Time(int hour, int minute, int second, int millisecond = 0) { set_hms(hour, minute, second, millisecond); }
 
   Time(time_t time, int millisecond = 0) : DateTime(from_time_t(time, millisecond)) { clear_date(); }
 
-  Time(const tm *time, int millisecond = 0) : DateTime(from_tm(*time, millisecond)) { clear_date(); }
+  Time(const tm* time, int millisecond = 0) : DateTime(from_tm(*time, millisecond)) { clear_date(); }
 
   // Set to the current time.
   void set_current()
@@ -381,13 +375,13 @@ public:
   // Defaults to the current date
   Date() { set_current(); }
 
-  Date(const DateTime &val) : DateTime(val) { clear_time(); }
+  Date(const DateTime& val) : DateTime(val) { clear_time(); }
 
   Date(int date, int month, int year) : DateTime(year, month, date, 0, 0, 0, 0) {}
 
   Date(long sec) : DateTime(sec / DateTime::SECONDS_PER_DAY, 0) {}
 
-  Date(const tm *time) : DateTime(from_tm(*time)) { clear_time(); }
+  Date(const tm* time) : DateTime(from_tm(*time)) { clear_time(); }
 
   // Set to the current time.
   void set_current()

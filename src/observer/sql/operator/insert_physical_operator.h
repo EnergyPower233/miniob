@@ -26,7 +26,7 @@ class InsertStmt;
 class InsertPhysicalOperator : public PhysicalOperator
 {
 public:
-  InsertPhysicalOperator(Table *table, vector<Value> &&values);
+  InsertPhysicalOperator(Table* table, vector<Value>&& values);
 
   virtual ~InsertPhysicalOperator() = default;
 
@@ -34,13 +34,13 @@ public:
 
   OpType get_op_type() const override { return OpType::INSERT; }
 
-  RC open(Trx *trx) override;
+  RC open(Trx* trx) override;
   RC next() override;
   RC close() override;
 
-  Tuple *current_tuple() override { return nullptr; }
+  Tuple* current_tuple() override { return nullptr; }
 
 private:
-  Table        *table_ = nullptr;
+  Table*        table_ = nullptr;
   vector<Value> values_;
 };

@@ -22,7 +22,7 @@ void ObBlockBuilder::reset()
   // first_key_.clear();
 }
 
-RC ObBlockBuilder::add(const string_view &key, const string_view &value)
+RC ObBlockBuilder::add(const string_view& key, const string_view& value)
 {
   RC rc = RC::SUCCESS;
   if (appro_size() + key.size() + value.size() + 2 * sizeof(uint32_t) > BLOCK_SIZE) {

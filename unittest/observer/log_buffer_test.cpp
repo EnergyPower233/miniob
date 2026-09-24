@@ -66,7 +66,7 @@ TEST(LogEntryBuffer, test_append)
   filesystem::remove("test_log_entry_buffer.log");
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

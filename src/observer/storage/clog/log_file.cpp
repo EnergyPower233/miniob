@@ -23,7 +23,7 @@ See the Mulan PSL v2 for more details. */
 
 using namespace common;
 
-RC LogFileReader::open(const char *filename)
+RC LogFileReader::open(const char* filename)
 {
   filename_ = filename;
 
@@ -48,7 +48,7 @@ RC LogFileReader::close()
   return RC::SUCCESS;
 }
 
-RC LogFileReader::iterate(function<RC(LogEntry &)> callback, LSN start_lsn /*=0*/)
+RC LogFileReader::iterate(function<RC(LogEntry&)> callback, LSN start_lsn /*=0*/)
 {
   RC rc = skip_to(start_lsn);
   if (OB_FAIL(rc)) {
@@ -57,7 +57,7 @@ RC LogFileReader::iterate(function<RC(LogEntry &)> callback, LSN start_lsn /*=0*
 
   LogHeader header;
   while (true) {
-    int ret = readn(fd_, reinterpret_cast<char *>(&header), LogHeader::SIZE);
+    int ret = readn(fd_, reinterpret_cast<char*>(&header), LogHeader::SIZE);
     if (0 != ret) {
       if (-1 == ret) {
         // EOF
@@ -106,7 +106,7 @@ RC LogFileReader::skip_to(LSN start_lsn)
 
   LogHeader header;
   while (true) {
-    int ret = readn(fd_, reinterpret_cast<char *>(&header), LogHeader::SIZE);
+    int ret = readn(fd_, reinterpret_cast<char*>(&header), LogHeader::SIZE);
     if (0 != ret) {
       if (-1 == ret) {
         // EOF
@@ -141,19 +141,16 @@ RC LogFileReader::skip_to(LSN start_lsn)
 }
 ////////////////////////////////////////////////////////////////////////////////
 // LogFileWriter
-LogFileWriter::~LogFileWriter()
-{
-  (void)this->close();
-}
+LogFileWriter::~LogFileWriter() { (void)this->close(); }
 
-RC LogFileWriter::open(const char *filename, int end_lsn)
+RC LogFileWriter::open(const char* filename, int end_lsn)
 {
   if (fd_ >= 0) {
     return RC::FILE_OPEN;
   }
 
   filename_ = filename;
-  end_lsn_ = end_lsn;
+  end_lsn_  = end_lsn;
 
   fd_ = ::open(filename, O_WRONLY | O_APPEND | O_CREAT | O_SYNC, 0644);
   if (fd_ < 0) {
@@ -176,7 +173,7 @@ RC LogFileWriter::close()
   return RC::SUCCESS;
 }
 
-RC LogFileWriter::write(LogEntry &entry)
+RC LogFileWriter::write(LogEntry& entry)
 {
   // 一个日志文件写的日志条数是有限制的
   if (entry.lsn() > end_lsn_) {
@@ -195,7 +192,7 @@ RC LogFileWriter::write(LogEntry &entry)
 
   /// WARNING 这里需要处理日志写一半的情况
   /// 日志只写成功一部分到文件中非常难处理
-  int ret = writen(fd_, reinterpret_cast<const char *>(&entry.header()), LogHeader::SIZE);
+  int ret = writen(fd_, reinterpret_cast<const char*>(&entry.header()), LogHeader::SIZE);
   if (0 != ret) {
     LOG_WARN("write log entry header failed. filename=%s, ret = %d, error=%s, entry=%s", 
              filename_.c_str(), ret, strerror(errno), entry.to_string().c_str());
@@ -214,27 +211,18 @@ RC LogFileWriter::write(LogEntry &entry)
   return RC::SUCCESS;
 }
 
-bool LogFileWriter::valid() const
-{
-  return fd_ >= 0;
-}
+bool LogFileWriter::valid() const { return fd_ >= 0; }
 
-bool LogFileWriter::full() const
-{
-  return last_lsn_ >= end_lsn_;
-}
+bool LogFileWriter::full() const { return last_lsn_ >= end_lsn_; }
 
-string LogFileWriter::to_string() const
-{
-  return filename_;
-}
+string LogFileWriter::to_string() const { return filename_; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // LogFileManager
 
-RC LogFileManager::init(const char *directory, int max_entry_number_per_file)
+RC LogFileManager::init(const char* directory, int max_entry_number_per_file)
 {
-  directory_ = filesystem::absolute(filesystem::path(directory));
+  directory_                 = filesystem::absolute(filesystem::path(directory));
   max_entry_number_per_file_ = max_entry_number_per_file;
 
   // 检查目录是否存在，不存在就创建出来
@@ -242,7 +230,7 @@ RC LogFileManager::init(const char *directory, int max_entry_number_per_file)
     LOG_INFO("directory is not exist. directory=%s", directory_.c_str());
 
     error_code ec;
-    bool ret = filesystem::create_directories(directory_, ec);
+    bool       ret = filesystem::create_directories(directory_, ec);
     if (!ret) {
       LOG_WARN("create directory failed. directory=%s, error=%s", directory_.c_str(), ec.message().c_str());
       return RC::FILE_CREATE;
@@ -250,14 +238,14 @@ RC LogFileManager::init(const char *directory, int max_entry_number_per_file)
   }
 
   // 列出所有的日志文件
-  for (const filesystem::directory_entry &dir_entry : filesystem::directory_iterator(directory_)) {
+  for (const filesystem::directory_entry& dir_entry : filesystem::directory_iterator(directory_)) {
     if (!dir_entry.is_regular_file()) {
       continue;
     }
 
     string filename = dir_entry.path().filename().string();
-    LSN lsn = 0;
-    RC rc = get_lsn_from_filename(filename, lsn);
+    LSN    lsn      = 0;
+    RC     rc       = get_lsn_from_filename(filename, lsn);
     if (OB_FAIL(rc)) {
       LOG_TRACE("invalid log file name. filename=%s", filename.c_str());
       continue;
@@ -277,13 +265,14 @@ RC LogFileManager::init(const char *directory, int max_entry_number_per_file)
   return RC::SUCCESS;
 }
 
-RC LogFileManager::get_lsn_from_filename(const string &filename, LSN &lsn)
+RC LogFileManager::get_lsn_from_filename(const string& filename, LSN& lsn)
 {
   if (!filename.starts_with(file_prefix_) || !filename.ends_with(file_suffix_)) {
     return RC::INVALID_ARGUMENT;
   }
 
-  string_view lsn_str(filename.data() + strlen(file_prefix_), filename.length() - strlen(file_suffix_) - strlen(file_prefix_));
+  string_view lsn_str(
+      filename.data() + strlen(file_prefix_), filename.length() - strlen(file_suffix_) - strlen(file_prefix_));
   from_chars_result result = from_chars(lsn_str.data(), lsn_str.data() + lsn_str.size(), lsn);
   if (result.ec != errc()) {
     LOG_TRACE("invalid log file name: cannot calc lsn. filename=%s, error=%s", 
@@ -294,13 +283,13 @@ RC LogFileManager::get_lsn_from_filename(const string &filename, LSN &lsn)
   return RC::SUCCESS;
 }
 
-RC LogFileManager::list_files(vector<string> &files, LSN start_lsn)
+RC LogFileManager::list_files(vector<string>& files, LSN start_lsn)
 {
   files.clear();
 
   // 这里的代码是AI自动生成的
   // 其实写的不好，我们只需要找到比start_lsn相等或者小的第一个日志文件就可以了
-  for (auto &file : log_files_) {
+  for (auto& file : log_files_) {
     if (file.first + max_entry_number_per_file_ - 1 >= start_lsn) {
       files.emplace_back(file.second.string());
     }
@@ -309,7 +298,7 @@ RC LogFileManager::list_files(vector<string> &files, LSN start_lsn)
   return RC::SUCCESS;
 }
 
-RC LogFileManager::last_file(LogFileWriter &file_writer)
+RC LogFileManager::last_file(LogFileWriter& file_writer)
 {
   if (log_files_.empty()) {
     return next_file(file_writer);
@@ -318,11 +307,10 @@ RC LogFileManager::last_file(LogFileWriter &file_writer)
   file_writer.close();
 
   auto last_file_item = log_files_.rbegin();
-  return file_writer.open(last_file_item->second.c_str(), 
-                          last_file_item->first + max_entry_number_per_file_ - 1);
+  return file_writer.open(last_file_item->second.c_str(), last_file_item->first + max_entry_number_per_file_ - 1);
 }
 
-RC LogFileManager::next_file(LogFileWriter &file_writer)
+RC LogFileManager::next_file(LogFileWriter& file_writer)
 {
   file_writer.close();
 
@@ -331,7 +319,7 @@ RC LogFileManager::next_file(LogFileWriter &file_writer)
     lsn = log_files_.rbegin()->first + max_entry_number_per_file_;
   }
 
-  string filename = file_prefix_ + to_string(lsn) + file_suffix_;
+  string           filename  = file_prefix_ + to_string(lsn) + file_suffix_;
   filesystem::path file_path = directory_ / filename;
   log_files_.emplace(lsn, file_path);
 

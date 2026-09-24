@@ -20,7 +20,7 @@ int mm256_extract_epi32_var_indx(const __m256i vec, const unsigned int i)
   return _mm_cvtsi128_si32(_mm256_castsi256_si128(val));
 }
 
-int mm256_sum_epi32(const int *values, int size)
+int mm256_sum_epi32(const int* values, int size)
 {
   // your code here
   int sum = 0;
@@ -30,7 +30,7 @@ int mm256_sum_epi32(const int *values, int size)
   return sum;
 }
 
-float mm256_sum_ps(const float *values, int size)
+float mm256_sum_ps(const float* values, int size)
 {
   // your code here
   float sum = 0;
@@ -41,17 +41,17 @@ float mm256_sum_ps(const float *values, int size)
 }
 
 template <typename V>
-void selective_load(V *memory, int offset, V *vec, __m256i &inv)
+void selective_load(V* memory, int offset, V* vec, __m256i& inv)
 {
-  int *inv_ptr = reinterpret_cast<int *>(&inv);
+  int* inv_ptr = reinterpret_cast<int*>(&inv);
   for (int i = 0; i < SIMD_WIDTH; i++) {
     if (inv_ptr[i] == -1) {
       vec[i] = memory[offset++];
     }
   }
 }
-template void selective_load<uint32_t>(uint32_t *memory, int offset, uint32_t *vec, __m256i &inv);
-template void selective_load<int>(int *memory, int offset, int *vec, __m256i &inv);
-template void selective_load<float>(float *memory, int offset, float *vec, __m256i &inv);
+template void selective_load<uint32_t>(uint32_t* memory, int offset, uint32_t* vec, __m256i& inv);
+template void selective_load<int>(int* memory, int offset, int* vec, __m256i& inv);
+template void selective_load<float>(float* memory, int offset, float* vec, __m256i& inv);
 
 #endif

@@ -27,7 +27,7 @@ class FieldMeta;
 class CreateIndexStmt : public Stmt
 {
 public:
-  CreateIndexStmt(Table *table, const FieldMeta *field_meta, const string &index_name)
+  CreateIndexStmt(Table* table, const FieldMeta* field_meta, const string& index_name)
       : table_(table), field_meta_(field_meta), index_name_(index_name)
   {}
 
@@ -35,15 +35,15 @@ public:
 
   StmtType type() const override { return StmtType::CREATE_INDEX; }
 
-  Table           *table() const { return table_; }
-  const FieldMeta *field_meta() const { return field_meta_; }
-  const string    &index_name() const { return index_name_; }
+  Table*           table() const { return table_; }
+  const FieldMeta* field_meta() const { return field_meta_; }
+  const string&    index_name() const { return index_name_; }
 
 public:
-  static RC create(Db *db, const CreateIndexSqlNode &create_index, Stmt *&stmt);
+  static RC create(Db* db, const CreateIndexSqlNode& create_index, Stmt*& stmt);
 
 private:
-  Table           *table_      = nullptr;
-  const FieldMeta *field_meta_ = nullptr;
+  Table*           table_      = nullptr;
+  const FieldMeta* field_meta_ = nullptr;
   string           index_name_;
 };

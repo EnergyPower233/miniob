@@ -34,16 +34,16 @@ public:
   StmtType type() const override { return StmtType::CALC; }
 
 public:
-  static RC create(CalcSqlNode &calc_sql, Stmt *&stmt)
+  static RC create(CalcSqlNode& calc_sql, Stmt*& stmt)
   {
-    CalcStmt *calc_stmt     = new CalcStmt();
+    CalcStmt* calc_stmt     = new CalcStmt();
     calc_stmt->expressions_ = std::move(calc_sql.expressions);
     stmt                    = calc_stmt;
     return RC::SUCCESS;
   }
 
 public:
-  vector<unique_ptr<Expression>> &expressions() { return expressions_; }
+  vector<unique_ptr<Expression>>& expressions() { return expressions_; }
 
 private:
   vector<unique_ptr<Expression>> expressions_;

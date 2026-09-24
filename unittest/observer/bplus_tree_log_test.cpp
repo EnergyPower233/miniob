@@ -28,7 +28,7 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-RC list_all_values(BplusTreeHandler &tree_handler, vector<RID> &rids)
+RC list_all_values(BplusTreeHandler& tree_handler, vector<RID>& rids)
 {
   auto scanner = make_unique<BplusTreeScanner>(tree_handler);
   RC   rc      = scanner->open(nullptr /*left_user_key*/,
@@ -60,7 +60,7 @@ TEST(BplusTreeLog, base)
   // 1. create a bplus tree and a disk logger
   auto bpm = make_unique<BufferPoolManager>();
   ASSERT_EQ(RC::SUCCESS, bpm->init(make_unique<VacuousDoubleWriteBuffer>()));
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   auto            log_handler = make_unique<DiskLogHandler>();
   ASSERT_EQ(RC::SUCCESS, bpm->create_file(bp_filename.c_str()));
   ASSERT_EQ(RC::SUCCESS, bpm->open_file(*log_handler, bp_filename.c_str(), buffer_pool));
@@ -90,7 +90,7 @@ TEST(BplusTreeLog, base)
   for (int i : keys) {
     RID rid(i, i);
     int key = i;
-    ASSERT_EQ(RC::SUCCESS, bplus_tree->insert_entry(reinterpret_cast<const char *>(&key), &rid));
+    ASSERT_EQ(RC::SUCCESS, bplus_tree->insert_entry(reinterpret_cast<const char*>(&key), &rid));
   }
 
   // 3. write logs to disk
@@ -111,7 +111,7 @@ TEST(BplusTreeLog, base)
   auto bpm2 = make_unique<BufferPoolManager>();
   ASSERT_EQ(RC::SUCCESS, bpm2->init(make_unique<VacuousDoubleWriteBuffer>()));
   auto            log_handler2 = make_unique<DiskLogHandler>();
-  DiskBufferPool *buffer_pool2 = nullptr;
+  DiskBufferPool* buffer_pool2 = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm2->open_file(*log_handler2, bp_filename2.c_str(), buffer_pool2));
   ASSERT_NE(nullptr, buffer_pool2);
 
@@ -170,13 +170,13 @@ TEST(BplusTreeLog, concurrency)
   }
 
   // 创建一批B+树，执行插入、删除动作
-  vector<DiskBufferPool *> buffer_pools;
-  auto                     bpm = make_unique<BufferPoolManager>();
+  vector<DiskBufferPool*> buffer_pools;
+  auto                    bpm = make_unique<BufferPoolManager>();
   ASSERT_EQ(RC::SUCCESS, bpm->init(make_unique<VacuousDoubleWriteBuffer>()));
   auto log_handler = make_unique<DiskLogHandler>();
-  for (filesystem::path &bp_filename : bp_filenames) {
+  for (filesystem::path& bp_filename : bp_filenames) {
     ASSERT_EQ(RC::SUCCESS, bpm->create_file(bp_filename.c_str()));
-    DiskBufferPool *buffer_pool = nullptr;
+    DiskBufferPool* buffer_pool = nullptr;
     ASSERT_EQ(RC::SUCCESS, bpm->open_file(*log_handler, bp_filename.c_str(), buffer_pool));
     ASSERT_NE(nullptr, buffer_pool);
     buffer_pools.push_back(buffer_pool);
@@ -190,7 +190,7 @@ TEST(BplusTreeLog, concurrency)
   ASSERT_EQ(RC::SUCCESS, log_handler->start());
 
   vector<unique_ptr<BplusTreeHandler>> bplus_trees;
-  for (DiskBufferPool *buffer_pool : buffer_pools) {
+  for (DiskBufferPool* buffer_pool : buffer_pools) {
     auto bplus_tree = make_unique<BplusTreeHandler>();
     ASSERT_EQ(RC::SUCCESS, bplus_tree->create(*log_handler, *buffer_pool, AttrType::INTS, 4));
     bplus_trees.push_back(std::move(bplus_tree));
@@ -216,7 +216,7 @@ TEST(BplusTreeLog, concurrency)
     executor.execute([&bplus_trees, &tree_index_generator, i]() {
       RID rid(i, i);
       int tree_index = tree_index_generator.next();
-      ASSERT_EQ(RC::SUCCESS, bplus_trees[tree_index]->insert_entry(reinterpret_cast<const char *>(&i), &rid));
+      ASSERT_EQ(RC::SUCCESS, bplus_trees[tree_index]->insert_entry(reinterpret_cast<const char*>(&i), &rid));
     });
   }
 
@@ -228,9 +228,9 @@ TEST(BplusTreeLog, concurrency)
       int operation_index = operation_index_generator.next();
       RID rid(i, i);
       if (0 == operation_index) {
-        bplus_trees[tree_index]->insert_entry(reinterpret_cast<const char *>(&i), &rid);
+        bplus_trees[tree_index]->insert_entry(reinterpret_cast<const char*>(&i), &rid);
       } else {
-        bplus_trees[tree_index]->delete_entry(reinterpret_cast<const char *>(&i), &rid);
+        bplus_trees[tree_index]->delete_entry(reinterpret_cast<const char*>(&i), &rid);
       }
     });
   }
@@ -254,13 +254,13 @@ TEST(BplusTreeLog, concurrency)
   auto bpm2 = make_unique<BufferPoolManager>();
   ASSERT_EQ(RC::SUCCESS, bpm2->init(make_unique<VacuousDoubleWriteBuffer>()));
   auto                     log_handler2 = make_unique<DiskLogHandler>();
-  vector<DiskBufferPool *> buffer_pools2;
+  vector<DiskBufferPool*>  buffer_pools2;
   vector<filesystem::path> bp_filenames2;
   for (int i = 0; i < 10; i++) {
     bp_filenames2.push_back(child_directory_dst / ("bplus_tree" + to_string(i) + ".bp"));
   }
-  for (filesystem::path &bp_filename : bp_filenames2) {
-    DiskBufferPool *buffer_pool = nullptr;
+  for (filesystem::path& bp_filename : bp_filenames2) {
+    DiskBufferPool* buffer_pool = nullptr;
     ASSERT_EQ(RC::SUCCESS, bpm2->open_file(*log_handler2, bp_filename.c_str(), buffer_pool));
     ASSERT_NE(nullptr, buffer_pool);
     buffer_pools2.push_back(buffer_pool);
@@ -271,7 +271,7 @@ TEST(BplusTreeLog, concurrency)
   ASSERT_EQ(RC::SUCCESS, log_handler2->replay(log_replayer2, 0));
 
   vector<unique_ptr<BplusTreeHandler>> bplus_trees2;
-  for (DiskBufferPool *buffer_pool : buffer_pools2) {
+  for (DiskBufferPool* buffer_pool : buffer_pools2) {
     auto bplus_tree = make_unique<BplusTreeHandler>();
     ASSERT_EQ(RC::SUCCESS, bplus_tree->open(*log_handler2, *buffer_pool));
     bplus_trees2.push_back(std::move(bplus_tree));
@@ -284,10 +284,10 @@ TEST(BplusTreeLog, concurrency)
     ASSERT_EQ(RC::SUCCESS, list_all_values(*bplus_trees2[i], rids2));
     LOG_INFO("bplus tree log test. tree index: %d, rids1 size: %d, rids2 size: %d", i, rids1.size(), rids2.size());
     if (rids1.size() != rids2.size()) {
-      for (RID &rid : rids1) {
+      for (RID& rid : rids1) {
         LOG_INFO("hnwyllmm rid1: %s", rid.to_string().c_str());
       }
-      for (RID &rid : rids2) {
+      for (RID& rid : rids2) {
         LOG_INFO("hnwyllmm rid2: %s", rid.to_string().c_str());
       }
     }
@@ -317,7 +317,7 @@ TEST(BplusTreeLog, concurrency)
   LOG_INFO("log_handler destoried");
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

@@ -14,9 +14,9 @@ See the Mulan PSL v2 for more details. */
 #include "oblsm/util/ob_coding.h"
 
 namespace oceanbase {
-int ObDefaultComparator::compare(const string_view &a, const string_view &b) const { return a.compare(b); }
+int ObDefaultComparator::compare(const string_view& a, const string_view& b) const { return a.compare(b); }
 
-int ObInternalKeyComparator::compare(const string_view &a, const string_view &b) const
+int ObInternalKeyComparator::compare(const string_view& a, const string_view& b) const
 {
   const string_view akey = extract_user_key(a);
   const string_view bkey = extract_user_key(b);

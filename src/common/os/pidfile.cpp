@@ -28,16 +28,16 @@ See the Mulan PSL v2 for more details. */
 
 namespace common {
 
-string &getPidPath()
+string& getPidPath()
 {
   static string path;
 
   return path;
 }
 
-void setPidPath(const char *progName)
+void setPidPath(const char* progName)
 {
-  string &path = getPidPath();
+  string& path = getPidPath();
 
   if (progName != NULL) {
     path = string(_PATH_TMP) + progName + ".pid";
@@ -46,11 +46,11 @@ void setPidPath(const char *progName)
   }
 }
 
-int writePidFile(const char *progName)
+int writePidFile(const char* progName)
 {
   assert(progName);
   ofstream ostr;
-  int           rv = 1;
+  int      rv = 1;
 
   setPidPath(progName);
   string path = getPidPath();

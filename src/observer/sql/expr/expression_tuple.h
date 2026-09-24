@@ -23,35 +23,35 @@ template <typename ExprPointerType>
 class ExpressionTuple : public Tuple
 {
 public:
-  ExpressionTuple(const vector<ExprPointerType> &expressions) : expressions_(expressions) {}
+  ExpressionTuple(const vector<ExprPointerType>& expressions) : expressions_(expressions) {}
   virtual ~ExpressionTuple() = default;
 
-  void set_tuple(const Tuple *tuple) { child_tuple_ = tuple; }
+  void set_tuple(const Tuple* tuple) { child_tuple_ = tuple; }
 
   int cell_num() const override { return static_cast<int>(expressions_.size()); }
 
-  RC cell_at(int index, Value &cell) const override
+  RC cell_at(int index, Value& cell) const override
   {
     if (index < 0 || index >= cell_num()) {
       return RC::INVALID_ARGUMENT;
     }
 
-    const ExprPointerType &expression = expressions_[index];
+    const ExprPointerType& expression = expressions_[index];
     return get_value(expression, cell);
   }
 
-  RC spec_at(int index, TupleCellSpec &spec) const override
+  RC spec_at(int index, TupleCellSpec& spec) const override
   {
     if (index < 0 || index >= cell_num()) {
       return RC::INVALID_ARGUMENT;
     }
 
-    const ExprPointerType &expression = expressions_[index];
+    const ExprPointerType& expression = expressions_[index];
     spec                              = TupleCellSpec(expression->name());
     return RC::SUCCESS;
   }
 
-  RC find_cell(const TupleCellSpec &spec, Value &cell) const override
+  RC find_cell(const TupleCellSpec& spec, Value& cell) const override
   {
     RC rc = RC::SUCCESS;
     if (child_tuple_ != nullptr) {
@@ -62,7 +62,7 @@ public:
     }
 
     rc = RC::NOTFOUND;
-    for (const ExprPointerType &expression : expressions_) {
+    for (const ExprPointerType& expression : expressions_) {
       if (0 == strcmp(spec.alias(), expression->name())) {
         rc = get_value(expression, cell);
         break;
@@ -73,7 +73,7 @@ public:
   }
 
 private:
-  RC get_value(const ExprPointerType &expression, Value &value) const
+  RC get_value(const ExprPointerType& expression, Value& value) const
   {
     RC rc = RC::SUCCESS;
     if (child_tuple_ != nullptr) {
@@ -85,6 +85,6 @@ private:
   }
 
 private:
-  const vector<ExprPointerType> &expressions_;
-  const Tuple                   *child_tuple_ = nullptr;
+  const vector<ExprPointerType>& expressions_;
+  const Tuple*                   child_tuple_ = nullptr;
 };

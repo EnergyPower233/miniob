@@ -16,7 +16,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/log/log.h"
 #include "sql/expr/expression.h"
 
-RC ComparisonSimplificationRule::rewrite(unique_ptr<Expression> &expr, bool &change_made)
+RC ComparisonSimplificationRule::rewrite(unique_ptr<Expression>& expr, bool& change_made)
 {
   RC rc = RC::SUCCESS;
 
@@ -24,7 +24,7 @@ RC ComparisonSimplificationRule::rewrite(unique_ptr<Expression> &expr, bool &cha
   if (expr->type() == ExprType::COMPARISON) {
     Value value;
 
-    ComparisonExpr *cmp_expr = static_cast<ComparisonExpr *>(expr.get());
+    ComparisonExpr* cmp_expr = static_cast<ComparisonExpr*>(expr.get());
 
     RC sub_rc = cmp_expr->try_get_value(value);
     if (sub_rc == RC::SUCCESS) {
