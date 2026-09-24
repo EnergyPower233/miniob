@@ -15,7 +15,6 @@ See the Mulan PSL v2 for more details. */
 #include "storage/common/meta_util.h"
 #include "storage/db/db.h"
 
-
 HeapTableEngine::~HeapTableEngine()
 {
   if (record_handler_ != nullptr) {
@@ -28,15 +27,15 @@ HeapTableEngine::~HeapTableEngine()
     data_buffer_pool_ = nullptr;
   }
 
-  for (vector<Index *>::iterator it = indexes_.begin(); it != indexes_.end(); ++it) {
-    Index *index = *it;
+  for (vector<Index*>::iterator it = indexes_.begin(); it != indexes_.end(); ++it) {
+    Index* index = *it;
     delete index;
   }
   indexes_.clear();
 
   LOG_INFO("Table has been closed: %s", table_meta_->name());
 }
-RC HeapTableEngine::insert_record(Record &record)
+RC HeapTableEngine::insert_record(Record& record)
 {
   RC rc = RC::SUCCESS;
   rc    = record_handler_->insert_record(record.data(), table_meta_->record_size(), &record.rid());
@@ -74,12 +73,10 @@ RC HeapTableEngine::insert_chunk(const Chunk& chunk)
   return rc;
 }
 
-RC HeapTableEngine::visit_record(const RID &rid, function<bool(Record &)> visitor)
-{
-  return record_handler_->visit_record(rid, visitor);
-}
+RC HeapTableEngine::visit_record(const RID& rid, function<bool(Record&)> visitor)
+{ return record_handler_->visit_record(rid, visitor); }
 
-RC HeapTableEngine::get_record(const RID &rid, Record &record)
+RC HeapTableEngine::get_record(const RID& rid, Record& record)
 {
   RC rc = record_handler_->get_record(rid, record);
   if (rc != RC::SUCCESS) {
@@ -90,10 +87,10 @@ RC HeapTableEngine::get_record(const RID &rid, Record &record)
   return rc;
 }
 
-RC HeapTableEngine::delete_record(const Record &record)
+RC HeapTableEngine::delete_record(const Record& record)
 {
   RC rc = RC::SUCCESS;
-  for (Index *index : indexes_) {
+  for (Index* index : indexes_) {
     rc = index->delete_entry(record.data(), &record.rid());
     ASSERT(RC::SUCCESS == rc, 
            "failed to delete entry from index. table name=%s, index name=%s, rid=%s, rc=%s",
@@ -103,17 +100,17 @@ RC HeapTableEngine::delete_record(const Record &record)
   return rc;
 }
 
-RC HeapTableEngine::get_record_scanner(RecordScanner *&scanner, Trx *trx, ReadWriteMode mode)
+RC HeapTableEngine::get_record_scanner(RecordScanner*& scanner, Trx* trx, ReadWriteMode mode)
 {
   scanner = new HeapRecordScanner(table_, *data_buffer_pool_, trx, db_->log_handler(), mode, nullptr);
-  RC rc = scanner->open_scan();
+  RC rc   = scanner->open_scan();
   if (rc != RC::SUCCESS) {
     LOG_ERROR("failed to open scanner. rc=%s", strrc(rc));
   }
   return rc;
 }
 
-RC HeapTableEngine::get_chunk_scanner(ChunkFileScanner &scanner, Trx *trx, ReadWriteMode mode)
+RC HeapTableEngine::get_chunk_scanner(ChunkFileScanner& scanner, Trx* trx, ReadWriteMode mode)
 {
   RC rc = scanner.open_scan_chunk(table_, *data_buffer_pool_, db_->log_handler(), mode);
   if (rc != RC::SUCCESS) {
@@ -122,7 +119,7 @@ RC HeapTableEngine::get_chunk_scanner(ChunkFileScanner &scanner, Trx *trx, ReadW
   return rc;
 }
 
-RC HeapTableEngine::create_index(Trx *trx, const FieldMeta *field_meta, const char *index_name)
+RC HeapTableEngine::create_index(Trx* trx, const FieldMeta* field_meta, const char* index_name)
 {
   if (common::is_blank(index_name) || nullptr == field_meta) {
     LOG_INFO("Invalid input arguments, table name is %s, index_name is blank or attribute_name is blank", table_meta_->name());
@@ -139,7 +136,7 @@ RC HeapTableEngine::create_index(Trx *trx, const FieldMeta *field_meta, const ch
   }
 
   // 创建索引相关数据
-  BplusTreeIndex *index      = new BplusTreeIndex();
+  BplusTreeIndex* index      = new BplusTreeIndex();
   string          index_file = table_index_file(db_->path().c_str(), table_meta_->name(), index_name);
 
   rc = index->create(table_, index_file.c_str(), new_index_meta, *field_meta);
@@ -150,8 +147,8 @@ RC HeapTableEngine::create_index(Trx *trx, const FieldMeta *field_meta, const ch
   }
 
   // 遍历当前的所有数据，插入这个索引
-  RecordScanner *scanner = nullptr;
-  rc = get_record_scanner(scanner, trx, ReadWriteMode::READ_ONLY);
+  RecordScanner* scanner = nullptr;
+  rc                     = get_record_scanner(scanner, trx, ReadWriteMode::READ_ONLY);
   if (rc != RC::SUCCESS) {
     LOG_WARN("failed to create scanner while creating index. table=%s, index=%s, rc=%s", 
              table_meta_->name(), index_name, strrc(rc));
@@ -221,10 +218,10 @@ RC HeapTableEngine::create_index(Trx *trx, const FieldMeta *field_meta, const ch
   return rc;
 }
 
-RC HeapTableEngine::insert_entry_of_indexes(const char *record, const RID &rid)
+RC HeapTableEngine::insert_entry_of_indexes(const char* record, const RID& rid)
 {
   RC rc = RC::SUCCESS;
-  for (Index *index : indexes_) {
+  for (Index* index : indexes_) {
     rc = index->insert_entry(record, &rid);
     if (rc != RC::SUCCESS) {
       break;
@@ -233,10 +230,10 @@ RC HeapTableEngine::insert_entry_of_indexes(const char *record, const RID &rid)
   return rc;
 }
 
-RC HeapTableEngine::delete_entry_of_indexes(const char *record, const RID &rid, bool error_on_not_exists)
+RC HeapTableEngine::delete_entry_of_indexes(const char* record, const RID& rid, bool error_on_not_exists)
 {
   RC rc = RC::SUCCESS;
-  for (Index *index : indexes_) {
+  for (Index* index : indexes_) {
     rc = index->delete_entry(record, &rid);
     if (rc != RC::SUCCESS) {
       if (rc != RC::RECORD_INVALID_KEY || !error_on_not_exists) {
@@ -250,7 +247,7 @@ RC HeapTableEngine::delete_entry_of_indexes(const char *record, const RID &rid, 
 RC HeapTableEngine::sync()
 {
   RC rc = RC::SUCCESS;
-  for (Index *index : indexes_) {
+  for (Index* index : indexes_) {
     rc = index->sync();
     if (rc != RC::SUCCESS) {
       LOG_ERROR("Failed to flush index's pages. table=%s, index=%s, rc=%d:%s",
@@ -267,18 +264,18 @@ RC HeapTableEngine::sync()
   return rc;
 }
 
-Index *HeapTableEngine::find_index(const char *index_name) const
+Index* HeapTableEngine::find_index(const char* index_name) const
 {
-  for (Index *index : indexes_) {
+  for (Index* index : indexes_) {
     if (0 == strcmp(index->index_meta().name(), index_name)) {
       return index;
     }
   }
   return nullptr;
 }
-Index *HeapTableEngine::find_index_by_field(const char *field_name) const
+Index* HeapTableEngine::find_index_by_field(const char* field_name) const
 {
-  const IndexMeta *index_meta = table_meta_->find_index_by_field(field_name);
+  const IndexMeta* index_meta = table_meta_->find_index_by_field(field_name);
   if (index_meta != nullptr) {
     return this->find_index(index_meta->name());
   }
@@ -289,7 +286,7 @@ RC HeapTableEngine::init()
 {
   string data_file = table_data_file(db_->path().c_str(), table_meta_->name());
 
-  BufferPoolManager &bpm = db_->buffer_pool_manager();
+  BufferPoolManager& bpm = db_->buffer_pool_manager();
   RC                 rc  = bpm.open_file(db_->log_handler(), data_file.c_str(), data_buffer_pool_);
   if (rc != RC::SUCCESS) {
     LOG_ERROR("Failed to open disk buffer pool for file:%s. rc=%d:%s", data_file.c_str(), rc, strrc(rc));
@@ -315,8 +312,8 @@ RC HeapTableEngine::open()
   init();
   const int index_num = table_meta_->index_num();
   for (int i = 0; i < index_num; i++) {
-    const IndexMeta *index_meta = table_meta_->index(i);
-    const FieldMeta *field_meta = table_meta_->field(index_meta->field());
+    const IndexMeta* index_meta = table_meta_->index(i);
+    const FieldMeta* field_meta = table_meta_->field(index_meta->field());
     if (field_meta == nullptr) {
       LOG_ERROR("Found invalid index meta info which has a non-exists field. table=%s, index=%s, field=%s",
                 table_meta_->name(), index_meta->name(), index_meta->field());
@@ -325,7 +322,7 @@ RC HeapTableEngine::open()
       return RC::INTERNAL;
     }
 
-    BplusTreeIndex *index      = new BplusTreeIndex();
+    BplusTreeIndex* index      = new BplusTreeIndex();
     string          index_file = table_index_file(db_->path().c_str(), table_meta_->name(), index_meta->name());
 
     rc = index->open(table_, index_file.c_str(), *index_meta, *field_meta);

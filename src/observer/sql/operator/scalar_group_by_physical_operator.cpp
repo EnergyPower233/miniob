@@ -20,27 +20,27 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-ScalarGroupByPhysicalOperator::ScalarGroupByPhysicalOperator(vector<Expression *> &&expressions)
+ScalarGroupByPhysicalOperator::ScalarGroupByPhysicalOperator(vector<Expression*>&& expressions)
     : GroupByPhysicalOperator(std::move(expressions))
 {}
 
-RC ScalarGroupByPhysicalOperator::open(Trx *trx)
+RC ScalarGroupByPhysicalOperator::open(Trx* trx)
 {
   ASSERT(children_.size() == 1, "group by operator only support one child, but got %d", children_.size());
 
-  PhysicalOperator &child = *children_[0];
+  PhysicalOperator& child = *children_[0];
   RC                rc    = child.open(trx);
   if (OB_FAIL(rc)) {
     LOG_INFO("failed to open child operator. rc=%s", strrc(rc));
     return rc;
   }
 
-  ExpressionTuple<Expression *> group_value_expression_tuple(value_expressions_);
+  ExpressionTuple<Expression*> group_value_expression_tuple(value_expressions_);
 
   ValueListTuple group_by_evaluated_tuple;
 
   while (OB_SUCC(rc = child.next())) {
-    Tuple *child_tuple = child.current_tuple();
+    Tuple* child_tuple = child.current_tuple();
     if (nullptr == child_tuple) {
       LOG_WARN("failed to get tuple from child operator. rc=%s", strrc(rc));
       return RC::INTERNAL;
@@ -65,7 +65,7 @@ RC ScalarGroupByPhysicalOperator::open(Trx *trx)
       composite_tuple.add_tuple(make_unique<ValueListTuple>(std::move(child_tuple_to_value)));
       group_value_ = make_unique<GroupValueType>(std::move(aggregator_list), std::move(composite_tuple));
     }
-    
+
     rc = aggregate(get<0>(*group_value_), group_value_expression_tuple);
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to aggregate values. rc=%s", strrc(rc));
@@ -110,7 +110,7 @@ RC ScalarGroupByPhysicalOperator::close()
   return RC::SUCCESS;
 }
 
-Tuple *ScalarGroupByPhysicalOperator::current_tuple()
+Tuple* ScalarGroupByPhysicalOperator::current_tuple()
 {
   if (group_value_ == nullptr) {
     return nullptr;

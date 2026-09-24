@@ -37,20 +37,20 @@ public:
    * @details 参考MySQL或MariaDB的手册，服务端要首先向客户端发送一个握手包，等客户端回复后，
    * 再回复一个OkPacket或ErrPacket
    */
-  virtual RC init(int fd, unique_ptr<Session> session, const string &addr) override;
+  virtual RC init(int fd, unique_ptr<Session> session, const string& addr) override;
 
   /**
    * @brief 有新的消息到达时，接收消息
    * @details 因为MySQL协议的特殊性，收到数据后不一定需要向后流转，比如握手包
    */
-  virtual RC read_event(SessionEvent *&event) override;
+  virtual RC read_event(SessionEvent*& event) override;
 
   /**
    * @brief 将处理结果返回给客户端
    * @param[in] event 任务数据，包括处理的结果
    * @param[out] need_disconnect 是否需要断开连接
    */
-  virtual RC write_result(SessionEvent *event, bool &need_disconnect) override;
+  virtual RC write_result(SessionEvent* event, bool& need_disconnect) override;
 
 private:
   /**
@@ -58,7 +58,7 @@ private:
    *
    * @param[in] packet 要发送的数据包
    */
-  RC send_packet(const BasePacket &packet);
+  RC send_packet(const BasePacket& packet);
 
   /**
    * @brief 有些情况下不需要给客户端返回一行行的记录结果，而是返回执行是否成功即可，比如create table等
@@ -66,14 +66,14 @@ private:
    * @param[in] event 处理的结果
    * @param[out] need_disconnect 是否需要断开连接
    */
-  RC write_state(SessionEvent *event, bool &need_disconnect);
+  RC write_state(SessionEvent* event, bool& need_disconnect);
 
   /**
    * @brief 返回客户端列描述信息
    * @details 根据MySQL text protocol 描述，普通的结果分为列信息描述和行数据。
    * 这里就分为两个函数
    */
-  RC send_column_definition(SqlResult *sql_result, bool &need_disconnect);
+  RC send_column_definition(SqlResult* sql_result, bool& need_disconnect);
 
   /**
    * @brief 返回客户端行数据
@@ -84,16 +84,16 @@ private:
    * @param[out] need_disconnect 是否需要断开连接
    * @return RC
    */
-  RC send_result_rows(SessionEvent *event, SqlResult *sql_result, bool no_column_def, bool &need_disconnect);
+  RC send_result_rows(SessionEvent* event, SqlResult* sql_result, bool no_column_def, bool& need_disconnect);
 
   /**
    * @brief 根据实际测试，客户端在连接上来时，会发起一个 version_comment的查询
    * @details 这里就针对这个查询返回一个结果
    */
-  RC handle_version_comment(bool &need_disconnect);
+  RC handle_version_comment(bool& need_disconnect);
 
-  RC write_tuple_result(SqlResult *sql_result, vector<char> &packet, int &affected_rows, bool &need_disconnect);
-  RC write_chunk_result(SqlResult *sql_result, vector<char> &packet, int &affected_rows, bool &need_disconnect);
+  RC write_tuple_result(SqlResult* sql_result, vector<char>& packet, int& affected_rows, bool& need_disconnect);
+  RC write_chunk_result(SqlResult* sql_result, vector<char>& packet, int& affected_rows, bool& need_disconnect);
 
 private:
   //! 握手阶段(鉴权)，需要做一些特殊处理，所以加个字段单独标记

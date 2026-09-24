@@ -23,28 +23,28 @@ using namespace oceanbase;
 class LsmMvccTrxKit : public TrxKit
 {
 public:
-  LsmMvccTrxKit(Db *db) : lsm_(db->lsm()) {}
+  LsmMvccTrxKit(Db* db) : lsm_(db->lsm()) {}
   virtual ~LsmMvccTrxKit() = default;
 
   RC                       init() override;
-  const vector<FieldMeta> *trx_fields() const override;
+  const vector<FieldMeta>* trx_fields() const override;
 
-  Trx *create_trx(LogHandler &log_handler) override;
-  Trx *create_trx(LogHandler &log_handler, int32_t trx_id) override;
-  void all_trxes(vector<Trx *> &trxes) override;
+  Trx* create_trx(LogHandler& log_handler) override;
+  Trx* create_trx(LogHandler& log_handler, int32_t trx_id) override;
+  void all_trxes(vector<Trx*>& trxes) override;
 
-  void destroy_trx(Trx *trx) override;
+  void destroy_trx(Trx* trx) override;
 
-  LogReplayer *create_log_replayer(Db &db, LogHandler &log_handler) override;
+  LogReplayer* create_log_replayer(Db& db, LogHandler& log_handler) override;
 
 private:
-  oceanbase::ObLsm *lsm_;
+  oceanbase::ObLsm* lsm_;
 };
 
 class LsmMvccTrx : public Trx
 {
 public:
-  LsmMvccTrx(ObLsm *lsm) : Trx(TrxKit::Type::LSM), lsm_(lsm), trx_(nullptr) {}
+  LsmMvccTrx(ObLsm* lsm) : Trx(TrxKit::Type::LSM), lsm_(lsm), trx_(nullptr) {}
   virtual ~LsmMvccTrx()
   {
     if (trx_ != nullptr) {
@@ -52,23 +52,23 @@ public:
     }
   }
 
-  RC insert_record(Table *table, Record &record) override;
-  RC delete_record(Table *table, Record &record) override;
-  RC update_record(Table *table, Record &old_record, Record &record) override;
-  RC visit_record(Table *table, Record &record, ReadWriteMode mode) override;
+  RC insert_record(Table* table, Record& record) override;
+  RC delete_record(Table* table, Record& record) override;
+  RC update_record(Table* table, Record& old_record, Record& record) override;
+  RC visit_record(Table* table, Record& record, ReadWriteMode mode) override;
   RC start_if_need() override;
   RC commit() override;
   RC rollback() override;
 
-  RC redo(Db *db, const LogEntry &log_entry) override;
+  RC redo(Db* db, const LogEntry& log_entry) override;
 
-  ObLsmTransaction *get_trx() { return trx_; }
+  ObLsmTransaction* get_trx() { return trx_; }
 
   int32_t id() const override { return 0; }
 
 private:
-  ObLsm            *lsm_;
-  ObLsmTransaction *trx_ = nullptr;
+  ObLsm*            lsm_;
+  ObLsmTransaction* trx_ = nullptr;
 };
 
 class LsmMvccTrxLogReplayer : public LogReplayer
@@ -77,5 +77,5 @@ public:
   LsmMvccTrxLogReplayer()          = default;
   virtual ~LsmMvccTrxLogReplayer() = default;
 
-  RC replay(const LogEntry &) override { return RC::SUCCESS; }
+  RC replay(const LogEntry&) override { return RC::SUCCESS; }
 };

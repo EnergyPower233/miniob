@@ -24,7 +24,7 @@ void ObLsmCliCmdTokenizer::skip_blank_space()
   }
 }
 
-RC ObLsmCliCmdTokenizer::parse_string(string &res)
+RC ObLsmCliCmdTokenizer::parse_string(string& res)
 {
   while (!out_of_range() && command_[p_] != '"') {
     char ch = command_[p_++];

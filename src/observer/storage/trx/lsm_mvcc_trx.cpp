@@ -13,39 +13,31 @@ See the Mulan PSL v2 for more details. */
 
 RC LsmMvccTrxKit::init() { return RC::SUCCESS; }
 
-const vector<FieldMeta> *LsmMvccTrxKit::trx_fields() const { return nullptr; }
+const vector<FieldMeta>* LsmMvccTrxKit::trx_fields() const { return nullptr; }
 
-Trx *LsmMvccTrxKit::create_trx(LogHandler &) { return new LsmMvccTrx(lsm_); }
+Trx* LsmMvccTrxKit::create_trx(LogHandler&) { return new LsmMvccTrx(lsm_); }
 
-Trx *LsmMvccTrxKit::create_trx(LogHandler &, int32_t /*trx_id*/) { return nullptr; }
+Trx* LsmMvccTrxKit::create_trx(LogHandler&, int32_t /*trx_id*/) { return nullptr; }
 
-void LsmMvccTrxKit::destroy_trx(Trx *trx) { delete trx; }
+void LsmMvccTrxKit::destroy_trx(Trx* trx) { delete trx; }
 
-void LsmMvccTrxKit::all_trxes(vector<Trx *> &trxes) { return; }
+void LsmMvccTrxKit::all_trxes(vector<Trx*>& trxes) { return; }
 
 /** oblsm 自身的日志回放是足够的，这里其实是空实现 */
-LogReplayer *LsmMvccTrxKit::create_log_replayer(Db &, LogHandler &) { return new LsmMvccTrxLogReplayer; }
+LogReplayer* LsmMvccTrxKit::create_log_replayer(Db&, LogHandler&) { return new LsmMvccTrxLogReplayer; }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-RC LsmMvccTrx::insert_record(Table *table, Record &record)
-{
-   return table->insert_record_with_trx(record, this);
-}
+RC LsmMvccTrx::insert_record(Table* table, Record& record) { return table->insert_record_with_trx(record, this); }
 
-RC LsmMvccTrx::delete_record(Table *table, Record &record)
-{
-  return table->delete_record_with_trx(record, this);
-}
+RC LsmMvccTrx::delete_record(Table* table, Record& record) { return table->delete_record_with_trx(record, this); }
 
-RC LsmMvccTrx::update_record(Table *table, Record &old_record, Record &new_record)
-{
-  return table->update_record_with_trx(old_record, new_record, this);
-}
+RC LsmMvccTrx::update_record(Table* table, Record& old_record, Record& new_record)
+{ return table->update_record_with_trx(old_record, new_record, this); }
 /**
  * 在 index scan 中使用的，需要适配 index scan
  */
-RC LsmMvccTrx::visit_record(Table *table, Record &record, ReadWriteMode) { return RC::SUCCESS; }
+RC LsmMvccTrx::visit_record(Table* table, Record& record, ReadWriteMode) { return RC::SUCCESS; }
 
 RC LsmMvccTrx::start_if_need()
 {
@@ -64,12 +56,9 @@ RC LsmMvccTrx::commit()
   return trx_->commit();
 }
 
-RC LsmMvccTrx::rollback()
-{
-  return trx_->rollback();
-}
+RC LsmMvccTrx::rollback() { return trx_->rollback(); }
 
 /**
  * 实际没有使用
  */
-RC LsmMvccTrx::redo(Db *, const LogEntry &) { return RC::SUCCESS; }
+RC LsmMvccTrx::redo(Db*, const LogEntry&) { return RC::SUCCESS; }

@@ -43,12 +43,12 @@ TEST(MvccTrxLog, wal)
   filesystem::remove_all(test_directory);
   filesystem::create_directory(test_directory);
 
-  const char      *dbname           = "test_db";
-  const char      *dbname2          = "test_db2";
+  const char*      dbname           = "test_db";
+  const char*      dbname2          = "test_db2";
   filesystem::path db_path          = test_directory / dbname;
   filesystem::path db_path2         = test_directory / dbname2;
-  const char      *trx_kit_name     = "mvcc";
-  const char      *log_handler_name = "disk";
+  const char*      trx_kit_name     = "mvcc";
+  const char*      log_handler_name = "disk";
 
   filesystem::create_directories(db_path);
   filesystem::create_directories(db_path2);
@@ -72,7 +72,7 @@ TEST(MvccTrxLog, wal)
     attr_infos.push_back(attr_info);
   }
 
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
     ASSERT_EQ(RC::SUCCESS, db->create_table(table_name.c_str(), attr_infos, {}));
     ASSERT_EQ(RC::SUCCESS, db->sync());
   }
@@ -80,22 +80,22 @@ TEST(MvccTrxLog, wal)
   ThreadPoolExecutor executor;
   ASSERT_EQ(0, executor.init("Trx", 4, 4, 60 * 1000));
 
-  TrxKit   &trx_kit    = db->trx_kit();
+  TrxKit&   trx_kit    = db->trx_kit();
   const int insert_num = 100;
   for (int i = 0; i < insert_num; i++) {
     auto trx_task = [&trx_kit, &table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -114,7 +114,7 @@ TEST(MvccTrxLog, wal)
   ASSERT_EQ(0, executor.shutdown());
   ASSERT_EQ(0, executor.await_termination());
 
-  DiskLogHandler &log_handler = static_cast<DiskLogHandler &>(db->log_handler());
+  DiskLogHandler& log_handler = static_cast<DiskLogHandler&>(db->log_handler());
   LSN             current_lsn = log_handler.current_lsn();
   ASSERT_EQ(RC::SUCCESS, log_handler.wait_lsn(current_lsn));
 
@@ -130,13 +130,13 @@ TEST(MvccTrxLog, wal)
   ASSERT_EQ(table_names, table_names2);
 
   // count each table's record number and take a check
-  Trx *trx2 = db2->trx_kit().create_trx(db2->log_handler());
-  for (const string &table_name : table_names2) {
+  Trx* trx2 = db2->trx_kit().create_trx(db2->log_handler());
+  for (const string& table_name : table_names2) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
-    RecordScanner *scanner2 = nullptr;
+    RecordScanner* scanner2 = nullptr;
     ASSERT_EQ(RC::SUCCESS, table2->get_record_scanner(scanner2, nullptr, ReadWriteMode::READ_ONLY));
     int    count2 = 0;
     RC     rc     = RC::SUCCESS;
@@ -166,12 +166,12 @@ TEST(MvccTrxLog, wal2)
   filesystem::remove_all(test_directory);
   filesystem::create_directory(test_directory);
 
-  const char      *dbname           = "test_db";
-  const char      *dbname2          = "test_db2";
+  const char*      dbname           = "test_db";
+  const char*      dbname2          = "test_db2";
   filesystem::path db_path          = test_directory / dbname;
   filesystem::path db_path2         = test_directory / dbname2;
-  const char      *trx_kit_name     = "mvcc";
-  const char      *log_handler_name = "disk";
+  const char*      trx_kit_name     = "mvcc";
+  const char*      log_handler_name = "disk";
 
   filesystem::create_directories(db_path);
   filesystem::create_directories(db_path2);
@@ -195,7 +195,7 @@ TEST(MvccTrxLog, wal2)
     attr_infos.push_back(attr_info);
   }
 
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
     ASSERT_EQ(RC::SUCCESS, db->create_table(table_name.c_str(), attr_infos, {}));
     ASSERT_EQ(RC::SUCCESS, db->sync());
   }
@@ -203,23 +203,23 @@ TEST(MvccTrxLog, wal2)
   ThreadPoolExecutor executor;
   ASSERT_EQ(0, executor.init("Trx", 4, 4, 60 * 1000));
 
-  TrxKit &trx_kit = db->trx_kit();
+  TrxKit& trx_kit = db->trx_kit();
 
   const int insert_num = 100;
   for (int i = 0; i < insert_num; i++) {
     auto trx_task = [&trx_kit, &table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -257,18 +257,18 @@ TEST(MvccTrxLog, wal2)
   all_table_names.insert(all_table_names.end(), table_names_part2.begin(), table_names_part2.end());
   for (int i = insert_num; i < insert_num + insert_num2; i++) {
     auto trx_task = [&trx_kit, &all_table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : all_table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : all_table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -286,7 +286,7 @@ TEST(MvccTrxLog, wal2)
   ASSERT_EQ(0, executor.shutdown());
   ASSERT_EQ(0, executor.await_termination());
 
-  DiskLogHandler &log_handler = static_cast<DiskLogHandler &>(db->log_handler());
+  DiskLogHandler& log_handler = static_cast<DiskLogHandler&>(db->log_handler());
   LSN             current_lsn = log_handler.current_lsn();
   ASSERT_EQ(RC::SUCCESS, log_handler.wait_lsn(current_lsn));
 
@@ -302,9 +302,9 @@ TEST(MvccTrxLog, wal2)
   ASSERT_EQ(all_table_names, table_names2);
 
   // count each table's record number and take a check
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
     RecordScanner* scanner2;
@@ -321,9 +321,9 @@ TEST(MvccTrxLog, wal2)
     ASSERT_EQ(insert_num + insert_num2, count2);
   }
 
-  for (const string &table_name : table_names_part2) {
+  for (const string& table_name : table_names_part2) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
     RecordScanner* scanner2;
@@ -355,12 +355,12 @@ TEST(MvccTrxLog, wal_rollback)
   filesystem::remove_all(test_directory);
   filesystem::create_directory(test_directory);
 
-  const char      *dbname           = "test_db";
-  const char      *dbname2          = "test_db2";
+  const char*      dbname           = "test_db";
+  const char*      dbname2          = "test_db2";
   filesystem::path db_path          = test_directory / dbname;
   filesystem::path db_path2         = test_directory / dbname2;
-  const char      *trx_kit_name     = "mvcc";
-  const char      *log_handler_name = "disk";
+  const char*      trx_kit_name     = "mvcc";
+  const char*      log_handler_name = "disk";
 
   filesystem::create_directories(db_path);
   filesystem::create_directories(db_path2);
@@ -384,7 +384,7 @@ TEST(MvccTrxLog, wal_rollback)
     attr_infos.push_back(attr_info);
   }
 
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
     ASSERT_EQ(RC::SUCCESS, db->create_table(table_name.c_str(), attr_infos, {}));
     ASSERT_EQ(RC::SUCCESS, db->sync());
   }
@@ -392,23 +392,23 @@ TEST(MvccTrxLog, wal_rollback)
   ThreadPoolExecutor executor;
   ASSERT_EQ(0, executor.init("trx", 4, 4, 60 * 1000));
 
-  TrxKit &trx_kit = db->trx_kit();
+  TrxKit& trx_kit = db->trx_kit();
 
   const int insert_num = 100;
   for (int i = 0; i < insert_num; i++) {
     auto trx_task = [&trx_kit, &table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -426,7 +426,7 @@ TEST(MvccTrxLog, wal_rollback)
   ASSERT_EQ(0, executor.shutdown());
   ASSERT_EQ(0, executor.await_termination());
 
-  DiskLogHandler &log_handler = static_cast<DiskLogHandler &>(db->log_handler());
+  DiskLogHandler& log_handler = static_cast<DiskLogHandler&>(db->log_handler());
   LSN             current_lsn = log_handler.current_lsn();
   ASSERT_EQ(RC::SUCCESS, log_handler.wait_lsn(current_lsn));
 
@@ -442,11 +442,11 @@ TEST(MvccTrxLog, wal_rollback)
   ASSERT_EQ(table_names, table_names2);
 
   // count each table's record number and take a check
-  Trx *trx = db2->trx_kit().create_trx(db2->log_handler());
+  Trx* trx = db2->trx_kit().create_trx(db2->log_handler());
   trx->start_if_need();
-  for (const string &table_name : table_names2) {
+  for (const string& table_name : table_names2) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
     RecordScanner* scanner2;
@@ -481,12 +481,12 @@ TEST(MvccTrxLog, wal_rollback_half)
   filesystem::remove_all(test_directory);
   filesystem::create_directory(test_directory);
 
-  const char      *dbname           = "test_db";
-  const char      *dbname2          = "test_db2";
+  const char*      dbname           = "test_db";
+  const char*      dbname2          = "test_db2";
   filesystem::path db_path          = test_directory / dbname;
   filesystem::path db_path2         = test_directory / dbname2;
-  const char      *trx_kit_name     = "mvcc";
-  const char      *log_handler_name = "disk";
+  const char*      trx_kit_name     = "mvcc";
+  const char*      log_handler_name = "disk";
 
   filesystem::create_directories(db_path);
   filesystem::create_directories(db_path2);
@@ -510,7 +510,7 @@ TEST(MvccTrxLog, wal_rollback_half)
     attr_infos.push_back(attr_info);
   }
 
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
     ASSERT_EQ(RC::SUCCESS, db->create_table(table_name.c_str(), attr_infos, {}));
     ASSERT_EQ(RC::SUCCESS, db->sync());
   }
@@ -518,23 +518,23 @@ TEST(MvccTrxLog, wal_rollback_half)
   ThreadPoolExecutor executor;
   ASSERT_EQ(0, executor.init("trx", 4, 4, 60 * 1000));
 
-  TrxKit &trx_kit = db->trx_kit();
+  TrxKit& trx_kit = db->trx_kit();
 
   const int insert_num = 100;
   for (int i = 0; i < insert_num; i++) {
     auto trx_task = [&trx_kit, &table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -556,7 +556,7 @@ TEST(MvccTrxLog, wal_rollback_half)
   ASSERT_EQ(0, executor.shutdown());
   ASSERT_EQ(0, executor.await_termination());
 
-  DiskLogHandler &log_handler = static_cast<DiskLogHandler &>(db->log_handler());
+  DiskLogHandler& log_handler = static_cast<DiskLogHandler&>(db->log_handler());
   LSN             current_lsn = log_handler.current_lsn();
   ASSERT_EQ(RC::SUCCESS, log_handler.wait_lsn(current_lsn));
 
@@ -572,11 +572,11 @@ TEST(MvccTrxLog, wal_rollback_half)
   ASSERT_EQ(table_names, table_names2);
 
   // count each table's record number and take a check
-  Trx *trx = db2->trx_kit().create_trx(db2->log_handler());
+  Trx* trx = db2->trx_kit().create_trx(db2->log_handler());
   trx->start_if_need();
-  for (const string &table_name : table_names2) {
+  for (const string& table_name : table_names2) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
     RecordScanner* scanner2;
@@ -612,12 +612,12 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
   filesystem::remove_all(test_directory);
   filesystem::create_directory(test_directory);
 
-  const char      *dbname           = "test_db";
-  const char      *dbname2          = "test_db2";
+  const char*      dbname           = "test_db";
+  const char*      dbname2          = "test_db2";
   filesystem::path db_path          = test_directory / dbname;
   filesystem::path db_path2         = test_directory / dbname2;
-  const char      *trx_kit_name     = "mvcc";
-  const char      *log_handler_name = "disk";
+  const char*      trx_kit_name     = "mvcc";
+  const char*      log_handler_name = "disk";
 
   filesystem::create_directories(db_path);
   filesystem::create_directories(db_path2);
@@ -641,7 +641,7 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
     attr_infos.push_back(attr_info);
   }
 
-  for (const string &table_name : table_names) {
+  for (const string& table_name : table_names) {
     ASSERT_EQ(RC::SUCCESS, db->create_table(table_name.c_str(), attr_infos, {}));
     ASSERT_EQ(RC::SUCCESS, db->sync());
   }
@@ -649,22 +649,22 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
   ThreadPoolExecutor executor;
   ASSERT_EQ(0, executor.init("trx", 4, 4, 60 * 1000));
 
-  TrxKit   &trx_kit    = db->trx_kit();
+  TrxKit&   trx_kit    = db->trx_kit();
   const int insert_num = 1000;
   for (int i = 0; i < insert_num; i++) {
     auto trx_task = [&trx_kit, &table_names, &db, i] {
-      Trx *trx = trx_kit.create_trx(db->log_handler());
+      Trx* trx = trx_kit.create_trx(db->log_handler());
       ASSERT_NE(trx, nullptr);
       trx->start_if_need();
 
-      for (const string &table_name : table_names) {
-        Table *table = db->find_table(table_name.c_str());
+      for (const string& table_name : table_names) {
+        Table* table = db->find_table(table_name.c_str());
         ASSERT_NE(table, nullptr);
 
         Record record;
 
         vector<Value> values(field_num);
-        for (Value &value : values) {
+        for (Value& value : values) {
           value.set_int(i);
         }
 
@@ -685,7 +685,7 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
   ASSERT_EQ(0, executor.shutdown());
   ASSERT_EQ(0, executor.await_termination());
 
-  DiskLogHandler &log_handler = static_cast<DiskLogHandler &>(db->log_handler());
+  DiskLogHandler& log_handler = static_cast<DiskLogHandler&>(db->log_handler());
   LSN             current_lsn = log_handler.current_lsn();
   ASSERT_EQ(RC::SUCCESS, log_handler.wait_lsn(current_lsn));
 
@@ -701,11 +701,11 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
   ASSERT_EQ(table_names, table_names2);
 
   // count each table's record number and take a check
-  Trx *trx = db2->trx_kit().create_trx(db2->log_handler());
+  Trx* trx = db2->trx_kit().create_trx(db2->log_handler());
   trx->start_if_need();
-  for (const string &table_name : table_names2) {
+  for (const string& table_name : table_names2) {
 
-    Table *table2 = db2->find_table(table_name.c_str());
+    Table* table2 = db2->find_table(table_name.c_str());
     ASSERT_NE(table2, nullptr);
 
     RecordScanner* scanner2;
@@ -729,7 +729,7 @@ TEST(MvccTrxLog, wal_rollback_abnormal)
   db.reset();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

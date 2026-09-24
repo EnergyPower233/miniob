@@ -84,7 +84,7 @@ public:
   RecordLogHandler()  = default;
   ~RecordLogHandler() = default;
 
-  RC init(LogHandler &log_handler, int32_t buffer_pool_id, int32_t record_size, StorageFormat storage_format);
+  RC init(LogHandler& log_handler, int32_t buffer_pool_id, int32_t record_size, StorageFormat storage_format);
 
   /**
    * @brief 初始化一个新的页面
@@ -99,7 +99,7 @@ public:
    * @param page_num 页面编号
    * @param data 页面数据目前主要是 `column index`
    */
-  RC init_new_page(Frame *frame, PageNum page_num, span<const char> data);
+  RC init_new_page(Frame* frame, PageNum page_num, span<const char> data);
 
   /**
    * @brief 插入一条记录
@@ -107,14 +107,14 @@ public:
    * @param rid 记录的位置
    * @param record 记录的内容
    */
-  RC insert_record(Frame *frame, const RID &rid, const char *record);
+  RC insert_record(Frame* frame, const RID& rid, const char* record);
 
   /**
    * @brief 删除一条记录
    * @param frame 页帧
    * @param rid 记录的位置
    */
-  RC delete_record(Frame *frame, const RID &rid);
+  RC delete_record(Frame* frame, const RID& rid);
 
   /**
    * @brief 更新一条记录
@@ -123,10 +123,10 @@ public:
    * @param record 更新后的记录。不需要做回滚，所以不用记录原先的数据
    * @details 更新数据时，通常只更新其中几个字段，这里记录所有数据，是可以优化的。
    */
-  RC update_record(Frame *frame, const RID &rid, const char *record);
+  RC update_record(Frame* frame, const RID& rid, const char* record);
 
 private:
-  LogHandler   *log_handler_    = nullptr;
+  LogHandler*   log_handler_    = nullptr;
   int32_t       buffer_pool_id_ = -1;
   int32_t       record_size_    = -1;
   StorageFormat storage_format_ = StorageFormat::ROW_FORMAT;
@@ -139,17 +139,17 @@ private:
 class RecordLogReplayer final : public LogReplayer
 {
 public:
-  RecordLogReplayer(BufferPoolManager &bpm);
+  RecordLogReplayer(BufferPoolManager& bpm);
   virtual ~RecordLogReplayer() = default;
 
-  virtual RC replay(const LogEntry &entry) override;
+  virtual RC replay(const LogEntry& entry) override;
 
 private:
-  RC replay_init_page(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header);
-  RC replay_insert(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header);
-  RC replay_delete(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header);
-  RC replay_update(DiskBufferPool &buffer_pool, const RecordLogHeader &log_header);
+  RC replay_init_page(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header);
+  RC replay_insert(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header);
+  RC replay_delete(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header);
+  RC replay_update(DiskBufferPool& buffer_pool, const RecordLogHeader& log_header);
 
 private:
-  BufferPoolManager &bpm_;
+  BufferPoolManager& bpm_;
 };

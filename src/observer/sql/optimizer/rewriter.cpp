@@ -26,12 +26,12 @@ Rewriter::Rewriter()
   rewrite_rules_.emplace_back(new PredicatePushdownRewriter);
 }
 
-RC Rewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made)
+RC Rewriter::rewrite(unique_ptr<LogicalOperator>& oper, bool& change_made)
 {
   RC rc = RC::SUCCESS;
 
   change_made = false;
-  for (unique_ptr<RewriteRule> &rule : rewrite_rules_) {
+  for (unique_ptr<RewriteRule>& rule : rewrite_rules_) {
     bool sub_change_made = false;
 
     rc = rule->rewrite(oper, sub_change_made);
@@ -49,8 +49,8 @@ RC Rewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made)
     return rc;
   }
 
-  vector<unique_ptr<LogicalOperator>> &child_opers = oper->children();
-  for (auto &child_oper : child_opers) {
+  vector<unique_ptr<LogicalOperator>>& child_opers = oper->children();
+  for (auto& child_oper : child_opers) {
     bool sub_change_made = false;
     rc                   = this->rewrite(child_oper, sub_change_made);
     if (rc != RC::SUCCESS) {

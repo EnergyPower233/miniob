@@ -17,20 +17,20 @@ See the Mulan PSL v2 for more details. */
 class AggregateHashTableBenchmark : public benchmark::Fixture
 {
 public:
-  void SetUp(const ::benchmark::State &state) override
+  void SetUp(const ::benchmark::State& state) override
   {
     unique_ptr<Column> column1 = make_unique<Column>(AttrType::INTS, 4);
     unique_ptr<Column> column2 = make_unique<Column>(AttrType::INTS, 4);
     for (int i = 0; i < state.range(0); i++) {
       int key = i % 8;
-      column1->append_one((char *)&key);
-      column2->append_one((char *)&i);
+      column1->append_one((char*)&key);
+      column2->append_one((char*)&i);
     }
     group_chunk_.add_column(std::move(column1), 0);
     aggr_chunk_.add_column(std::move(column2), 0);
   }
 
-  void TearDown(const ::benchmark::State &state) override
+  void TearDown(const ::benchmark::State& state) override
   {
     group_chunk_.reset();
     aggr_chunk_.reset();
@@ -44,12 +44,12 @@ protected:
 class DISABLED_StandardAggregateHashTableBenchmark : public AggregateHashTableBenchmark
 {
 public:
-  void SetUp(const ::benchmark::State &state) override
+  void SetUp(const ::benchmark::State& state) override
   {
 
     AggregateHashTableBenchmark::SetUp(state);
-    AggregateExpr        aggregate_expr(AggregateExpr::Type::SUM, nullptr);
-    vector<Expression *> aggregate_exprs;
+    AggregateExpr       aggregate_expr(AggregateExpr::Type::SUM, nullptr);
+    vector<Expression*> aggregate_exprs;
     aggregate_exprs.push_back(&aggregate_expr);
     standard_hash_table_ = make_unique<StandardAggregateHashTable>(aggregate_exprs);
   }
@@ -58,7 +58,7 @@ protected:
   unique_ptr<AggregateHashTable> standard_hash_table_;
 };
 
-BENCHMARK_DEFINE_F(DISABLED_StandardAggregateHashTableBenchmark, Aggregate)(benchmark::State &state)
+BENCHMARK_DEFINE_F(DISABLED_StandardAggregateHashTableBenchmark, Aggregate)(benchmark::State& state)
 {
   for (auto _ : state) {
     standard_hash_table_->add_chunk(group_chunk_, aggr_chunk_);
@@ -71,7 +71,7 @@ BENCHMARK_REGISTER_F(DISABLED_StandardAggregateHashTableBenchmark, Aggregate)->A
 class DISABLED_LinearProbingAggregateHashTableBenchmark : public AggregateHashTableBenchmark
 {
 public:
-  void SetUp(const ::benchmark::State &state) override
+  void SetUp(const ::benchmark::State& state) override
   {
 
     AggregateHashTableBenchmark::SetUp(state);
@@ -82,7 +82,7 @@ protected:
   unique_ptr<AggregateHashTable> linear_probing_hash_table_;
 };
 
-BENCHMARK_DEFINE_F(DISABLED_LinearProbingAggregateHashTableBenchmark, Aggregate)(benchmark::State &state)
+BENCHMARK_DEFINE_F(DISABLED_LinearProbingAggregateHashTableBenchmark, Aggregate)(benchmark::State& state)
 {
   for (auto _ : state) {
     linear_probing_hash_table_->add_chunk(group_chunk_, aggr_chunk_);

@@ -21,19 +21,19 @@ class ProjectVecPhysicalOperator : public PhysicalOperator
 {
 public:
   ProjectVecPhysicalOperator() {}
-  ProjectVecPhysicalOperator(vector<unique_ptr<Expression>> &&expressions);
+  ProjectVecPhysicalOperator(vector<unique_ptr<Expression>>&& expressions);
 
   virtual ~ProjectVecPhysicalOperator() = default;
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::PROJECT_VEC; }
 
-  RC open(Trx *trx) override;
-  RC next(Chunk &chunk) override;
+  RC open(Trx* trx) override;
+  RC next(Chunk& chunk) override;
   RC close() override;
 
-  RC tuple_schema(TupleSchema &schema) const override;
+  RC tuple_schema(TupleSchema& schema) const override;
 
-  vector<unique_ptr<Expression>> &expressions() { return expressions_; }
+  vector<unique_ptr<Expression>>& expressions() { return expressions_; }
 
 private:
   vector<unique_ptr<Expression>> expressions_;

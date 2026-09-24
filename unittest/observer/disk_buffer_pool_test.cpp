@@ -23,7 +23,7 @@ See the Mulan PSL v2 for more details. */
 using namespace std;
 using namespace common;
 
-int buffer_pool_page_count(DiskBufferPool *buffer_pool)
+int buffer_pool_page_count(DiskBufferPool* buffer_pool)
 {
   int                count = 0;
   BufferPoolIterator iterator;
@@ -62,14 +62,14 @@ TEST(DiskBufferPool, allocate_dispose)
 
   // 3. 创建disk buffer pool
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.create_file(buffer_pool_filename.c_str()));
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, buffer_pool_manager.open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
   ASSERT_NE(buffer_pool, nullptr);
 
   // 4. 分配100个页面
   const int allocate_page_num = 100;
   for (int i = 0; i < allocate_page_num; ++i) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_NE(frame, nullptr);
     ASSERT_EQ(buffer_pool->unpin_page(frame), RC::SUCCESS);
@@ -84,7 +84,7 @@ TEST(DiskBufferPool, allocate_dispose)
       ASSERT_EQ(buffer_pool->dispose_page(i / 3), RC::SUCCESS);
       LOG_INFO("dispose one page");
     } else {
-      Frame *frame = nullptr;
+      Frame* frame = nullptr;
       ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
       ASSERT_NE(frame, nullptr);
       ASSERT_EQ(buffer_pool->unpin_page(frame), RC::SUCCESS);
@@ -117,7 +117,7 @@ TEST(BufferPool, create)
   ASSERT_EQ(RC::SUCCESS, bpm.create_file(bp_file.c_str()));
 
   VacuousLogHandler log_handler;
-  DiskBufferPool   *buffer_pool = nullptr;
+  DiskBufferPool*   buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm.open_file(log_handler, bp_file.c_str(), buffer_pool));
   ASSERT_NE(buffer_pool, nullptr);
 
@@ -126,13 +126,13 @@ TEST(BufferPool, create)
   filesystem::path bp_file2 = test_directory / "create2.bp";
   filesystem::copy_file(bp_file, bp_file2);
 
-  DiskBufferPool *buffer_pool2 = nullptr;
+  DiskBufferPool* buffer_pool2 = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm2.open_file(log_handler, bp_file2.c_str(), buffer_pool2));
   ASSERT_NE(buffer_pool2, nullptr);
   ASSERT_EQ(buffer_pool->id(), buffer_pool2->id());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   filesystem::path log_filename = filesystem::path(argv[0]).filename();

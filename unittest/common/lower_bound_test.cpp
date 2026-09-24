@@ -41,7 +41,7 @@ TEST(lower_bound, test_lower_bound)
     ASSERT_EQ(found, false);
   }
 }
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   // 分析gtest程序的命令行参数
   testing::InitGoogleTest(&argc, argv);

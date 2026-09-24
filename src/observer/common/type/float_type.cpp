@@ -17,40 +17,39 @@ See the Mulan PSL v2 for more details. */
 #include "common/value.h"
 #include "storage/common/column.h"
 
-int FloatType::compare(const Value &left, const Value &right) const
+int FloatType::compare(const Value& left, const Value& right) const
 {
   ASSERT(left.attr_type() == AttrType::FLOATS, "left type is not float");
   ASSERT(right.attr_type() == AttrType::INTS || right.attr_type() == AttrType::FLOATS, "right type is not numeric");
   float left_val  = left.get_float();
   float right_val = right.get_float();
-  return common::compare_float((void *)&left_val, (void *)&right_val);
+  return common::compare_float((void*)&left_val, (void*)&right_val);
 }
 
-int FloatType::compare(const Column &left, const Column &right, int left_idx, int right_idx) const
+int FloatType::compare(const Column& left, const Column& right, int left_idx, int right_idx) const
 {
   ASSERT(left.attr_type() == AttrType::FLOATS, "left type is not float");
   ASSERT(right.attr_type() == AttrType::FLOATS, "right type is not float");
-  return common::compare_float((void *)&((float*)left.data())[left_idx],
-      (void *)&((float*)right.data())[right_idx]);
+  return common::compare_float((void*)&((float*)left.data())[left_idx], (void*)&((float*)right.data())[right_idx]);
 }
 
-RC FloatType::add(const Value &left, const Value &right, Value &result) const
+RC FloatType::add(const Value& left, const Value& right, Value& result) const
 {
   result.set_float(left.get_float() + right.get_float());
   return RC::SUCCESS;
 }
-RC FloatType::subtract(const Value &left, const Value &right, Value &result) const
+RC FloatType::subtract(const Value& left, const Value& right, Value& result) const
 {
   result.set_float(left.get_float() - right.get_float());
   return RC::SUCCESS;
 }
-RC FloatType::multiply(const Value &left, const Value &right, Value &result) const
+RC FloatType::multiply(const Value& left, const Value& right, Value& result) const
 {
   result.set_float(left.get_float() * right.get_float());
   return RC::SUCCESS;
 }
 
-RC FloatType::divide(const Value &left, const Value &right, Value &result) const
+RC FloatType::divide(const Value& left, const Value& right, Value& result) const
 {
   if (right.get_float() > -EPSILON && right.get_float() < EPSILON) {
     // NOTE:
@@ -62,15 +61,15 @@ RC FloatType::divide(const Value &left, const Value &right, Value &result) const
   return RC::SUCCESS;
 }
 
-RC FloatType::negative(const Value &val, Value &result) const
+RC FloatType::negative(const Value& val, Value& result) const
 {
   result.set_float(-val.get_float());
   return RC::SUCCESS;
 }
 
-RC FloatType::set_value_from_str(Value &val, const string &data) const
+RC FloatType::set_value_from_str(Value& val, const string& data) const
 {
-  RC                rc = RC::SUCCESS;
+  RC           rc = RC::SUCCESS;
   stringstream deserialize_stream;
   deserialize_stream.clear();
   deserialize_stream.str(data);
@@ -85,7 +84,7 @@ RC FloatType::set_value_from_str(Value &val, const string &data) const
   return rc;
 }
 
-RC FloatType::to_string(const Value &val, string &result) const
+RC FloatType::to_string(const Value& val, string& result) const
 {
   stringstream ss;
   ss << common::double_to_str(val.value_.float_value_);

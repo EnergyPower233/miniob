@@ -14,7 +14,7 @@ See the Mulan PSL v2 for more details. */
 
 using namespace std;
 
-RC TableScanVecPhysicalOperator::open(Trx *trx)
+RC TableScanVecPhysicalOperator::open(Trx* trx)
 {
   RC rc = table_->get_chunk_scanner(chunk_scanner_, trx, mode_);
   if (rc != RC::SUCCESS) {
@@ -31,7 +31,7 @@ RC TableScanVecPhysicalOperator::open(Trx *trx)
   return rc;
 }
 
-RC TableScanVecPhysicalOperator::next(Chunk &chunk)
+RC TableScanVecPhysicalOperator::next(Chunk& chunk)
 {
   RC rc = RC::SUCCESS;
 
@@ -53,8 +53,7 @@ RC TableScanVecPhysicalOperator::next(Chunk &chunk)
           continue;
         }
         for (int j = 0; j < all_columns_.column_num(); j++) {
-          filterd_columns_.column(j).append_value(
-              all_columns_.column(filterd_columns_.column_ids(j)).get_value(i));
+          filterd_columns_.column(j).append_value(all_columns_.column(filterd_columns_.column_ids(j)).get_value(i));
         }
       }
       chunk.reference(filterd_columns_);
@@ -67,15 +66,13 @@ RC TableScanVecPhysicalOperator::close() { return chunk_scanner_.close_scan(); }
 
 string TableScanVecPhysicalOperator::param() const { return table_->name(); }
 
-void TableScanVecPhysicalOperator::set_predicates(vector<unique_ptr<Expression>> &&exprs)
-{
-  predicates_ = std::move(exprs);
-}
+void TableScanVecPhysicalOperator::set_predicates(vector<unique_ptr<Expression>>&& exprs)
+{ predicates_ = std::move(exprs); }
 
-RC TableScanVecPhysicalOperator::filter(Chunk &chunk)
+RC TableScanVecPhysicalOperator::filter(Chunk& chunk)
 {
   RC rc = RC::SUCCESS;
-  for (unique_ptr<Expression> &expr : predicates_) {
+  for (unique_ptr<Expression>& expr : predicates_) {
     rc = expr->eval(chunk, select_);
     if (rc != RC::SUCCESS) {
       return rc;

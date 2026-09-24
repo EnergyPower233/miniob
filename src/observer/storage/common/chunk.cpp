@@ -16,7 +16,7 @@ void Chunk::add_column(unique_ptr<Column> col, int col_id)
   column_ids_.push_back(col_id);
 }
 
-RC Chunk::reference(Chunk &chunk)
+RC Chunk::reference(Chunk& chunk)
 {
   reset();
   this->columns_.resize(chunk.column_num());
@@ -48,7 +48,7 @@ int Chunk::capacity() const
 
 void Chunk::reset_data()
 {
-  for (auto &col : columns_) {
+  for (auto& col : columns_) {
     col->reset_data();
   }
 }

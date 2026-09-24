@@ -27,25 +27,25 @@ See the Mulan PSL v2 for more details. */
 
 namespace common {
 
-char *strip(char *str_)
+char* strip(char* str_)
 {
   if (str_ == NULL || *str_ == 0) {
     LOG_ERROR("The augument is invalid!");
     return str_;
   }
 
-  char *head = str_;
+  char* head = str_;
   while (isspace(*head))
     ++head;
 
-  char *last = str_ + strlen(str_) - 1;
+  char* last = str_ + strlen(str_) - 1;
   while (isspace(*last) && last != str_)
     --last;
   *(last + 1) = 0;
   return head;
 }
 
-void strip(string &str)
+void strip(string& str)
 {
   size_t head = 0;
 
@@ -69,19 +69,19 @@ string size_to_pad_str(int size, int pad)
   return ss.str();
 }
 
-string &str_to_upper(string &s)
+string& str_to_upper(string& s)
 {
-  transform(s.begin(), s.end(), s.begin(), (int (*)(int)) & toupper);
+  transform(s.begin(), s.end(), s.begin(), (int (*)(int))&toupper);
   return s;
 }
 
-string &str_to_lower(string &s)
+string& str_to_lower(string& s)
 {
-  transform(s.begin(), s.end(), s.begin(), (int (*)(int)) & tolower);
+  transform(s.begin(), s.end(), s.begin(), (int (*)(int))&tolower);
   return s;
 }
 
-void split_string(const string &str, string delim, set<string> &results)
+void split_string(const string& str, string delim, set<string>& results)
 {
   int    cut_at;
   string tmp_str(str);
@@ -97,7 +97,7 @@ void split_string(const string &str, string delim, set<string> &results)
   }
 }
 
-void split_string(const string &str, string delim, vector<string> &results)
+void split_string(const string& str, string delim, vector<string>& results)
 {
   int    cut_at;
   string tmp_str(str);
@@ -113,10 +113,10 @@ void split_string(const string &str, string delim, vector<string> &results)
   }
 }
 
-void split_string(char *str, char dim, vector<char *> &results, bool keep_null)
+void split_string(char* str, char dim, vector<char*>& results, bool keep_null)
 {
-  char *p = str;
-  char *l = p;
+  char* p = str;
+  char* l = p;
   while (*p) {
     if (*p == dim) {
       *p++ = 0;
@@ -131,7 +131,7 @@ void split_string(char *str, char dim, vector<char *> &results, bool keep_null)
   return;
 }
 
-void merge_string(string &str, string delim, vector<string> &source, size_t result_len)
+void merge_string(string& str, string delim, vector<string>& source, size_t result_len)
 {
   ostringstream ss;
   if (source.empty()) {
@@ -155,7 +155,7 @@ void merge_string(string &str, string delim, vector<string> &source, size_t resu
   return;
 }
 
-void replace(string &str, const string &old, const string &new_str)
+void replace(string& str, const string& old, const string& new_str)
 {
   if (old.compare(new_str) == 0) {
     return;
@@ -187,11 +187,11 @@ void replace(string &str, const string &old, const string &new_str)
   return;
 }
 
-char *bin_to_hex(const char *s, const int len, char *hex_buff)
+char* bin_to_hex(const char* s, const int len, char* hex_buff)
 {
   int            new_len = 0;
-  unsigned char *end     = (unsigned char *)s + len;
-  for (unsigned char *p = (unsigned char *)s; p < end; p++) {
+  unsigned char* end     = (unsigned char*)s + len;
+  for (unsigned char* p = (unsigned char*)s; p < end; p++) {
     new_len += snprintf(hex_buff + new_len, 3, "%02x", *p);
   }
 
@@ -199,13 +199,13 @@ char *bin_to_hex(const char *s, const int len, char *hex_buff)
   return hex_buff;
 }
 
-char *hex_to_bin(const char *s, char *bin_buff, int *dest_len)
+char* hex_to_bin(const char* s, char* bin_buff, int* dest_len)
 {
   char  buff[3];
-  char *src;
+  char* src;
   int   src_len;
-  char *p_dest;
-  char *p_dest_end;
+  char* p_dest;
+  char* p_dest_end;
 
   src_len = strlen(s);
   if (src_len == 0) {
@@ -215,7 +215,7 @@ char *hex_to_bin(const char *s, char *bin_buff, int *dest_len)
   }
 
   *dest_len = src_len / 2;
-  src       = (char *)s;
+  src       = (char*)s;
   buff[2]   = '\0';
 
   p_dest_end = bin_buff + (*dest_len);
@@ -229,7 +229,7 @@ char *hex_to_bin(const char *s, char *bin_buff, int *dest_len)
   return bin_buff;
 }
 
-bool is_blank(const char *s)
+bool is_blank(const char* s)
 {
   if (s == nullptr) {
     return true;
@@ -252,9 +252,9 @@ bool is_blank(const char *s)
  * @param n2
  * @return
  */
-char *substr(const char *s, int n1, int n2)
+char* substr(const char* s, int n1, int n2)
 {
-  char *sp = (char *)malloc(sizeof(char) * (n2 - n1 + 2));
+  char* sp = (char*)malloc(sizeof(char) * (n2 - n1 + 2));
   int   i, j = 0;
   for (i = n1; i <= n2; i++) {
     sp[j++] = s[i];
@@ -270,7 +270,7 @@ char *substr(const char *s, int n1, int n2)
  */
 string double_to_str(double v)
 {
-  char buf[256];
+  char   buf[256];
   double rounded_v = round(v * 100.0) / 100.0;
   snprintf(buf, sizeof(buf), "%.2f", rounded_v);
   size_t len = strlen(buf);

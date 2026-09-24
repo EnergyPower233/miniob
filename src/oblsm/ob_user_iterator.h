@@ -33,6 +33,6 @@ class ObLsmIterator;
  * @warning Passing a `nullptr` as the `iterator` parameter will result in undefined behavior.
  *          Ensure that a valid iterator is provided before calling this function.
  */
-ObLsmIterator *new_user_iterator(ObLsmIterator *iterator, uint64_t seq);
+ObLsmIterator* new_user_iterator(ObLsmIterator* iterator, uint64_t seq);
 
 }  // namespace oceanbase

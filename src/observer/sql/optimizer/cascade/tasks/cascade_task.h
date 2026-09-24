@@ -31,19 +31,19 @@ enum class CascadeTaskType
 class CascadeTask
 {
 public:
-  CascadeTask(OptimizerContext *context, CascadeTaskType type) : type_(type), context_(context) {}
+  CascadeTask(OptimizerContext* context, CascadeTaskType type) : type_(type), context_(context) {}
 
   virtual void perform() = 0;
 
-  Memo &get_memo() const;
+  Memo& get_memo() const;
 
-  RuleSet &get_rule_set() const;
+  RuleSet& get_rule_set() const;
 
-  void push_task(CascadeTask *task);
+  void push_task(CascadeTask* task);
 
   virtual ~CascadeTask() = default;
 
 protected:
   CascadeTaskType   type_;
-  OptimizerContext *context_;
+  OptimizerContext* context_;
 };

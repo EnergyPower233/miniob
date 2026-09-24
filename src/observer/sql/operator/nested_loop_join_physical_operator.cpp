@@ -16,7 +16,7 @@ See the Mulan PSL v2 for more details. */
 
 NestedLoopJoinPhysicalOperator::NestedLoopJoinPhysicalOperator() {}
 
-RC NestedLoopJoinPhysicalOperator::open(Trx *trx)
+RC NestedLoopJoinPhysicalOperator::open(Trx* trx)
 {
   if (children_.size() != 2) {
     LOG_WARN("nlj operator should have 2 children");
@@ -36,7 +36,7 @@ RC NestedLoopJoinPhysicalOperator::open(Trx *trx)
 
 RC NestedLoopJoinPhysicalOperator::next()
 {
-  RC   rc             = RC::SUCCESS;
+  RC rc = RC::SUCCESS;
   while (RC::SUCCESS == rc) {
     bool left_need_step = (left_tuple_ == nullptr);
     if (round_done_) {
@@ -53,7 +53,7 @@ RC NestedLoopJoinPhysicalOperator::next()
     rc = right_next();
     if (rc != RC::SUCCESS) {
       if (rc == RC::RECORD_EOF) {
-        rc = RC::SUCCESS;
+        rc          = RC::SUCCESS;
         round_done_ = true;
         continue;
       } else {
@@ -82,7 +82,7 @@ RC NestedLoopJoinPhysicalOperator::close()
   return rc;
 }
 
-Tuple *NestedLoopJoinPhysicalOperator::current_tuple() { return &joined_tuple_; }
+Tuple* NestedLoopJoinPhysicalOperator::current_tuple() { return &joined_tuple_; }
 
 RC NestedLoopJoinPhysicalOperator::left_next()
 {

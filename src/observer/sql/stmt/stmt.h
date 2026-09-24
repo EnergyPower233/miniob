@@ -60,7 +60,7 @@ enum class StmtType
 #undef DEFINE_ENUM_ITEM
 };
 
-inline const char *stmt_type_name(StmtType type)
+inline const char* stmt_type_name(StmtType type)
 {
   switch (type) {
 #define DEFINE_ENUM_ITEM(name) \
@@ -88,7 +88,7 @@ public:
   virtual StmtType type() const = 0;
 
 public:
-  static RC create_stmt(Db *db, ParsedSqlNode &sql_node, Stmt *&stmt);
+  static RC create_stmt(Db* db, ParsedSqlNode& sql_node, Stmt*& stmt);
 
 private:
 };

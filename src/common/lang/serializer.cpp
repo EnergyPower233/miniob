@@ -26,13 +26,13 @@ int Serializer::write(span<const char> data)
 
 int Serializer::write_int32(int32_t value)
 {
-  char *p = reinterpret_cast<char *>(&value);
+  char* p = reinterpret_cast<char*>(&value);
   return write(span(p, sizeof(value)));
 }
 
 int Serializer::write_int64(int64_t value)
 {
-  char *p = reinterpret_cast<char *>(&value);
+  char* p = reinterpret_cast<char*>(&value);
   return write(span(p, sizeof(value)));
 }
 
@@ -47,15 +47,15 @@ int Deserializer::read(span<char> data)
   return 0;
 }
 
-int Deserializer::read_int32(int32_t &value)
+int Deserializer::read_int32(int32_t& value)
 {
-  span<char> data(reinterpret_cast<char *>(&value), sizeof(value));
+  span<char> data(reinterpret_cast<char*>(&value), sizeof(value));
   return read(data);
 }
 
-int Deserializer::read_int64(int64_t &value)
+int Deserializer::read_int64(int64_t& value)
 {
-  span<char> data(reinterpret_cast<char *>(&value), sizeof(value));
+  span<char> data(reinterpret_cast<char*>(&value), sizeof(value));
   return read(data);
 }
 

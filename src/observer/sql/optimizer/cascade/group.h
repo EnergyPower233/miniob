@@ -37,7 +37,7 @@ public:
    *
    * @param id The unique identifier for the group.
    */
-  Group(int id, GroupExpr *expr, Memo *memo);
+  Group(int id, GroupExpr* expr, Memo* memo);
 
   ~Group();
 
@@ -46,7 +46,7 @@ public:
    *
    * @param expr The expression to add.
    */
-  void add_expr(GroupExpr *expr);
+  void add_expr(GroupExpr* expr);
 
   /**
    * @brief Sets the cost of a given expression in the group.
@@ -55,22 +55,22 @@ public:
    * @param cost The cost associated with the expression.
    * @return True if the cost was successfully set, false if the expression is not setted.
    */
-  bool set_expr_cost(GroupExpr *expr, double cost);
+  bool set_expr_cost(GroupExpr* expr, double cost);
 
   /**
    * @return The expression with the lowest cost.
    */
-  GroupExpr *get_winner();
+  GroupExpr* get_winner();
 
   /**
    * @brief Gets the logical expressions in the group.
    */
-  const std::vector<GroupExpr *> &get_logical_expressions() const { return logical_expressions_; }
+  const std::vector<GroupExpr*>& get_logical_expressions() const { return logical_expressions_; }
 
   /**
    * @brief Gets the physical expressions in the group.
    */
-  const std::vector<GroupExpr *> &get_physical_expressions() const { return physical_expressions_; }
+  const std::vector<GroupExpr*>& get_physical_expressions() const { return physical_expressions_; }
 
   /**
    * @brief Gets the cost lower bound.
@@ -91,9 +91,9 @@ public:
 
   int get_id() const { return id_; }
 
-  GroupExpr *get_logical_expression();
+  GroupExpr* get_logical_expression();
 
-  LogicalProperty *get_logical_prop() { return logical_prop_.get(); }
+  LogicalProperty* get_logical_prop() { return logical_prop_.get(); }
 
   ///< dump the group info, for debug
   void dump() const;
@@ -101,13 +101,13 @@ public:
 private:
   int id_;
 
-  std::tuple<double, GroupExpr *> winner_;
+  std::tuple<double, GroupExpr*> winner_;
 
   bool has_explored_;
 
-  std::vector<GroupExpr *> logical_expressions_;
+  std::vector<GroupExpr*> logical_expressions_;
 
-  std::vector<GroupExpr *> physical_expressions_;
+  std::vector<GroupExpr*> physical_expressions_;
 
   unique_ptr<LogicalProperty> logical_prop_ = nullptr;
 };

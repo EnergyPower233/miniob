@@ -25,12 +25,12 @@ TEST(test_mem_pool_item, test_mem_pool_item_basic)
 
   const int item_num_per_pool = 128;
   mem_pool_item.init(32, true, 1, item_num_per_pool);
-  list<void *> used_list;
+  list<void*> used_list;
 
   int alloc_num = 1000;
 
   for (int i = 0; i < alloc_num; i++) {
-    void *item = mem_pool_item.alloc();
+    void* item = mem_pool_item.alloc();
     used_list.push_back(item);
   }
 
@@ -47,7 +47,7 @@ TEST(test_mem_pool_item, test_mem_pool_item_basic)
     auto item = used_list.front();
     used_list.pop_front();
 
-    char *check = (char *)item + 10;
+    char* check = (char*)item + 10;
     mem_pool_item.free(item);
     mem_pool_item.free(check);
   }
@@ -84,7 +84,7 @@ TEST(mm, mm_legal_access)
 {
   MemPoolSimple<Frame> pool{"mm_legal_access"};
   ASSERT_TRUE(pool.init(false, 3, 3) == 0);
-  std::vector<Frame *> frames;
+  std::vector<Frame*> frames;
 
   for (auto i = 0; i < 3; ++i) {
     frames.push_back(pool.alloc());
@@ -96,14 +96,14 @@ TEST(mm, mm_legal_access)
 
   frames.clear();
   for (auto i = 0; i < 3; ++i) {
-    Frame *f  = pool.alloc();
+    Frame* f  = pool.alloc();
     f->buf[0] = 1;
     pool.free(f);
   }
 }
 #endif
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

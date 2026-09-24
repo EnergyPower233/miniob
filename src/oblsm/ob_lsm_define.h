@@ -11,9 +11,9 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 namespace oceanbase {
 
-static constexpr const char *SSTABLE_SUFFIX  = ".sst";
-static constexpr const char *MANIFEST_SUFFIX = ".mf";
-static constexpr const char *WAL_SUFFIX      = ".wal";
+static constexpr const char* SSTABLE_SUFFIX  = ".sst";
+static constexpr const char* MANIFEST_SUFFIX = ".mf";
+static constexpr const char* WAL_SUFFIX      = ".wal";
 
 /**
  * @enum CompactionType

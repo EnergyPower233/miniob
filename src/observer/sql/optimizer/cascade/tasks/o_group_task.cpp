@@ -25,12 +25,12 @@ void OptimizeGroup::perform()
   }
 
   if (!group_->has_explored()) {
-    for (auto &logical_expr : group_->get_logical_expressions()) {
+    for (auto& logical_expr : group_->get_logical_expressions()) {
       push_task(new OptimizeExpression(logical_expr, context_));
     }
   }
 
-  for (auto &physical_expr : group_->get_physical_expressions()) {
+  for (auto& physical_expr : group_->get_physical_expressions()) {
     push_task(new OptimizeInputs(physical_expr, context_));
   }
 

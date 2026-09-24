@@ -15,16 +15,16 @@ See the Mulan PSL v2 for more details. */
 #include "sql/expr/aggregator.h"
 #include "common/log/log.h"
 
-RC SumAggregator::accumulate(const Value &value)
+RC SumAggregator::accumulate(const Value& value)
 {
   if (value_.attr_type() == AttrType::UNDEFINED) {
     value_ = value;
     return RC::SUCCESS;
   }
-  
+
   ASSERT(value.attr_type() == value_.attr_type(), "type mismatch. value type: %s, value_.type: %s", 
         attr_type_to_string(value.attr_type()), attr_type_to_string(value_.attr_type()));
-  
+
   Value::add(value, value_, value_);
   return RC::SUCCESS;
 }

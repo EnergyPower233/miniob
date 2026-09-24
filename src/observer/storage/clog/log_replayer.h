@@ -33,7 +33,7 @@ public:
    *
    * @param entry 日志
    */
-  virtual RC replay(const LogEntry &entry) = 0;
+  virtual RC replay(const LogEntry& entry) = 0;
 
   /**
    * @brief 当所有日志回放完成时的回调函数

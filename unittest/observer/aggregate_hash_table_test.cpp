@@ -26,14 +26,14 @@ TEST(AggregateHashTableTest, DISABLED_standard_hash_table)
     std::unique_ptr<Column> column2 = std::make_unique<Column>(AttrType::INTS, 4);
     for (int i = 0; i < 1023; i++) {
       int key = i % 8;
-      column1->append_one((char *)&key);
-      column2->append_one((char *)&i);
+      column1->append_one((char*)&key);
+      column2->append_one((char*)&i);
     }
     group_chunk.add_column(std::move(column1), 0);
     aggr_chunk.add_column(std::move(column2), 1);
 
-    AggregateExpr             aggregate_expr(AggregateExpr::Type::SUM, nullptr);
-    std::vector<Expression *> aggregate_exprs;
+    AggregateExpr            aggregate_expr(AggregateExpr::Type::SUM, nullptr);
+    std::vector<Expression*> aggregate_exprs;
     aggregate_exprs.push_back(&aggregate_expr);
     auto standard_hash_table = std::make_unique<StandardAggregateHashTable>(aggregate_exprs);
     RC   rc                  = standard_hash_table->add_chunk(group_chunk, aggr_chunk);
@@ -65,18 +65,18 @@ TEST(AggregateHashTableTest, DISABLED_standard_hash_table)
       float i_float  = i + 0.5;
       int   i_group2 = i % 8;
 
-      group1->append_one((char *)std::to_string(i % 8).c_str());
-      group2->append_one((char *)&i_group2);
-      aggr1->append_one((char *)&i_float);
-      aggr2->append_one((char *)&i);
+      group1->append_one((char*)std::to_string(i % 8).c_str());
+      group2->append_one((char*)&i_group2);
+      aggr1->append_one((char*)&i_float);
+      aggr2->append_one((char*)&i);
     }
     group_chunk.add_column(std::move(group1), 0);
     group_chunk.add_column(std::move(group2), 1);
     aggr_chunk.add_column(std::move(aggr1), 0);
     aggr_chunk.add_column(std::move(aggr2), 1);
 
-    AggregateExpr             aggregate_expr(AggregateExpr::Type::SUM, nullptr);
-    std::vector<Expression *> aggregate_exprs;
+    AggregateExpr            aggregate_expr(AggregateExpr::Type::SUM, nullptr);
+    std::vector<Expression*> aggregate_exprs;
     aggregate_exprs.push_back(&aggregate_expr);
     aggregate_exprs.push_back(&aggregate_expr);
     auto standard_hash_table = std::make_unique<StandardAggregateHashTable>(aggregate_exprs);
@@ -114,8 +114,8 @@ TEST(AggregateHashTableTest, DISABLED_linear_probing_hash_table)
     std::unique_ptr<Column> column2 = std::make_unique<Column>(AttrType::INTS, 4);
     for (int i = 0; i < 1023; i++) {
       int key = i % 8;
-      column1->append_one((char *)&key);
-      column2->append_one((char *)&i);
+      column1->append_one((char*)&key);
+      column2->append_one((char*)&i);
     }
     group_chunk.add_column(std::move(column1), 0);
     aggr_chunk.add_column(std::move(column2), 1);
@@ -152,8 +152,8 @@ TEST(AggregateHashTableTest, DISABLED_linear_probing_hash_table)
         key = 257;
       }
 
-      column1->append_one((char *)&key);
-      column2->append_one((char *)&value);
+      column1->append_one((char*)&key);
+      column2->append_one((char*)&value);
     }
     group_chunk.add_column(std::move(column1), 0);
     aggr_chunk.add_column(std::move(column2), 1);
@@ -177,7 +177,7 @@ TEST(AggregateHashTableTest, DISABLED_linear_probing_hash_table)
 }
 #endif
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

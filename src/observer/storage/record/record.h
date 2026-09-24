@@ -46,11 +46,11 @@ struct RID
     return ss.str();
   }
 
-  bool operator==(const RID &other) const { return page_num == other.page_num && slot_num == other.slot_num; }
+  bool operator==(const RID& other) const { return page_num == other.page_num && slot_num == other.slot_num; }
 
-  bool operator!=(const RID &other) const { return !(*this == other); }
+  bool operator!=(const RID& other) const { return !(*this == other); }
 
-  static int compare(const RID *rid1, const RID *rid2)
+  static int compare(const RID* rid1, const RID* rid2)
   {
     int page_diff = rid1->page_num - rid2->page_num;
     if (page_diff != 0) {
@@ -65,7 +65,7 @@ struct RID
    * 虽然page num 0和slot num 0都是合法的，但是page num 0通常用于存放meta数据，所以对数据部分来说都是
    * 不合法的. 这里在bplus tree中查找时会用到。
    */
-  static RID *min()
+  static RID* min()
   {
     static RID rid{0, 0};
     return &rid;
@@ -75,7 +75,7 @@ struct RID
    * @brief 返回一个“最大的”RID
    * 我们假设page num和slot num都不会使用对应数值类型的最大值
    */
-  static RID *max()
+  static RID* max()
   {
     static RID rid{numeric_limits<PageNum>::max(), numeric_limits<SlotNum>::max()};
     return &rid;
@@ -84,10 +84,8 @@ struct RID
 
 struct RIDHash
 {
-  size_t operator()(const RID &rid) const noexcept
-  {
-    return hash<PageNum>()(rid.page_num) ^ hash<SlotNum>()(rid.slot_num);
-  }
+  size_t operator()(const RID& rid) const noexcept
+  { return hash<PageNum>()(rid.page_num) ^ hash<SlotNum>()(rid.slot_num); }
 };
 
 /**
@@ -109,7 +107,7 @@ public:
     }
   }
 
-  Record(const Record &other)
+  Record(const Record& other)
   {
     rid_   = other.rid_;
     key_   = other.key_;
@@ -118,14 +116,14 @@ public:
     owner_ = other.owner_;
 
     if (other.owner_) {
-      char *tmp = (char *)malloc(other.len_);
+      char* tmp = (char*)malloc(other.len_);
       ASSERT(nullptr != tmp, "failed to allocate memory. size=%d", other.len_);
       memcpy(tmp, other.data_, other.len_);
       data_ = tmp;
     }
   }
 
-  Record &operator=(const Record &other)
+  Record& operator=(const Record& other)
   {
     if (this == &other) {
       return *this;
@@ -142,7 +140,7 @@ public:
     return *this;
   }
 
-  Record(Record &&other)
+  Record(Record&& other)
   {
     rid_ = other.rid_;
     key_ = other.key_;
@@ -161,7 +159,7 @@ public:
     }
   }
 
-  Record &operator=(Record &&other)
+  Record& operator=(Record&& other)
   {
     if (this == &other) {
       return *this;
@@ -172,12 +170,12 @@ public:
     return *this;
   }
 
-  void set_data(char *data, int len = 0)
+  void set_data(char* data, int len = 0)
   {
     this->data_ = data;
     this->len_  = len;
   }
-  void set_data_owner(char *data, int len)
+  void set_data_owner(char* data, int len)
   {
     ASSERT(len != 0, "the len of data should not be 0");
     this->~Record();
@@ -187,10 +185,10 @@ public:
     this->owner_ = true;
   }
 
-  RC copy_data(const char *data, int len)
+  RC copy_data(const char* data, int len)
   {
     ASSERT(len!= 0, "the len of data should not be 0");
-    char *tmp = (char *)malloc(len);
+    char* tmp = (char*)malloc(len);
     if (nullptr == tmp) {
       LOG_WARN("failed to allocate memory. size=%d", len);
       return RC::NOMEM;
@@ -204,7 +202,7 @@ public:
   RC new_record(int len)
   {
     ASSERT(len!= 0, "the len of data should not be 0");
-    char *tmp = (char *)malloc(len);
+    char* tmp = (char*)malloc(len);
     if (nullptr == tmp) {
       LOG_WARN("failed to allocate memory. size=%d", len);
       return RC::NOMEM;
@@ -213,7 +211,7 @@ public:
     return RC::SUCCESS;
   }
 
-  RC set_field(int field_offset, int field_len, char *data)
+  RC set_field(int field_offset, int field_len, char* data)
   {
     if (!owner_) {
       LOG_ERROR("cannot set field when record does not own the memory");
@@ -243,26 +241,26 @@ public:
     return RC::SUCCESS;
   }
 
-  char       *data() { return this->data_; }
-  const char *data() const { return this->data_; }
+  char*       data() { return this->data_; }
+  const char* data() const { return this->data_; }
   int         len() const { return this->len_; }
 
-  void set_rid(const RID &rid) { this->rid_ = rid; }
+  void set_rid(const RID& rid) { this->rid_ = rid; }
   void set_rid(const PageNum page_num, const SlotNum slot_num)
   {
     this->rid_.page_num = page_num;
     this->rid_.slot_num = slot_num;
   }
 
-  RID          &rid() { return rid_; }
-  const RID    &rid() const { return rid_; }
-  void          set_key(const string &key) { key_ = key; }
-  const string &key() const { return key_; }
+  RID&          rid() { return rid_; }
+  const RID&    rid() const { return rid_; }
+  void          set_key(const string& key) { key_ = key; }
+  const string& key() const { return key_; }
 
 private:
   RID    rid_;
   string key_;  //// 记录的主键，用于 lsm-tree 引擎，需要考虑重构 Record
-  char  *data_  = nullptr;
+  char*  data_  = nullptr;
   int    len_   = 0;      /// 如果不是record自己来管理内存，这个字段可能是无效的
   bool   owner_ = false;  /// 表示当前是否由record来管理内存
 };

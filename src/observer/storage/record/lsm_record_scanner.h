@@ -20,7 +20,7 @@ using namespace oceanbase;
 class LsmRecordScanner : public RecordScanner
 {
 public:
-  LsmRecordScanner(Table *table, ObLsm *oblsm, Trx *trx) : table_(table), oblsm_(oblsm), trx_(trx) {}
+  LsmRecordScanner(Table* table, ObLsm* oblsm, Trx* trx) : table_(table), oblsm_(oblsm), trx_(trx) {}
   ~LsmRecordScanner() = default;
 
   /**
@@ -38,13 +38,13 @@ public:
    *
    * @param record 返回的下一条记录
    */
-  RC next(Record &record) override;
+  RC next(Record& record) override;
 
 private:
-  Table         *table_    = nullptr;
-  ObLsm         *oblsm_    = nullptr;
-  Trx           *trx_      = nullptr;
-  ObLsmIterator *lsm_iter_ = nullptr;
+  Table*         table_    = nullptr;
+  ObLsm*         oblsm_    = nullptr;
+  Trx*           trx_      = nullptr;
+  ObLsmIterator* lsm_iter_ = nullptr;
   RowTuple       tuple_;
   Record         record_;
 };

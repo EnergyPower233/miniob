@@ -45,7 +45,7 @@ public:
    * @param oper 逻辑计划
    * @param change_made 当前是否有重写发生
    */
-  RC rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made);
+  RC rewrite(unique_ptr<LogicalOperator>& oper, bool& change_made);
 
 private:
   vector<unique_ptr<RewriteRule>> rewrite_rules_;

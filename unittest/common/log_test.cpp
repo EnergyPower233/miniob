@@ -30,7 +30,7 @@ LogTest::~LogTest()
   // Auto-generated destructor stub
 }
 
-int LogTest::init(const string &logFile)
+int LogTest::init(const string& logFile)
 {
 
   LoggerFactory::init_default(logFile);
@@ -40,9 +40,9 @@ int LogTest::init(const string &logFile)
   return 0;
 }
 
-void *LogTest::log_loop(void *param)
+void* LogTest::log_loop(void* param)
 {
-  int index = *(int *)param;
+  int index = *(int*)param;
   int i     = 0;
   while (i < 100) {
     i++;
@@ -92,7 +92,7 @@ void testEnableTest()
 
 TEST(testEnableTest, CheckEnableTest) { testEnableTest(); }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

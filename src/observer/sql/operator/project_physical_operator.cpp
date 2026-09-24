@@ -19,18 +19,17 @@ See the Mulan PSL v2 for more details. */
 
 using namespace std;
 
-ProjectPhysicalOperator::ProjectPhysicalOperator(vector<unique_ptr<Expression>> &&expressions)
-  : expressions_(std::move(expressions)), tuple_(expressions_)
-{
-}
+ProjectPhysicalOperator::ProjectPhysicalOperator(vector<unique_ptr<Expression>>&& expressions)
+    : expressions_(std::move(expressions)), tuple_(expressions_)
+{}
 
-RC ProjectPhysicalOperator::open(Trx *trx)
+RC ProjectPhysicalOperator::open(Trx* trx)
 {
   if (children_.empty()) {
     return RC::SUCCESS;
   }
 
-  PhysicalOperator *child = children_[0].get();
+  PhysicalOperator* child = children_[0].get();
   RC                rc    = child->open(trx);
   if (rc != RC::SUCCESS) {
     LOG_WARN("failed to open child operator: %s", strrc(rc));
@@ -55,15 +54,15 @@ RC ProjectPhysicalOperator::close()
   }
   return RC::SUCCESS;
 }
-Tuple *ProjectPhysicalOperator::current_tuple()
+Tuple* ProjectPhysicalOperator::current_tuple()
 {
   tuple_.set_tuple(children_[0]->current_tuple());
   return &tuple_;
 }
 
-RC ProjectPhysicalOperator::tuple_schema(TupleSchema &schema) const
+RC ProjectPhysicalOperator::tuple_schema(TupleSchema& schema) const
 {
-  for (const unique_ptr<Expression> &expression : expressions_) {
+  for (const unique_ptr<Expression>& expression : expressions_) {
     schema.append_cell(expression->name());
   }
   return RC::SUCCESS;

@@ -28,7 +28,7 @@ public:
    * @return == 0 iff "a" == "b",
    * @return > 0 iff "a" > "b"
    */
-  virtual int compare(const string_view &a, const string_view &b) const = 0;
+  virtual int compare(const string_view& a, const string_view& b) const = 0;
 };
 
 /**
@@ -38,7 +38,7 @@ class ObDefaultComparator : public ObComparator
 {
 public:
   explicit ObDefaultComparator() = default;
-  int compare(const string_view &a, const string_view &b) const override;
+  int compare(const string_view& a, const string_view& b) const override;
 };
 
 /**
@@ -50,8 +50,8 @@ class ObInternalKeyComparator : public ObComparator
 public:
   explicit ObInternalKeyComparator() = default;
 
-  int                 compare(const string_view &a, const string_view &b) const override;
-  const ObComparator *user_comparator() const { return &default_comparator_; }
+  int                 compare(const string_view& a, const string_view& b) const override;
+  const ObComparator* user_comparator() const { return &default_comparator_; }
 
 private:
   ObDefaultComparator default_comparator_;

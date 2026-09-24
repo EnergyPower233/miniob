@@ -20,7 +20,7 @@ See the Mulan PSL v2 for more details. */
 using namespace common;
 
 static constexpr int PAGE_HEADER_SIZE = (sizeof(PageHeader));
-RecordPageHandler   *RecordPageHandler::create(StorageFormat format)
+RecordPageHandler*   RecordPageHandler::create(StorageFormat format)
 {
   if (format == StorageFormat::ROW_FORMAT) {
     return new RowRecordPageHandler();
@@ -71,7 +71,7 @@ string PageHeader::to_string() const
 RecordPageIterator::RecordPageIterator() {}
 RecordPageIterator::~RecordPageIterator() {}
 
-void RecordPageIterator::init(RecordPageHandler *record_page_handler, SlotNum start_slot_num /*=0*/)
+void RecordPageIterator::init(RecordPageHandler* record_page_handler, SlotNum start_slot_num /*=0*/)
 {
   record_page_handler_ = record_page_handler;
   page_num_            = record_page_handler->get_page_num();
@@ -81,7 +81,7 @@ void RecordPageIterator::init(RecordPageHandler *record_page_handler, SlotNum st
 
 bool RecordPageIterator::has_next() { return -1 != next_slot_num_; }
 
-RC RecordPageIterator::next(Record &record)
+RC RecordPageIterator::next(Record& record)
 {
   record_page_handler_->get_record(RID(page_num_, next_slot_num_), record);
 
@@ -95,8 +95,8 @@ RC RecordPageIterator::next(Record &record)
 
 RecordPageHandler::~RecordPageHandler() { cleanup(); }
 
-RC RecordPageHandler::init(DiskBufferPool &buffer_pool, LogHandler &log_handler, PageNum page_num, ReadWriteMode mode,
-    LobFileHandler *lob_handler)
+RC RecordPageHandler::init(DiskBufferPool& buffer_pool, LogHandler& log_handler, PageNum page_num, ReadWriteMode mode,
+    LobFileHandler* lob_handler)
 {
   if (disk_buffer_pool_ != nullptr) {
     if (frame_->page_num() == page_num) {
@@ -114,7 +114,7 @@ RC RecordPageHandler::init(DiskBufferPool &buffer_pool, LogHandler &log_handler,
     return ret;
   }
 
-  char *data = frame_->data();
+  char* data = frame_->data();
 
   if (mode == ReadWriteMode::READ_ONLY) {
     frame_->read_latch();
@@ -124,7 +124,7 @@ RC RecordPageHandler::init(DiskBufferPool &buffer_pool, LogHandler &log_handler,
   disk_buffer_pool_ = &buffer_pool;
 
   rw_mode_     = mode;
-  page_header_ = (PageHeader *)(data);
+  page_header_ = (PageHeader*)(data);
   bitmap_      = data + PAGE_HEADER_SIZE;
 
   (void)log_handler_.init(log_handler, buffer_pool.id(), page_header_->record_real_size, storage_format_);
@@ -133,7 +133,7 @@ RC RecordPageHandler::init(DiskBufferPool &buffer_pool, LogHandler &log_handler,
   return ret;
 }
 
-RC RecordPageHandler::recover_init(DiskBufferPool &buffer_pool, PageNum page_num)
+RC RecordPageHandler::recover_init(DiskBufferPool& buffer_pool, PageNum page_num)
 {
   if (disk_buffer_pool_ != nullptr) {
     LOG_WARN("Disk buffer pool has been opened for page_num %d.", page_num);
@@ -146,12 +146,12 @@ RC RecordPageHandler::recover_init(DiskBufferPool &buffer_pool, PageNum page_num
     return ret;
   }
 
-  char *data = frame_->data();
+  char* data = frame_->data();
 
   frame_->write_latch();
   disk_buffer_pool_ = &buffer_pool;
   rw_mode_          = ReadWriteMode::READ_WRITE;
-  page_header_      = (PageHeader *)(data);
+  page_header_      = (PageHeader*)(data);
   bitmap_           = data + PAGE_HEADER_SIZE;
 
   buffer_pool.recover_page(page_num);
@@ -160,8 +160,8 @@ RC RecordPageHandler::recover_init(DiskBufferPool &buffer_pool, PageNum page_num
   return ret;
 }
 
-RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &log_handler, PageNum page_num,
-    int record_size, TableMeta *table_meta, LobFileHandler *lob_handler)
+RC RecordPageHandler::init_empty_page(DiskBufferPool& buffer_pool, LogHandler& log_handler, PageNum page_num,
+    int record_size, TableMeta* table_meta, LobFileHandler* lob_handler)
 {
   RC rc        = init(buffer_pool, log_handler, page_num, ReadWriteMode::READ_WRITE);
   lob_handler_ = lob_handler;
@@ -185,7 +185,7 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
       BP_PAGE_DATA_SIZE, page_header_->record_size, column_num * sizeof(int) /* other fixed size*/);
   page_header_->col_idx_offset = align8(PAGE_HEADER_SIZE + page_bitmap_size(page_header_->record_capacity));
   page_header_->data_offset    = align8(PAGE_HEADER_SIZE + page_bitmap_size(page_header_->record_capacity)) +
-                              column_num * sizeof(int) /* column index*/;
+                                 column_num * sizeof(int) /* column index*/;
   this->fix_record_capacity();
   ASSERT(page_header_->data_offset + page_header_->record_capacity * page_header_->record_size 
               <= BP_PAGE_DATA_SIZE, 
@@ -196,7 +196,7 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
   // column_index[i] store the end offset of column `i` or the start offset of column `i+1`
 
   // 计算列偏移
-  int *column_index = reinterpret_cast<int *>(frame_->data() + page_header_->col_idx_offset);
+  int* column_index = reinterpret_cast<int*>(frame_->data() + page_header_->col_idx_offset);
   for (int i = 0; i < column_num; ++i) {
     ASSERT(i == table_meta->field(i)->field_id(), "i should be the col_id of fields[i]");
     if (i == 0) {
@@ -206,7 +206,7 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
     }
   }
 
-  rc = log_handler_.init_new_page(frame_, page_num, span((const char *)column_index, column_num * sizeof(int)));
+  rc = log_handler_.init_new_page(frame_, page_num, span((const char*)column_index, column_num * sizeof(int)));
   if (OB_FAIL(rc)) {
     LOG_ERROR("Failed to init empty page: write log failed. page_num:record_size %d:%d. rc=%s", 
               page_num, record_size, strrc(rc));
@@ -216,8 +216,8 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
   return RC::SUCCESS;
 }
 
-RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &log_handler, PageNum page_num,
-    int record_size, int column_num, const char *col_idx_data, LobFileHandler *lob_handler)
+RC RecordPageHandler::init_empty_page(DiskBufferPool& buffer_pool, LogHandler& log_handler, PageNum page_num,
+    int record_size, int column_num, const char* col_idx_data, LobFileHandler* lob_handler)
 {
   RC rc = init(buffer_pool, log_handler, page_num, ReadWriteMode::READ_WRITE);
   if (OB_FAIL(rc)) {
@@ -236,7 +236,7 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
       page_record_capacity(BP_PAGE_DATA_SIZE, page_header_->record_size, page_header_->column_num * sizeof(int));
   page_header_->col_idx_offset = align8(PAGE_HEADER_SIZE + page_bitmap_size(page_header_->record_capacity));
   page_header_->data_offset    = align8(PAGE_HEADER_SIZE + page_bitmap_size(page_header_->record_capacity)) +
-                              column_num * sizeof(int) /* column index*/;
+                                 column_num * sizeof(int) /* column index*/;
   this->fix_record_capacity();
   ASSERT(page_header_->data_offset + page_header_->record_capacity * page_header_->record_size 
               <= BP_PAGE_DATA_SIZE, 
@@ -245,7 +245,7 @@ RC RecordPageHandler::init_empty_page(DiskBufferPool &buffer_pool, LogHandler &l
   bitmap_ = frame_->data() + PAGE_HEADER_SIZE;
   memset(bitmap_, 0, page_bitmap_size(page_header_->record_capacity));
   // column_index[i] store the end offset of column `i` the start offset of column `i+1`
-  int *column_index = reinterpret_cast<int *>(frame_->data() + page_header_->col_idx_offset);
+  int* column_index = reinterpret_cast<int*>(frame_->data() + page_header_->col_idx_offset);
   memcpy(column_index, col_idx_data, column_num * sizeof(int));
 
   if (OB_FAIL(rc)) {
@@ -272,7 +272,7 @@ RC RecordPageHandler::cleanup()
   return RC::SUCCESS;
 }
 
-RC RowRecordPageHandler::insert_record(const char *data, RID *rid)
+RC RowRecordPageHandler::insert_record(const char* data, RID* rid)
 {
   ASSERT(rw_mode_ != ReadWriteMode::READ_ONLY, 
          "cannot insert record into page while the page is readonly");
@@ -296,7 +296,7 @@ RC RowRecordPageHandler::insert_record(const char *data, RID *rid)
   }
 
   // assert index < page_header_->record_capacity
-  char *record_data = get_record_data(index);
+  char* record_data = get_record_data(index);
   memcpy(record_data, data, page_header_->record_real_size);
 
   frame_->mark_dirty();
@@ -310,7 +310,7 @@ RC RowRecordPageHandler::insert_record(const char *data, RID *rid)
   return RC::SUCCESS;
 }
 
-RC RowRecordPageHandler::recover_insert_record(const char *data, const RID &rid)
+RC RowRecordPageHandler::recover_insert_record(const char* data, const RID& rid)
 {
   if (rid.slot_num >= page_header_->record_capacity) {
     LOG_WARN("slot_num illegal, slot_num(%d) > record_capacity(%d).", rid.slot_num, page_header_->record_capacity);
@@ -325,7 +325,7 @@ RC RowRecordPageHandler::recover_insert_record(const char *data, const RID &rid)
   }
 
   // 恢复数据
-  char *record_data = get_record_data(rid.slot_num);
+  char* record_data = get_record_data(rid.slot_num);
   memcpy(record_data, data, page_header_->record_real_size);
 
   frame_->mark_dirty();
@@ -333,7 +333,7 @@ RC RowRecordPageHandler::recover_insert_record(const char *data, const RID &rid)
   return RC::SUCCESS;
 }
 
-RC RowRecordPageHandler::delete_record(const RID *rid)
+RC RowRecordPageHandler::delete_record(const RID* rid)
 {
   ASSERT(rw_mode_ != ReadWriteMode::READ_ONLY, 
          "cannot delete record from page while the page is readonly");
@@ -357,7 +357,7 @@ RC RowRecordPageHandler::delete_record(const RID *rid)
   }
 }
 
-RC RowRecordPageHandler::update_record(const RID &rid, const char *data)
+RC RowRecordPageHandler::update_record(const RID& rid, const char* data)
 {
   ASSERT(rw_mode_ != ReadWriteMode::READ_ONLY, "cannot delete record from page while the page is readonly");
 
@@ -371,7 +371,7 @@ RC RowRecordPageHandler::update_record(const RID &rid, const char *data)
   if (bitmap.get_bit(rid.slot_num)) {
     frame_->mark_dirty();
 
-    char *record_data = get_record_data(rid.slot_num);
+    char* record_data = get_record_data(rid.slot_num);
     if (record_data == data) {
       // nothing to do
     } else {
@@ -392,7 +392,7 @@ RC RowRecordPageHandler::update_record(const RID &rid, const char *data)
   }
 }
 
-RC RowRecordPageHandler::get_record(const RID &rid, Record &record)
+RC RowRecordPageHandler::get_record(const RID& rid, Record& record)
 {
   if (rid.slot_num >= page_header_->record_capacity) {
     LOG_ERROR("Invalid slot_num %d, exceed page's record capacity, frame=%s, page_header=%s",
@@ -421,7 +421,7 @@ PageNum RecordPageHandler::get_page_num() const
 
 bool RecordPageHandler::is_full() const { return page_header_->record_num >= page_header_->record_capacity; }
 
-RC PaxRecordPageHandler::insert_record(const char *data, RID *rid)
+RC PaxRecordPageHandler::insert_record(const char* data, RID* rid)
 {
   // your code here
   // Todo:
@@ -431,13 +431,13 @@ RC PaxRecordPageHandler::insert_record(const char *data, RID *rid)
   return RC::UNIMPLEMENTED;
 }
 
-RC PaxRecordPageHandler::insert_chunk(const Chunk &chunk, int start_row, int &insert_rows)
+RC PaxRecordPageHandler::insert_chunk(const Chunk& chunk, int start_row, int& insert_rows)
 {
   // your code here
   return RC::UNIMPLEMENTED;
 }
 
-RC PaxRecordPageHandler::delete_record(const RID *rid)
+RC PaxRecordPageHandler::delete_record(const RID* rid)
 {
   ASSERT(rw_mode_ != ReadWriteMode::READ_ONLY, 
          "cannot delete record from page while the page is readonly");
@@ -461,7 +461,7 @@ RC PaxRecordPageHandler::delete_record(const RID *rid)
   }
 }
 
-RC PaxRecordPageHandler::get_record(const RID &rid, Record &record)
+RC PaxRecordPageHandler::get_record(const RID& rid, Record& record)
 {
   // your code here
   // Todo:
@@ -472,7 +472,7 @@ RC PaxRecordPageHandler::get_record(const RID &rid, Record &record)
 }
 
 // TODO: specify the column_ids that chunk needed. currenly we get all columns
-RC PaxRecordPageHandler::get_chunk(Chunk &chunk)
+RC PaxRecordPageHandler::get_chunk(Chunk& chunk)
 {
   // your code here
   // Todo:
@@ -481,9 +481,9 @@ RC PaxRecordPageHandler::get_chunk(Chunk &chunk)
   return RC::UNIMPLEMENTED;
 }
 
-char *PaxRecordPageHandler::get_field_data(SlotNum slot_num, int col_id)
+char* PaxRecordPageHandler::get_field_data(SlotNum slot_num, int col_id)
 {
-  int *col_idx = reinterpret_cast<int *>(frame_->data() + page_header_->col_idx_offset);
+  int* col_idx = reinterpret_cast<int*>(frame_->data() + page_header_->col_idx_offset);
   if (col_id == 0) {
     return frame_->data() + page_header_->data_offset + (get_field_len(col_id) * slot_num);
   } else {
@@ -493,7 +493,7 @@ char *PaxRecordPageHandler::get_field_data(SlotNum slot_num, int col_id)
 
 int PaxRecordPageHandler::get_field_len(int col_id)
 {
-  int *col_idx = reinterpret_cast<int *>(frame_->data() + page_header_->col_idx_offset);
+  int* col_idx = reinterpret_cast<int*>(frame_->data() + page_header_->col_idx_offset);
   if (col_id == 0) {
     return col_idx[col_id] / page_header_->record_capacity;
   } else {
@@ -506,7 +506,7 @@ int PaxRecordPageHandler::get_field_len(int col_id)
 RecordFileHandler::~RecordFileHandler() { this->close(); }
 
 RC RecordFileHandler::init(
-    DiskBufferPool &buffer_pool, LogHandler &log_handler, TableMeta *table_meta, LobFileHandler *lob_handler)
+    DiskBufferPool& buffer_pool, LogHandler& log_handler, TableMeta* table_meta, LobFileHandler* lob_handler)
 {
   if (disk_buffer_pool_ != nullptr) {
     LOG_ERROR("record file handler has been openned.");
@@ -565,7 +565,7 @@ RC RecordFileHandler::init_free_pages()
   return rc;
 }
 
-RC RecordFileHandler::insert_record(const char *data, int record_size, RID *rid)
+RC RecordFileHandler::insert_record(const char* data, int record_size, RID* rid)
 {
   RC ret = RC::SUCCESS;
 
@@ -598,7 +598,7 @@ RC RecordFileHandler::insert_record(const char *data, int record_size, RID *rid)
 
   // 找不到就分配一个新的页面
   if (!page_found) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     if ((ret = disk_buffer_pool_->allocate_page(&frame)) != RC::SUCCESS) {
       LOG_ERROR("Failed to allocate page while inserting record. ret:%d", ret);
       return ret;
@@ -631,13 +631,13 @@ RC RecordFileHandler::insert_record(const char *data, int record_size, RID *rid)
   return record_page_handler->insert_record(data, rid);
 }
 
-RC RecordFileHandler::insert_chunk(const Chunk &chunk, int record_size)
+RC RecordFileHandler::insert_chunk(const Chunk& chunk, int record_size)
 {
   // your code here
   return RC::UNIMPLEMENTED;
 }
 
-RC RecordFileHandler::recover_insert_record(const char *data, int record_size, const RID &rid)
+RC RecordFileHandler::recover_insert_record(const char* data, int record_size, const RID& rid)
 {
   RC ret = RC::SUCCESS;
 
@@ -652,7 +652,7 @@ RC RecordFileHandler::recover_insert_record(const char *data, int record_size, c
   return record_page_handler->recover_insert_record(data, rid);
 }
 
-RC RecordFileHandler::delete_record(const RID *rid)
+RC RecordFileHandler::delete_record(const RID* rid)
 {
   RC rc = RC::SUCCESS;
 
@@ -680,7 +680,7 @@ RC RecordFileHandler::delete_record(const RID *rid)
   return rc;
 }
 
-RC RecordFileHandler::get_record(const RID &rid, Record &record)
+RC RecordFileHandler::get_record(const RID& rid, Record& record)
 {
   unique_ptr<RecordPageHandler> page_handler(RecordPageHandler::create(storage_format_));
 
@@ -702,7 +702,7 @@ RC RecordFileHandler::get_record(const RID &rid, Record &record)
   return rc;
 }
 
-RC RecordFileHandler::visit_record(const RID &rid, function<bool(Record &)> updater)
+RC RecordFileHandler::visit_record(const RID& rid, function<bool(Record&)> updater)
 {
   unique_ptr<RecordPageHandler> page_handler(RecordPageHandler::create(storage_format_));
 
@@ -750,7 +750,7 @@ RC ChunkFileScanner::close_scan()
 }
 
 RC ChunkFileScanner::open_scan_chunk(
-    Table *table, DiskBufferPool &buffer_pool, LogHandler &log_handler, ReadWriteMode mode)
+    Table* table, DiskBufferPool& buffer_pool, LogHandler& log_handler, ReadWriteMode mode)
 {
   close_scan();
 
@@ -773,7 +773,7 @@ RC ChunkFileScanner::open_scan_chunk(
   return rc;
 }
 
-RC ChunkFileScanner::next_chunk(Chunk &chunk)
+RC ChunkFileScanner::next_chunk(Chunk& chunk)
 {
   RC rc = RC::SUCCESS;
 

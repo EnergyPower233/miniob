@@ -19,18 +19,18 @@ See the Mulan PSL v2 for more details. */
 class ExprVecPhysicalOperator : public PhysicalOperator
 {
 public:
-  ExprVecPhysicalOperator(vector<Expression *> &&expressions);
+  ExprVecPhysicalOperator(vector<Expression*>&& expressions);
 
   virtual ~ExprVecPhysicalOperator() = default;
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::EXPR_VEC; }
 
-  RC open(Trx *trx) override;
-  RC next(Chunk &chunk) override;
+  RC open(Trx* trx) override;
+  RC next(Chunk& chunk) override;
   RC close() override;
 
 private:
-  vector<Expression *> expressions_;  /// 表达式
-  Chunk                chunk_;
-  Chunk                evaled_chunk_;
+  vector<Expression*> expressions_;  /// 表达式
+  Chunk               chunk_;
+  Chunk               evaled_chunk_;
 };

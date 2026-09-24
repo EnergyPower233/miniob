@@ -26,12 +26,11 @@ Value::Value(float val) { set_float(val); }
 
 Value::Value(bool val) { set_boolean(val); }
 
-Value::Value(const char *s, int len /*= 0*/) { set_string(s, len); }
+Value::Value(const char* s, int len /*= 0*/) { set_string(s, len); }
 
 Value::Value(const string_t& s) { set_string(s.data(), s.size()); }
 
-
-Value::Value(const Value &other)
+Value::Value(const Value& other)
 {
   this->attr_type_ = other.attr_type_;
   this->length_    = other.length_;
@@ -47,7 +46,7 @@ Value::Value(const Value &other)
   }
 }
 
-Value::Value(Value &&other)
+Value::Value(Value&& other)
 {
   this->attr_type_ = other.attr_type_;
   this->length_    = other.length_;
@@ -57,7 +56,7 @@ Value::Value(Value &&other)
   other.length_    = 0;
 }
 
-Value &Value::operator=(const Value &other)
+Value& Value::operator=(const Value& other)
 {
   if (this == &other) {
     return *this;
@@ -78,7 +77,7 @@ Value &Value::operator=(const Value &other)
   return *this;
 }
 
-Value &Value::operator=(Value &&other)
+Value& Value::operator=(Value&& other)
 {
   if (this == &other) {
     return *this;
@@ -110,22 +109,22 @@ void Value::reset()
   own_data_  = false;
 }
 
-void Value::set_data(char *data, int length)
+void Value::set_data(char* data, int length)
 {
   switch (attr_type_) {
     case AttrType::CHARS: {
       set_string(data, length);
     } break;
     case AttrType::INTS: {
-      value_.int_value_ = *(int *)data;
+      value_.int_value_ = *(int*)data;
       length_           = length;
     } break;
     case AttrType::FLOATS: {
-      value_.float_value_ = *(float *)data;
+      value_.float_value_ = *(float*)data;
       length_             = length;
     } break;
     case AttrType::BOOLEANS: {
-      value_.bool_value_ = *(int *)data != 0;
+      value_.bool_value_ = *(int*)data != 0;
       length_            = length;
     } break;
     default: {
@@ -157,7 +156,7 @@ void Value::set_boolean(bool val)
   length_            = sizeof(val);
 }
 
-void Value::set_string(const char *s, int len /*= 0*/)
+void Value::set_string(const char* s, int len /*= 0*/)
 {
   reset();
   attr_type_ = AttrType::CHARS;
@@ -183,15 +182,14 @@ void Value::set_empty_string(int len)
   reset();
   attr_type_ = AttrType::CHARS;
 
-  own_data_ = true;
+  own_data_             = true;
   value_.pointer_value_ = new char[len + 1];
   length_               = len;
   memset(value_.pointer_value_, 0, len);
   value_.pointer_value_[len] = '\0';
-  
 }
 
-void Value::set_value(const Value &value)
+void Value::set_value(const Value& value)
 {
   switch (value.attr_type_) {
     case AttrType::INTS: {
@@ -212,7 +210,7 @@ void Value::set_value(const Value &value)
   }
 }
 
-void Value::set_string_from_other(const Value &other)
+void Value::set_string_from_other(const Value& other)
 {
   ASSERT(attr_type_ == AttrType::CHARS, "attr type is not CHARS");
   if (own_data_ && other.value_.pointer_value_ != nullptr && length_ != 0) {
@@ -222,14 +220,14 @@ void Value::set_string_from_other(const Value &other)
   }
 }
 
-char *Value::data() const
+char* Value::data() const
 {
   switch (attr_type_) {
     case AttrType::CHARS: {
       return value_.pointer_value_;
     } break;
     default: {
-      return (char *)&value_;
+      return (char*)&value_;
     } break;
   }
 }
@@ -245,7 +243,8 @@ string Value::to_string() const
   return res;
 }
 
-int Value::compare(const Value &other) const { return DataType::type_instance(this->attr_type_)->compare(*this, other); }
+int Value::compare(const Value& other) const
+{ return DataType::type_instance(this->attr_type_)->compare(*this, other); }
 
 int Value::get_int() const
 {
@@ -253,7 +252,7 @@ int Value::get_int() const
     case AttrType::CHARS: {
       try {
         return (int)(stol(value_.pointer_value_));
-      } catch (exception const &ex) {
+      } catch (exception const& ex) {
         LOG_TRACE("failed to convert string to number. s=%s, ex=%s", value_.pointer_value_, ex.what());
         return 0;
       }
@@ -281,7 +280,7 @@ float Value::get_float() const
     case AttrType::CHARS: {
       try {
         return stof(value_.pointer_value_);
-      } catch (exception const &ex) {
+      } catch (exception const& ex) {
         LOG_TRACE("failed to convert string to float. s=%s, ex=%s", value_.pointer_value_, ex.what());
         return 0.0;
       }
@@ -327,7 +326,7 @@ bool Value::get_boolean() const
         }
 
         return value_.pointer_value_ != nullptr;
-      } catch (exception const &ex) {
+      } catch (exception const& ex) {
         LOG_TRACE("failed to convert string to float or integer. s=%s, ex=%s", value_.pointer_value_, ex.what());
         return value_.pointer_value_ != nullptr;
       }

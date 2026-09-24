@@ -39,7 +39,7 @@ string BPFileHeader::to_string() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BPFrameManager::BPFrameManager(const char *name) : allocator_(name) {}
+BPFrameManager::BPFrameManager(const char* name) : allocator_(name) {}
 
 RC BPFrameManager::init(int pool_num)
 {
@@ -60,17 +60,17 @@ RC BPFrameManager::cleanup()
   return RC::SUCCESS;
 }
 
-int BPFrameManager::purge_frames(int count, function<RC(Frame *frame)> purger)
+int BPFrameManager::purge_frames(int count, function<RC(Frame* frame)> purger)
 {
   lock_guard<mutex> lock_guard(lock_);
 
-  vector<Frame *> frames_can_purge;
+  vector<Frame*> frames_can_purge;
   if (count <= 0) {
     count = 1;
   }
   frames_can_purge.reserve(count);
 
-  auto purge_finder = [&frames_can_purge, count](const FrameId &frame_id, Frame *const frame) {
+  auto purge_finder = [&frames_can_purge, count](const FrameId& frame_id, Frame* const frame) {
     if (frame->can_purge()) {
       frame->pin();
       frames_can_purge.push_back(frame);
@@ -87,7 +87,7 @@ int BPFrameManager::purge_frames(int count, function<RC(Frame *frame)> purger)
   /// 当前还在frameManager的锁内，而 purger 是一个非常耗时的操作
   /// 他需要把脏页数据刷新到磁盘上去，所以这里会极大地降低并发度
   int freed_count = 0;
-  for (Frame *frame : frames_can_purge) {
+  for (Frame* frame : frames_can_purge) {
     RC rc = purger(frame);
     if (RC::SUCCESS == rc) {
       free_internal(frame->frame_id(), frame);
@@ -102,17 +102,17 @@ int BPFrameManager::purge_frames(int count, function<RC(Frame *frame)> purger)
   return freed_count;
 }
 
-Frame *BPFrameManager::get(int buffer_pool_id, PageNum page_num)
+Frame* BPFrameManager::get(int buffer_pool_id, PageNum page_num)
 {
-  FrameId                     frame_id(buffer_pool_id, page_num);
+  FrameId frame_id(buffer_pool_id, page_num);
 
   lock_guard<mutex> lock_guard(lock_);
   return get_internal(frame_id);
 }
 
-Frame *BPFrameManager::get_internal(const FrameId &frame_id)
+Frame* BPFrameManager::get_internal(const FrameId& frame_id)
 {
-  Frame *frame = nullptr;
+  Frame* frame = nullptr;
   (void)frames_.get(frame_id, frame);
   if (frame != nullptr) {
     frame->pin();
@@ -121,13 +121,13 @@ Frame *BPFrameManager::get_internal(const FrameId &frame_id)
   return frame;
 }
 
-Frame *BPFrameManager::alloc(int buffer_pool_id, PageNum page_num)
+Frame* BPFrameManager::alloc(int buffer_pool_id, PageNum page_num)
 {
   FrameId frame_id(buffer_pool_id, page_num);
 
   lock_guard<mutex> lock_guard(lock_);
 
-  Frame                      *frame = get_internal(frame_id);
+  Frame* frame = get_internal(frame_id);
   if (frame != nullptr) {
     return frame;
   }
@@ -145,7 +145,7 @@ Frame *BPFrameManager::alloc(int buffer_pool_id, PageNum page_num)
   return frame;
 }
 
-RC BPFrameManager::free(int buffer_pool_id, PageNum page_num, Frame *frame)
+RC BPFrameManager::free(int buffer_pool_id, PageNum page_num, Frame* frame)
 {
   FrameId frame_id(buffer_pool_id, page_num);
 
@@ -153,9 +153,9 @@ RC BPFrameManager::free(int buffer_pool_id, PageNum page_num, Frame *frame)
   return free_internal(frame_id, frame);
 }
 
-RC BPFrameManager::free_internal(const FrameId &frame_id, Frame *frame)
+RC BPFrameManager::free_internal(const FrameId& frame_id, Frame* frame)
 {
-  Frame                *frame_source = nullptr;
+  Frame*                frame_source = nullptr;
   [[maybe_unused]] bool found        = frames_.get(frame_id, frame_source);
   ASSERT(found && frame == frame_source && frame->pin_count() == 1,
       "failed to free frame. found=%d, frameId=%s, frame_source=%p, frame=%p, pinCount=%d, lbt=%s",
@@ -168,12 +168,12 @@ RC BPFrameManager::free_internal(const FrameId &frame_id, Frame *frame)
   return RC::SUCCESS;
 }
 
-list<Frame *> BPFrameManager::find_list(int buffer_pool_id)
+list<Frame*> BPFrameManager::find_list(int buffer_pool_id)
 {
   lock_guard<mutex> lock_guard(lock_);
 
-  list<Frame *> frames;
-  auto               fetcher = [&frames, buffer_pool_id](const FrameId &frame_id, Frame *const frame) -> bool {
+  list<Frame*> frames;
+  auto         fetcher = [&frames, buffer_pool_id](const FrameId& frame_id, Frame* const frame) -> bool {
     if (buffer_pool_id == frame_id.buffer_pool_id()) {
       frame->pin();
       frames.push_back(frame);
@@ -187,7 +187,7 @@ list<Frame *> BPFrameManager::find_list(int buffer_pool_id)
 ////////////////////////////////////////////////////////////////////////////////
 BufferPoolIterator::BufferPoolIterator() {}
 BufferPoolIterator::~BufferPoolIterator() {}
-RC BufferPoolIterator::init(DiskBufferPool &bp, PageNum start_page /* = 0 */)
+RC BufferPoolIterator::init(DiskBufferPool& bp, PageNum start_page /* = 0 */)
 {
   bitmap_.init(bp.file_header_->bitmap, bp.file_header_->page_count);
   if (start_page <= 0) {
@@ -216,9 +216,12 @@ RC BufferPoolIterator::reset()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DiskBufferPool::DiskBufferPool(
-    BufferPoolManager &bp_manager, BPFrameManager &frame_manager, DoubleWriteBuffer &dblwr_manager, LogHandler &log_handler)
-    : bp_manager_(bp_manager), frame_manager_(frame_manager), dblwr_manager_(dblwr_manager), log_handler_(*this, log_handler)
+DiskBufferPool::DiskBufferPool(BufferPoolManager& bp_manager, BPFrameManager& frame_manager,
+    DoubleWriteBuffer& dblwr_manager, LogHandler& log_handler)
+    : bp_manager_(bp_manager),
+      frame_manager_(frame_manager),
+      dblwr_manager_(dblwr_manager),
+      log_handler_(*this, log_handler)
 {}
 
 DiskBufferPool::~DiskBufferPool()
@@ -227,7 +230,7 @@ DiskBufferPool::~DiskBufferPool()
   LOG_INFO("disk buffer pool exit");
 }
 
-RC DiskBufferPool::open_file(const char *file_name)
+RC DiskBufferPool::open_file(const char* file_name)
 {
   int fd = open(file_name, O_RDWR);
   if (fd < 0) {
@@ -240,7 +243,7 @@ RC DiskBufferPool::open_file(const char *file_name)
   file_desc_ = fd;
 
   Page header_page;
-  int ret = readn(file_desc_, &header_page, sizeof(header_page));
+  int  ret = readn(file_desc_, &header_page, sizeof(header_page));
   if (ret != 0) {
     LOG_ERROR("Failed to read first page of %s, due to %s.", file_name, strerror(errno));
     close(fd);
@@ -248,8 +251,8 @@ RC DiskBufferPool::open_file(const char *file_name)
     return RC::IOERR_READ;
   }
 
-  BPFileHeader *tmp_file_header = reinterpret_cast<BPFileHeader *>(header_page.data);
-  buffer_pool_id_ = tmp_file_header->buffer_pool_id;
+  BPFileHeader* tmp_file_header = reinterpret_cast<BPFileHeader*>(header_page.data);
+  buffer_pool_id_               = tmp_file_header->buffer_pool_id;
 
   RC rc = allocate_frame(BP_HEADER_PAGE, &hdr_frame_);
   if (rc != RC::SUCCESS) {
@@ -270,7 +273,7 @@ RC DiskBufferPool::open_file(const char *file_name)
     return rc;
   }
 
-  file_header_ = (BPFileHeader *)hdr_frame_->data();
+  file_header_ = (BPFileHeader*)hdr_frame_->data();
 
   LOG_INFO("Successfully open %s. file_desc=%d, hdr_frame=%p, file header=%s",
            file_name, file_desc_, hdr_frame_, file_header_->to_string().c_str());
@@ -312,12 +315,12 @@ RC DiskBufferPool::close_file()
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::get_this_page(PageNum page_num, Frame **frame)
+RC DiskBufferPool::get_this_page(PageNum page_num, Frame** frame)
 {
   RC rc  = RC::SUCCESS;
   *frame = nullptr;
 
-  Frame *used_match_frame = frame_manager_.get(id(), page_num);
+  Frame* used_match_frame = frame_manager_.get(id(), page_num);
   if (used_match_frame != nullptr) {
     used_match_frame->access();
     *frame = used_match_frame;
@@ -327,7 +330,7 @@ RC DiskBufferPool::get_this_page(PageNum page_num, Frame **frame)
   scoped_lock lock_guard(lock_);  // 直接加了一把大锁，其实可以根据访问的页面来细化提高并行度
 
   // Allocate one page and load the data into this page
-  Frame *allocated_frame = nullptr;
+  Frame* allocated_frame = nullptr;
 
   rc = allocate_frame(page_num, &allocated_frame);
   if (rc != RC::SUCCESS) {
@@ -349,7 +352,7 @@ RC DiskBufferPool::get_this_page(PageNum page_num, Frame **frame)
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::allocate_page(Frame **frame)
+RC DiskBufferPool::allocate_page(Frame** frame)
 {
   RC rc = RC::SUCCESS;
 
@@ -367,7 +370,7 @@ RC DiskBufferPool::allocate_page(Frame **frame)
         // TODO,  do we need clean the loaded page's data?
         hdr_frame_->mark_dirty();
         LSN lsn = 0;
-        rc = log_handler_.allocate_page(i, lsn);
+        rc      = log_handler_.allocate_page(i, lsn);
         if (OB_FAIL(rc)) {
           LOG_ERROR("Failed to log allocate page %d, rc=%s", i, strrc(rc));
           // 忽略了错误
@@ -391,7 +394,7 @@ RC DiskBufferPool::allocate_page(Frame **frame)
   }
 
   LSN lsn = 0;
-  rc = log_handler_.allocate_page(file_header_->page_count, lsn);
+  rc      = log_handler_.allocate_page(file_header_->page_count, lsn);
   if (OB_FAIL(rc)) {
     LOG_ERROR("Failed to log allocate page %d, rc=%s", file_header_->page_count, strrc(rc));
     // 忽略了错误
@@ -399,7 +402,7 @@ RC DiskBufferPool::allocate_page(Frame **frame)
   hdr_frame_->set_lsn(lsn);
 
   PageNum page_num        = file_header_->page_count;
-  Frame  *allocated_frame = nullptr;
+  Frame*  allocated_frame = nullptr;
   if ((rc = allocate_frame(page_num, &allocated_frame)) != RC::SUCCESS) {
     LOG_ERROR("Failed to allocate frame %s, due to no free page.", file_name_.c_str());
     lock_.unlock();
@@ -441,9 +444,9 @@ RC DiskBufferPool::dispose_page(PageNum page_num)
     LOG_ERROR("Failed to dispose page %d, because it is the first page. filename=%s", page_num, file_name_.c_str());
     return RC::INTERNAL;
   }
-  
+
   scoped_lock lock_guard(lock_);
-  Frame           *used_frame = frame_manager_.get(id(), page_num);
+  Frame*      used_frame = frame_manager_.get(id(), page_num);
   if (used_frame != nullptr) {
     ASSERT("the page try to dispose is in use. frame:%s", used_frame->to_string().c_str());
     frame_manager_.free(id(), page_num, used_frame);
@@ -452,7 +455,7 @@ RC DiskBufferPool::dispose_page(PageNum page_num)
   }
 
   LSN lsn = 0;
-  RC rc = log_handler_.deallocate_page(page_num, lsn);
+  RC  rc  = log_handler_.deallocate_page(page_num, lsn);
   if (OB_FAIL(rc)) {
     LOG_ERROR("Failed to log deallocate page %d, rc=%s", page_num, strrc(rc));
     // ignore error handle
@@ -466,13 +469,13 @@ RC DiskBufferPool::dispose_page(PageNum page_num)
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::unpin_page(Frame *frame)
+RC DiskBufferPool::unpin_page(Frame* frame)
 {
   frame->unpin();
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::purge_frame(PageNum page_num, Frame *buf)
+RC DiskBufferPool::purge_frame(PageNum page_num, Frame* buf)
 {
   if (buf->pin_count() != 1) {
     LOG_INFO("Begin to free page %d frame_id=%s, but it's pin count > 1:%d.",
@@ -497,7 +500,7 @@ RC DiskBufferPool::purge_page(PageNum page_num)
 {
   scoped_lock lock_guard(lock_);
 
-  Frame           *used_frame = frame_manager_.get(id(), page_num);
+  Frame* used_frame = frame_manager_.get(id(), page_num);
   if (used_frame != nullptr) {
     return purge_frame(page_num, used_frame);
   }
@@ -507,11 +510,11 @@ RC DiskBufferPool::purge_page(PageNum page_num)
 
 RC DiskBufferPool::purge_all_pages()
 {
-  list<Frame *> used = frame_manager_.find_list(id());
+  list<Frame*> used = frame_manager_.find_list(id());
 
   scoped_lock lock_guard(lock_);
-  for (list<Frame *>::iterator it = used.begin(); it != used.end(); ++it) {
-    Frame *frame = *it;
+  for (list<Frame*>::iterator it = used.begin(); it != used.end(); ++it) {
+    Frame* frame = *it;
 
     purge_frame(frame->page_num(), frame);
   }
@@ -520,10 +523,10 @@ RC DiskBufferPool::purge_all_pages()
 
 RC DiskBufferPool::check_all_pages_unpinned()
 {
-  list<Frame *> frames = frame_manager_.find_list(id());
+  list<Frame*> frames = frame_manager_.find_list(id());
 
   scoped_lock lock_guard(lock_);
-  for (Frame *frame : frames) {
+  for (Frame* frame : frames) {
     frame->unpin();
     if (frame->page_num() == BP_HEADER_PAGE && frame->pin_count() > 1) {
       LOG_WARN("This page has been pinned. id=%d, pageNum:%d, pin count=%d",
@@ -537,13 +540,13 @@ RC DiskBufferPool::check_all_pages_unpinned()
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::flush_page(Frame &frame)
+RC DiskBufferPool::flush_page(Frame& frame)
 {
   scoped_lock lock_guard(lock_);
   return flush_page_internal(frame);
 }
 
-RC DiskBufferPool::flush_page_internal(Frame &frame)
+RC DiskBufferPool::flush_page_internal(Frame& frame)
 {
   // The better way is use mmap the block into memory,
   // so it is easier to flush data to file.
@@ -569,8 +572,8 @@ RC DiskBufferPool::flush_page_internal(Frame &frame)
 
 RC DiskBufferPool::flush_all_pages()
 {
-  list<Frame *> used = frame_manager_.find_list(id());
-  for (Frame *frame : used) {
+  list<Frame*> used = frame_manager_.find_list(id());
+  for (Frame* frame : used) {
     RC rc = flush_page(*frame);
     frame->unpin();
     if (rc != RC::SUCCESS) {
@@ -597,7 +600,7 @@ RC DiskBufferPool::recover_page(PageNum page_num)
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::write_page(PageNum page_num, Page &page)
+RC DiskBufferPool::write_page(PageNum page_num, Page& page)
 {
   scoped_lock lock_guard(wr_lock_);
   int64_t     offset = ((int64_t)page_num) * sizeof(Page);
@@ -652,7 +655,7 @@ RC DiskBufferPool::redo_allocate_page(LSN lsn, PageNum page_num)
   file_header_->page_count++;
   hdr_frame_->set_lsn(lsn);
   hdr_frame_->mark_dirty();
-  
+
   // TODO 应该检查文件是否足够大，包含了当前新分配的页面
 
   Bitmap bitmap(file_header_->bitmap, file_header_->page_count);
@@ -686,9 +689,9 @@ RC DiskBufferPool::redo_deallocate_page(LSN lsn, PageNum page_num)
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::allocate_frame(PageNum page_num, Frame **buffer)
+RC DiskBufferPool::allocate_frame(PageNum page_num, Frame** buffer)
 {
-  auto purger = [this](Frame *frame) {
+  auto purger = [this](Frame* frame) {
     if (!frame->dirty()) {
       return RC::SUCCESS;
     }
@@ -707,7 +710,7 @@ RC DiskBufferPool::allocate_frame(PageNum page_num, Frame **buffer)
   };
 
   while (true) {
-    Frame *frame = frame_manager_.alloc(id(), page_num);
+    Frame* frame = frame_manager_.alloc(id(), page_num);
     if (frame != nullptr) {
       *buffer = frame;
       LOG_DEBUG("allocate frame %p, page num %d, frame=%s", frame, page_num, frame->to_string().c_str());
@@ -733,16 +736,16 @@ RC DiskBufferPool::check_page_num(PageNum page_num)
   return RC::SUCCESS;
 }
 
-RC DiskBufferPool::load_page(PageNum page_num, Frame *frame)
+RC DiskBufferPool::load_page(PageNum page_num, Frame* frame)
 {
-  Page &page = frame->page();
-  RC rc = dblwr_manager_.read_page(this, page_num, page);
+  Page& page = frame->page();
+  RC    rc   = dblwr_manager_.read_page(this, page_num, page);
   if (OB_SUCC(rc)) {
     return rc;
   }
 
   scoped_lock lock_guard(wr_lock_);
-  int64_t          offset = ((int64_t)page_num) * BP_PAGE_SIZE;
+  int64_t     offset = ((int64_t)page_num) * BP_PAGE_SIZE;
   if (lseek(file_desc_, offset, SEEK_SET) == -1) {
     LOG_ERROR("Failed to load page %s:%d, due to failed to lseek:%s.", file_name_.c_str(), page_num, strerror(errno));
 
@@ -779,10 +782,10 @@ BufferPoolManager::BufferPoolManager(int memory_size /* = 0 */)
 
 BufferPoolManager::~BufferPoolManager()
 {
-  unordered_map<string, DiskBufferPool *> tmp_bps;
+  unordered_map<string, DiskBufferPool*> tmp_bps;
   tmp_bps.swap(buffer_pools_);
 
-  for (auto &iter : tmp_bps) {
+  for (auto& iter : tmp_bps) {
     delete iter.second;
   }
 }
@@ -793,7 +796,7 @@ RC BufferPoolManager::init(unique_ptr<DoubleWriteBuffer> dblwr_buffer)
   return RC::SUCCESS;
 }
 
-RC BufferPoolManager::create_file(const char *file_name)
+RC BufferPoolManager::create_file(const char* file_name)
 {
   int fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, S_IREAD | S_IWRITE);
   if (fd < 0) {
@@ -815,12 +818,12 @@ RC BufferPoolManager::create_file(const char *file_name)
   Page page;
   memset(&page, 0, BP_PAGE_SIZE);
 
-  BPFileHeader *file_header    = (BPFileHeader *)page.data;
+  BPFileHeader* file_header    = (BPFileHeader*)page.data;
   file_header->allocated_pages = 1;
   file_header->page_count      = 1;
   file_header->buffer_pool_id  = next_buffer_pool_id_.fetch_add(1);
 
-  char *bitmap = file_header->bitmap;
+  char* bitmap = file_header->bitmap;
   bitmap[0] |= 0x01;
   if (lseek(fd, 0, SEEK_SET) == -1) {
     LOG_ERROR("Failed to seek file %s to position 0, due to %s .", file_name, strerror(errno));
@@ -828,7 +831,7 @@ RC BufferPoolManager::create_file(const char *file_name)
     return RC::IOERR_SEEK;
   }
 
-  if (writen(fd, (char *)&page, BP_PAGE_SIZE) != 0) {
+  if (writen(fd, (char*)&page, BP_PAGE_SIZE) != 0) {
     LOG_ERROR("Failed to write header to file %s, due to %s.", file_name, strerror(errno));
     close(fd);
     return RC::IOERR_WRITE;
@@ -839,7 +842,7 @@ RC BufferPoolManager::create_file(const char *file_name)
   return RC::SUCCESS;
 }
 
-RC BufferPoolManager::open_file(LogHandler &log_handler, const char *_file_name, DiskBufferPool *&_bp)
+RC BufferPoolManager::open_file(LogHandler& log_handler, const char* _file_name, DiskBufferPool*& _bp)
 {
   string file_name(_file_name);
 
@@ -849,7 +852,7 @@ RC BufferPoolManager::open_file(LogHandler &log_handler, const char *_file_name,
     return RC::BUFFERPOOL_OPEN;
   }
 
-  DiskBufferPool *bp = new DiskBufferPool(*this, frame_manager_, *dblwr_buffer_, log_handler);
+  DiskBufferPool* bp = new DiskBufferPool(*this, frame_manager_, *dblwr_buffer_, log_handler);
   RC              rc = bp->open_file(_file_name);
   if (rc != RC::SUCCESS) {
     LOG_WARN("failed to open file name");
@@ -861,14 +864,14 @@ RC BufferPoolManager::open_file(LogHandler &log_handler, const char *_file_name,
     next_buffer_pool_id_.store(bp->id() + 1);
   }
 
-  buffer_pools_.insert(pair<string, DiskBufferPool *>(file_name, bp));
-  id_to_buffer_pools_.insert(pair<int32_t, DiskBufferPool *>(bp->id(), bp));
+  buffer_pools_.insert(pair<string, DiskBufferPool*>(file_name, bp));
+  id_to_buffer_pools_.insert(pair<int32_t, DiskBufferPool*>(bp->id(), bp));
   LOG_DEBUG("insert buffer pool into fd buffer pools. fd=%d, bp=%p, lbt=%s", bp->file_desc(), bp, lbt());
   _bp = bp;
   return RC::SUCCESS;
 }
 
-RC BufferPoolManager::close_file(const char *_file_name)
+RC BufferPoolManager::close_file(const char* _file_name)
 {
   string file_name(_file_name);
 
@@ -883,7 +886,7 @@ RC BufferPoolManager::close_file(const char *_file_name)
 
   id_to_buffer_pools_.erase(iter->second->id());
 
-  DiskBufferPool *bp = iter->second;
+  DiskBufferPool* bp = iter->second;
   buffer_pools_.erase(iter);
   lock_.unlock();
 
@@ -891,22 +894,22 @@ RC BufferPoolManager::close_file(const char *_file_name)
   return RC::SUCCESS;
 }
 
-RC BufferPoolManager::flush_page(Frame &frame)
+RC BufferPoolManager::flush_page(Frame& frame)
 {
   int buffer_pool_id = frame.buffer_pool_id();
 
   scoped_lock lock_guard(lock_);
-  auto             iter = id_to_buffer_pools_.find(buffer_pool_id);
+  auto        iter = id_to_buffer_pools_.find(buffer_pool_id);
   if (iter == id_to_buffer_pools_.end()) {
     LOG_WARN("unknown buffer pool of id %d", buffer_pool_id);
     return RC::INTERNAL;
   }
 
-  DiskBufferPool *bp = iter->second;
+  DiskBufferPool* bp = iter->second;
   return bp->flush_page(frame);
 }
 
-RC BufferPoolManager::get_buffer_pool(int32_t id, DiskBufferPool *&bp)
+RC BufferPoolManager::get_buffer_pool(int32_t id, DiskBufferPool*& bp)
 {
   bp = nullptr;
 
@@ -917,8 +920,7 @@ RC BufferPoolManager::get_buffer_pool(int32_t id, DiskBufferPool *&bp)
     LOG_WARN("unknown buffer pool of id %d", id);
     return RC::INTERNAL;
   }
-  
+
   bp = iter->second;
   return RC::SUCCESS;
 }
-

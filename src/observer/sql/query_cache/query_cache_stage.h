@@ -30,5 +30,5 @@ public:
   virtual ~QueryCacheStage() = default;
 
 public:
-  RC handle_request(SQLStageEvent *sql_event);
+  RC handle_request(SQLStageEvent* sql_event);
 };

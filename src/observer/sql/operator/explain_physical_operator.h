@@ -30,18 +30,16 @@ public:
 
   OpType get_op_type() const override { return OpType::EXPLAIN; }
 
-  double calculate_cost(LogicalProperty *prop, const vector<LogicalProperty *> &child_log_props, CostModel *cm) override
-  {
-    return 0.0;
-  }
+  double calculate_cost(LogicalProperty* prop, const vector<LogicalProperty*>& child_log_props, CostModel* cm) override
+  { return 0.0; }
 
-  RC     open(Trx *trx) override;
+  RC     open(Trx* trx) override;
   RC     next() override;
-  RC     next(Chunk &chunk) override;
+  RC     next(Chunk& chunk) override;
   RC     close() override;
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
-  RC tuple_schema(TupleSchema &schema) const override
+  RC tuple_schema(TupleSchema& schema) const override
   {
     schema.append_cell("Query Plan");
     return RC::SUCCESS;

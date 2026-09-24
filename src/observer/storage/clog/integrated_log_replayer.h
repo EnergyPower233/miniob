@@ -36,18 +36,18 @@ public:
    * BufferPoolManager 在对应MySQL中，可以类比table space 的管理器。但是在这里，一个表可能会有多个table space(buffer
    * pool)。 比如一个数据文件、多个索引文件。
    */
-  IntegratedLogReplayer(BufferPoolManager &bpm);
+  IntegratedLogReplayer(BufferPoolManager& bpm);
 
   /**
    * @brief 构造函数
    * @details
    * 区别于另一个构造函数，这个构造函数可以指定不同的事务日志回放器。比如进程启动时可以指定选择使用VacuousTrx还是MvccTrx。
    */
-  IntegratedLogReplayer(BufferPoolManager &bpm, unique_ptr<LogReplayer> trx_log_replayer);
+  IntegratedLogReplayer(BufferPoolManager& bpm, unique_ptr<LogReplayer> trx_log_replayer);
   virtual ~IntegratedLogReplayer() = default;
 
   //! @copydoc LogReplayer::replay
-  RC replay(const LogEntry &entry) override;
+  RC replay(const LogEntry& entry) override;
 
   //! @copydoc LogReplayer::on_done
   RC on_done() override;

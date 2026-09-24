@@ -17,7 +17,7 @@ See the Mulan PSL v2 for more details. */
 
 namespace oceanbase {
 
-void ObMemTable::put(uint64_t seq, const string_view &key, const string_view &value)
+void ObMemTable::put(uint64_t seq, const string_view& key, const string_view& value)
 {
   // TODO: add lookup_key, internal_key, user_key relationship and format in memtable/sstable/block
   // TODO: unify the encode/decode logic in separate file.
@@ -27,12 +27,12 @@ void ObMemTable::put(uint64_t seq, const string_view &key, const string_view &va
   //  seq          : uint64(sequence)
   //  value_size   : value.size()
   //  value bytes  : char[value.size()]
-  size_t       user_key_size          = key.size();
+  size_t       user_key_size     = key.size();
   size_t       val_size          = value.size();
   size_t       internal_key_size = user_key_size + SEQ_SIZE;
   const size_t encoded_len       = sizeof(size_t) + internal_key_size + sizeof(size_t) + val_size;
-  char *       buf               = reinterpret_cast<char *>(arena_.alloc(encoded_len));
-  char *       p                 = buf;
+  char*        buf               = reinterpret_cast<char*>(arena_.alloc(encoded_len));
+  char*        p                 = buf;
   memcpy(p, &internal_key_size, sizeof(size_t));
   p += sizeof(size_t);
   memcpy(p, key.data(), user_key_size);
@@ -45,7 +45,7 @@ void ObMemTable::put(uint64_t seq, const string_view &key, const string_view &va
   table_.insert(buf);
 }
 
-int ObMemTable::KeyComparator::operator()(const char *a, const char *b) const
+int ObMemTable::KeyComparator::operator()(const char* a, const char* b) const
 {
   // Internal keys are encoded as length-prefixed strings.
   string_view a_v = get_length_prefixed_string(a);
@@ -53,7 +53,7 @@ int ObMemTable::KeyComparator::operator()(const char *a, const char *b) const
   return comparator.compare(a_v, b_v);
 }
 
-ObLsmIterator *ObMemTable::new_iterator() { return new ObMemTableIterator(get_shared_ptr(), &table_); }
+ObLsmIterator* ObMemTable::new_iterator() { return new ObMemTableIterator(get_shared_ptr(), &table_); }
 
 string_view ObMemTableIterator::key() const { return get_length_prefixed_string(iter_.key()); }
 
@@ -63,7 +63,7 @@ string_view ObMemTableIterator::value() const
   return get_length_prefixed_string(key_slice.data() + key_slice.size());
 }
 
-void ObMemTableIterator::seek(const string_view &k)
+void ObMemTableIterator::seek(const string_view& k)
 {
   tmp_.clear();
   iter_.seek(k.data());

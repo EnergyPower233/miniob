@@ -43,11 +43,11 @@ public:
   virtual ~SessionStage();
 
 public:
-  void handle_request2(SessionEvent *event);
+  void handle_request2(SessionEvent* event);
 
 public:
-  void handle_request(SessionEvent *event);
-  RC   handle_sql(SQLStageEvent *sql_event);
+  void handle_request(SessionEvent* event);
+  RC   handle_sql(SQLStageEvent* sql_event);
 
 private:
   QueryCacheStage query_cache_stage_;

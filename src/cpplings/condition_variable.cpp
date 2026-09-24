@@ -56,7 +56,7 @@ int main()
   for (int i = 0; i < thread_num; ++i)
     threads.emplace_back(add_count_and_notify);
   waiter.join();  // main 等 waiter 结束
-  for (auto &th : threads)
+  for (auto& th : threads)
     th.join();
   std::cout << "passed!" << std::endl;
   return 0;

@@ -29,7 +29,7 @@ public:
    * @param contents optimizer node contents
    * @param child_groups Vector of children groups
    */
-  GroupExpr(OperatorNode *contents, std::vector<int> &&child_groups)
+  GroupExpr(OperatorNode* contents, std::vector<int>&& child_groups)
       : group_id_(-1), contents_(contents), child_groups_(child_groups)
   {}
 
@@ -39,7 +39,7 @@ public:
 
   void set_group_id(int id) { group_id_ = id; }
 
-  const vector<int> &get_child_group_ids() const { return child_groups_; }
+  const vector<int>& get_child_group_ids() const { return child_groups_; }
 
   int get_child_group_id(int child_idx) const
   {
@@ -48,7 +48,7 @@ public:
     return child_groups_[child_idx];
   }
 
-  OperatorNode *get_op() { return contents_; }
+  OperatorNode* get_op() { return contents_; }
 
   double get_cost() const { return lowest_cost_; }
 
@@ -62,14 +62,12 @@ public:
   // TODO
   uint64_t hash() const;
 
-  bool operator==(const GroupExpr &r) const
-  {
-    return (*contents_ == *(r.contents_)) && (child_groups_ == r.child_groups_);
-  }
+  bool operator==(const GroupExpr& r) const
+  { return (*contents_ == *(r.contents_)) && (child_groups_ == r.child_groups_); }
 
-  void set_rule_explored(Rule *rule) { rule_mask_.set(rule->get_rule_idx(), true); }
+  void set_rule_explored(Rule* rule) { rule_mask_.set(rule->get_rule_idx(), true); }
 
-  bool rule_explored(Rule *rule) { return rule_mask_.test(rule->get_rule_idx()); }
+  bool rule_explored(Rule* rule) { return rule_mask_.test(rule->get_rule_idx()); }
 
   size_t get_children_groups_size() const { return child_groups_.size(); }
 
@@ -78,7 +76,7 @@ public:
 private:
   int group_id_{};
 
-  OperatorNode *contents_{};
+  OperatorNode* contents_{};
 
   std::vector<int> child_groups_;
 

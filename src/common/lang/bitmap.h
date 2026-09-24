@@ -20,9 +20,9 @@ class Bitmap
 {
 public:
   Bitmap();
-  Bitmap(char *bitmap, int size);
+  Bitmap(char* bitmap, int size);
 
-  void init(char *bitmap, int size);
+  void init(char* bitmap, int size);
   bool get_bit(int index);
   void set_bit(int index);
   void clear_bit(int index);
@@ -34,7 +34,7 @@ public:
   int next_setted_bit(int start);
 
 private:
-  char *bitmap_;
+  char* bitmap_;
   int   size_;
 };
 

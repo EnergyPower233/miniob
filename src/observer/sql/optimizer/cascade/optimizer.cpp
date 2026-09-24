@@ -15,8 +15,8 @@ See the Mulan PSL v2 for more details. */
 std::unique_ptr<PhysicalOperator> Optimizer::optimize(OperatorNode* op_tree)
 {
   // Generate initial operator tree from query tree
-  GroupExpr *gexpr = nullptr;
-  bool insert = context_->record_node_into_group(op_tree, &gexpr);
+  GroupExpr* gexpr  = nullptr;
+  bool       insert = context_->record_node_into_group(op_tree, &gexpr);
   ASSERT(insert && gexpr, "Logical expression tree should insert");
   context_->get_memo().dump();
 
@@ -30,8 +30,8 @@ std::unique_ptr<PhysicalOperator> Optimizer::optimize(OperatorNode* op_tree)
 
 std::unique_ptr<PhysicalOperator> Optimizer::choose_best_plan(int root_group_id)
 {
-  auto &memo = context_->get_memo();
-  Group *root_group = memo.get_group_by_id(root_group_id);
+  auto&  memo       = context_->get_memo();
+  Group* root_group = memo.get_group_by_id(root_group_id);
   ASSERT(root_group != nullptr, "Root group should not be null");
 
   // Choose the best physical plan
@@ -56,13 +56,13 @@ void Optimizer::optimize_loop(int root_group_id)
   auto task_stack = new PendingTasks();
   context_->set_task_pool(task_stack);
 
-  Memo &memo = context_->get_memo();
+  Memo& memo = context_->get_memo();
   task_stack->push(new OptimizeGroup(memo.get_group_by_id(root_group_id), context_.get()));
 
   execute_task_stack(task_stack, root_group_id, context_.get());
 }
 
-void Optimizer::execute_task_stack(PendingTasks *task_stack, int root_group_id, OptimizerContext *root_context)
+void Optimizer::execute_task_stack(PendingTasks* task_stack, int root_group_id, OptimizerContext* root_context)
 {
   while (!task_stack->empty()) {
     auto task = task_stack->pop();

@@ -48,7 +48,7 @@ TEST(DoubleWriteBuffer, single_file_normal)
   ASSERT_EQ(RC::SUCCESS, double_write_buffer->open_file(double_write_buffer_filename.c_str()));
   ASSERT_EQ(bpm->init(std::move(double_write_buffer)), RC::SUCCESS);
 
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm->create_file(buffer_pool_filename.c_str()));
   ASSERT_EQ(RC::SUCCESS, bpm->open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
   ASSERT_NE(buffer_pool, nullptr);
@@ -57,7 +57,7 @@ TEST(DoubleWriteBuffer, single_file_normal)
   vector<FrameId> dispose_frame_ids;
   int             allocate_frame_num = 100;
   for (int i = 0; i < allocate_frame_num; i++) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_NE(frame, nullptr);
     if (i % 2 == 1) {
@@ -69,7 +69,7 @@ TEST(DoubleWriteBuffer, single_file_normal)
     frame->unpin();
   }
 
-  for (FrameId &frame_id : dispose_frame_ids) {
+  for (FrameId& frame_id : dispose_frame_ids) {
     PageNum page_num = frame_id.page_num();
     ASSERT_EQ(RC::SUCCESS, buffer_pool->dispose_page(page_num));
   }
@@ -86,7 +86,7 @@ TEST(DoubleWriteBuffer, single_file_normal)
   ASSERT_EQ(RC::SUCCESS, bpm->open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
   ASSERT_NE(buffer_pool, nullptr);
 
-  DiskDoubleWriteBuffer *disk_double_write_buffer = static_cast<DiskDoubleWriteBuffer *>(bpm->get_dblwr_buffer());
+  DiskDoubleWriteBuffer* disk_double_write_buffer = static_cast<DiskDoubleWriteBuffer*>(bpm->get_dblwr_buffer());
   ASSERT_EQ(RC::SUCCESS, disk_double_write_buffer->recover());
 
   BufferPoolIterator bp_iterator;
@@ -135,7 +135,7 @@ TEST(DoubleWriteBuffer, single_file_exception)
 
   ASSERT_EQ(RC::SUCCESS, log_handler.start());
 
-  DiskBufferPool *buffer_pool = nullptr;
+  DiskBufferPool* buffer_pool = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm->create_file(buffer_pool_filename.c_str()));
   ASSERT_EQ(RC::SUCCESS, bpm->open_file(log_handler, buffer_pool_filename.c_str(), buffer_pool));
   ASSERT_NE(buffer_pool, nullptr);
@@ -144,7 +144,7 @@ TEST(DoubleWriteBuffer, single_file_exception)
   vector<FrameId> dispose_frame_ids;
   int             allocate_frame_num = 100;
   for (int i = 0; i < allocate_frame_num; i++) {
-    Frame *frame = nullptr;
+    Frame* frame = nullptr;
     ASSERT_EQ(RC::SUCCESS, buffer_pool->allocate_page(&frame));
     ASSERT_NE(frame, nullptr);
     if (i % 2 == 1) {
@@ -156,7 +156,7 @@ TEST(DoubleWriteBuffer, single_file_exception)
     frame->unpin();
   }
 
-  for (FrameId &frame_id : dispose_frame_ids) {
+  for (FrameId& frame_id : dispose_frame_ids) {
     PageNum page_num = frame_id.page_num();
     ASSERT_EQ(RC::SUCCESS, buffer_pool->dispose_page(page_num));
   }
@@ -177,11 +177,11 @@ TEST(DoubleWriteBuffer, single_file_exception)
   ASSERT_EQ(RC::SUCCESS, double_write_buffer2->open_file(double_write_buffer_filename2.c_str()));
   ASSERT_EQ(bpm2->init(std::move(double_write_buffer2)), RC::SUCCESS);
 
-  DiskBufferPool *buffer_pool2 = nullptr;
+  DiskBufferPool* buffer_pool2 = nullptr;
   ASSERT_EQ(RC::SUCCESS, bpm2->open_file(log_handler2, buffer_pool_filename2.c_str(), buffer_pool2));
   ASSERT_NE(buffer_pool2, nullptr);
 
-  DiskDoubleWriteBuffer *disk_double_write_buffer = static_cast<DiskDoubleWriteBuffer *>(bpm2->get_dblwr_buffer());
+  DiskDoubleWriteBuffer* disk_double_write_buffer = static_cast<DiskDoubleWriteBuffer*>(bpm2->get_dblwr_buffer());
   ASSERT_EQ(RC::SUCCESS, disk_double_write_buffer->recover());
 
   IntegratedLogReplayer log_replayer(*bpm2);
@@ -201,7 +201,7 @@ TEST(DoubleWriteBuffer, single_file_exception)
   bpm  = nullptr;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   LoggerFactory::init_default(string(argv[0]) + ".log", LOG_LEVEL_TRACE);

@@ -12,7 +12,6 @@ See the Mulan PSL v2 for more details. */
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
 RC HeapRecordScanner::open_scan()
 {
   ASSERT(disk_buffer_pool_ != nullptr, "disk buffer pool is null");
@@ -135,7 +134,7 @@ RC HeapRecordScanner::close_scan()
   return RC::SUCCESS;
 }
 
-RC HeapRecordScanner::next(Record &record)
+RC HeapRecordScanner::next(Record& record)
 {
   RC rc = fetch_next_record();
   if (OB_FAIL(rc)) {

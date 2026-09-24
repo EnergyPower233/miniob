@@ -33,7 +33,7 @@ using namespace common;
 
 Db::~Db()
 {
-  for (auto &iter : opened_tables_) {
+  for (auto& iter : opened_tables_) {
     delete iter.second;
   }
 
@@ -50,7 +50,8 @@ Db::~Db()
   LOG_INFO("Db has been closed: %s", name_.c_str());
 }
 
-RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, const char *log_handler_name, const char *storage_engine)
+RC Db::init(const char* name, const char* dbpath, const char* trx_kit_name, const char* log_handler_name,
+    const char* storage_engine)
 {
   RC rc = RC::SUCCESS;
 
@@ -65,7 +66,7 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
   }
 
   oceanbase::ObLsmOptions options;
-  filesystem::path lsm_path = filesystem::path(dbpath) / "lsm";
+  filesystem::path        lsm_path = filesystem::path(dbpath) / "lsm";
   filesystem::create_directory(lsm_path);
 
   rc = oceanbase::ObLsm::open(options, lsm_path, &lsm_);
@@ -74,7 +75,7 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
     return rc;
   }
 
-  TrxKit *trx_kit = TrxKit::create(trx_kit_name, this);
+  TrxKit* trx_kit = TrxKit::create(trx_kit_name, this);
   if (trx_kit == nullptr) {
     LOG_ERROR("Failed to create trx kit: %s", trx_kit_name);
     return RC::INVALID_ARGUMENT;
@@ -87,7 +88,7 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
   buffer_pool_manager_ = make_unique<BufferPoolManager>();
   auto dblwr_buffer    = make_unique<DiskDoubleWriteBuffer>(*buffer_pool_manager_);
 
-  const char      *double_write_buffer_filename  = "dblwr.db";
+  const char*      double_write_buffer_filename  = "dblwr.db";
   filesystem::path double_write_buffer_file_path = filesystem::path(dbpath) / double_write_buffer_filename;
   rc                                             = dblwr_buffer->open_file(double_write_buffer_file_path.c_str());
   if (OB_FAIL(rc)) {
@@ -103,7 +104,7 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
   }
 
   filesystem::path clog_path       = filesystem::path(dbpath) / "clog";
-  LogHandler      *tmp_log_handler = nullptr;
+  LogHandler*      tmp_log_handler = nullptr;
   rc                               = LogHandler::create(log_handler_name, tmp_log_handler);
   if (OB_FAIL(rc)) {
     LOG_ERROR("Failed to create log handler: %s", log_handler_name);
@@ -151,7 +152,8 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
   return rc;
 }
 
-RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attributes, const vector<string>& primary_keys, const StorageFormat storage_format)
+RC Db::create_table(const char* table_name, span<const AttrInfoSqlNode> attributes, const vector<string>& primary_keys,
+    const StorageFormat storage_format)
 {
   RC rc = RC::SUCCESS;
   // check table_name
@@ -162,10 +164,17 @@ RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attribut
 
   // 文件路径可以移到Table模块
   string  table_file_path = table_meta_file(path_.c_str(), table_name);
-  Table  *table           = new Table();
+  Table*  table           = new Table();
   int32_t table_id        = next_table_id_++;
-  rc = table->create(this, table_id, table_file_path.c_str(), table_name, path_.c_str(), attributes, primary_keys, storage_format,
-                     get_storage_engine());
+  rc                      = table->create(this,
+      table_id,
+      table_file_path.c_str(),
+      table_name,
+      path_.c_str(),
+      attributes,
+      primary_keys,
+      storage_format,
+      get_storage_engine());
   if (rc != RC::SUCCESS) {
     LOG_ERROR("Failed to create table %s.", table_name);
     delete table;
@@ -177,16 +186,16 @@ RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attribut
   return RC::SUCCESS;
 }
 
-Table *Db::find_table(const char *table_name) const
+Table* Db::find_table(const char* table_name) const
 {
-  unordered_map<string, Table *>::const_iterator iter = opened_tables_.find(table_name);
+  unordered_map<string, Table*>::const_iterator iter = opened_tables_.find(table_name);
   if (iter != opened_tables_.end()) {
     return iter->second;
   }
   return nullptr;
 }
 
-Table *Db::find_table(int32_t table_id) const
+Table* Db::find_table(int32_t table_id) const
 {
   for (auto pair : opened_tables_) {
     if (pair.second->table_id() == table_id) {
@@ -207,8 +216,8 @@ RC Db::open_all_tables()
   }
 
   RC rc = RC::SUCCESS;
-  for (const string &filename : table_meta_files) {
-    Table *table = new Table();
+  for (const string& filename : table_meta_files) {
+    Table* table = new Table();
     rc           = table->open(this, filename.c_str(), path_.c_str());
     if (rc != RC::SUCCESS) {
       delete table;
@@ -235,11 +244,11 @@ RC Db::open_all_tables()
   return rc;
 }
 
-const char *Db::name() const { return name_.c_str(); }
+const char* Db::name() const { return name_.c_str(); }
 
-void Db::all_tables(vector<string> &table_names) const
+void Db::all_tables(vector<string>& table_names) const
 {
-  for (const auto &table_item : opened_tables_) {
+  for (const auto& table_item : opened_tables_) {
     table_names.emplace_back(table_item.first);
   }
 }
@@ -248,8 +257,8 @@ RC Db::sync()
 {
   RC rc = RC::SUCCESS;
   // 调用所有表的sync函数刷新数据到磁盘
-  for (const auto &table_pair : opened_tables_) {
-    Table *table = table_pair.second;
+  for (const auto& table_pair : opened_tables_) {
+    Table* table = table_pair.second;
     rc           = table->sync();
     if (rc != RC::SUCCESS) {
       LOG_ERROR("Failed to flush table. table=%s.%s, rc=%d:%s", name_.c_str(), table->name(), rc, strrc(rc));
@@ -258,7 +267,7 @@ RC Db::sync()
     LOG_INFO("Successfully sync table db:%s, table:%s.", name_.c_str(), table->name());
   }
 
-  auto dblwr_buffer = static_cast<DiskDoubleWriteBuffer *>(buffer_pool_manager_->get_dblwr_buffer());
+  auto dblwr_buffer = static_cast<DiskDoubleWriteBuffer*>(buffer_pool_manager_->get_dblwr_buffer());
   rc                = dblwr_buffer->flush_page();
   LOG_INFO("double write buffer flush pages ret=%s", strrc(rc));
 
@@ -287,7 +296,7 @@ RC Db::recover()
 {
   LOG_TRACE("db recover begin. check_point_lsn=%d", check_point_lsn_);
 
-  LogReplayer *trx_log_replayer = trx_kit_->create_log_replayer(*this, *log_handler_);
+  LogReplayer* trx_log_replayer = trx_kit_->create_log_replayer(*this, *log_handler_);
   if (trx_log_replayer == nullptr) {
     LOG_ERROR("Failed to create trx log replayer.");
     return RC::INTERNAL;
@@ -403,7 +412,7 @@ RC Db::flush_meta()
 
 RC Db::init_dblwr_buffer()
 {
-  auto dblwr_buffer = static_cast<DiskDoubleWriteBuffer *>(buffer_pool_manager_->get_dblwr_buffer());
+  auto dblwr_buffer = static_cast<DiskDoubleWriteBuffer*>(buffer_pool_manager_->get_dblwr_buffer());
   RC   rc           = dblwr_buffer->recover();
   if (OB_FAIL(rc)) {
     LOG_ERROR("fail to recover in dblwr buffer");
@@ -413,6 +422,6 @@ RC Db::init_dblwr_buffer()
   return RC::SUCCESS;
 }
 
-LogHandler        &Db::log_handler() { return *log_handler_; }
-BufferPoolManager &Db::buffer_pool_manager() { return *buffer_pool_manager_; }
-TrxKit            &Db::trx_kit() { return *trx_kit_; }
+LogHandler&        Db::log_handler() { return *log_handler_; }
+BufferPoolManager& Db::buffer_pool_manager() { return *buffer_pool_manager_; }
+TrxKit&            Db::trx_kit() { return *trx_kit_; }

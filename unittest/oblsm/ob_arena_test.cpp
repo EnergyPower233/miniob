@@ -17,9 +17,9 @@ using namespace oceanbase;
 
 TEST(arena_test, DISABLED_arena_test_basic)
 {
-  ObArena arena;
-  const int count = 1000;
-  size_t bytes = 0;
+  ObArena                 arena;
+  const int               count = 1000;
+  size_t                  bytes = 0;
   common::RandomGenerator rnd;
   for (int i = 0; i < count; i++) {
     size_t s;
@@ -39,7 +39,7 @@ TEST(arena_test, DISABLED_arena_test_basic)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

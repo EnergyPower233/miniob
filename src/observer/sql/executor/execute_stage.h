@@ -29,6 +29,6 @@ class SelectStmt;
 class ExecuteStage
 {
 public:
-  RC handle_request(SQLStageEvent *event);
-  RC handle_request_with_physical_operator(SQLStageEvent *sql_event);
+  RC handle_request(SQLStageEvent* event);
+  RC handle_request_with_physical_operator(SQLStageEvent* sql_event);
 };

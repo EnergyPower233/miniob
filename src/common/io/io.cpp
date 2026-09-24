@@ -27,9 +27,9 @@ See the Mulan PSL v2 for more details. */
 
 namespace common {
 
-int readFromFile(const string &fileName, char *&outputData, size_t &fileSize)
+int readFromFile(const string& fileName, char*& outputData, size_t& fileSize)
 {
-  FILE *file = fopen(fileName.c_str(), "rb");
+  FILE* file = fopen(fileName.c_str(), "rb");
   if (file == NULL) {
     cerr << "Failed to open file " << fileName << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
     return -1;
@@ -43,7 +43,7 @@ int readFromFile(const string &fileName, char *&outputData, size_t &fileSize)
   size_t readSize = 0;
   size_t oneRead  = 0;
 
-  char *data = NULL;
+  char* data = NULL;
   do {
     memset(buffer, 0, sizeof(buffer));
     oneRead = fread(buffer, 1, sizeof(buffer), file);
@@ -57,7 +57,7 @@ int readFromFile(const string &fileName, char *&outputData, size_t &fileSize)
       return -1;
     }
 
-    data = (char *)realloc(data, readSize + oneRead);
+    data = (char*)realloc(data, readSize + oneRead);
     if (data == NULL) {
       cerr << "Failed to alloc memory for " << fileName << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
       free(data);
@@ -72,23 +72,23 @@ int readFromFile(const string &fileName, char *&outputData, size_t &fileSize)
 
   fclose(file);
 
-  data           = (char *)realloc(data, readSize + 1);
+  data           = (char*)realloc(data, readSize + 1);
   data[readSize] = '\0';
   outputData     = data;
   fileSize       = readSize;
   return 0;
 }
 
-int writeToFile(const string &fileName, const char *data, uint32_t dataSize, const char *openMode)
+int writeToFile(const string& fileName, const char* data, uint32_t dataSize, const char* openMode)
 {
-  FILE *file = fopen(fileName.c_str(), openMode);
+  FILE* file = fopen(fileName.c_str(), openMode);
   if (file == NULL) {
     cerr << "Failed to open file " << fileName << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
     return -1;
   }
 
   uint32_t    leftSize = dataSize;
-  const char *buffer   = data;
+  const char* buffer   = data;
   while (leftSize > 0) {
     int writeCount = fwrite(buffer, 1, leftSize, file);
     if (writeCount <= 0) {
@@ -106,7 +106,7 @@ int writeToFile(const string &fileName, const char *data, uint32_t dataSize, con
   return 0;
 }
 
-int getFileLines(const string &fileName, uint64_t &lineNum)
+int getFileLines(const string& fileName, uint64_t& lineNum)
 {
   lineNum = 0;
 
@@ -120,7 +120,7 @@ int getFileLines(const string &fileName, uint64_t &lineNum)
   while (ifs.good()) {
     line[0] = 0;
     ifs.getline(line, sizeof(line));
-    char *lineStrip = strip(line);
+    char* lineStrip = strip(line);
     if (strlen(lineStrip)) {
       lineNum++;
     }
@@ -130,10 +130,10 @@ int getFileLines(const string &fileName, uint64_t &lineNum)
   return 0;
 }
 
-int getFileNum(uint64_t &fileNum, const string &path, const string &pattern, bool recursive)
+int getFileNum(uint64_t& fileNum, const string& path, const string& pattern, bool recursive)
 {
   try {
-    DIR *dirp = NULL;
+    DIR* dirp = NULL;
     dirp      = opendir(path.c_str());
     if (dirp == NULL) {
       cerr << "Failed to opendir " << path << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
@@ -141,7 +141,7 @@ int getFileNum(uint64_t &fileNum, const string &path, const string &pattern, boo
     }
 
     string         fullPath;
-    struct dirent *entry = NULL;
+    struct dirent* entry = NULL;
     struct stat    fs;
     while ((entry = readdir(dirp)) != NULL) {
       // don't care ".", "..", ".****" hidden files
@@ -193,10 +193,10 @@ int getFileNum(uint64_t &fileNum, const string &path, const string &pattern, boo
   return -1;
 }
 
-int getFileList(vector<string> &fileList, const string &path, const string &pattern, bool recursive)
+int getFileList(vector<string>& fileList, const string& path, const string& pattern, bool recursive)
 {
   try {
-    DIR *dirp = NULL;
+    DIR* dirp = NULL;
     dirp      = opendir(path.c_str());
     if (dirp == NULL) {
       cerr << "Failed to opendir " << path << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
@@ -204,7 +204,7 @@ int getFileList(vector<string> &fileList, const string &path, const string &patt
     }
 
     string         fullPath;
-    struct dirent *entry = NULL;
+    struct dirent* entry = NULL;
     struct stat    fs;
     while ((entry = readdir(dirp)) != NULL) {
       // don't care ".", "..", ".****" hidden files
@@ -255,10 +255,10 @@ int getFileList(vector<string> &fileList, const string &path, const string &patt
   return -1;
 }
 
-int getDirList(vector<string> &dirList, const string &path, const string &pattern)
+int getDirList(vector<string>& dirList, const string& path, const string& pattern)
 {
   try {
-    DIR *dirp = NULL;
+    DIR* dirp = NULL;
     dirp      = opendir(path.c_str());
     if (dirp == NULL) {
       cerr << "Failed to opendir " << path << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR << endl;
@@ -266,7 +266,7 @@ int getDirList(vector<string> &dirList, const string &path, const string &patter
     }
 
     string         fullPath;
-    struct dirent *entry = NULL;
+    struct dirent* entry = NULL;
     struct stat    fs;
     while ((entry = readdir(dirp)) != NULL) {
       // don't care ".", "..", ".****" hidden files
@@ -305,7 +305,7 @@ int getDirList(vector<string> &dirList, const string &path, const string &patter
   return -1;
 }
 
-int touch(const string &path)
+int touch(const string& path)
 {
   // CWE367: A check occurs on a file's attributes before
   // the file is used in a privileged operation, but things
@@ -319,7 +319,7 @@ int touch(const string &path)
   // }
 
   // create the file
-  FILE *file = fopen(path.c_str(), "a");
+  FILE* file = fopen(path.c_str(), "a");
   if (file == NULL) {
     return -1;
   }
@@ -327,7 +327,7 @@ int touch(const string &path)
   return 0;
 }
 
-int getFileSize(const char *filePath, int64_t &fileLen)
+int getFileSize(const char* filePath, int64_t& fileLen)
 {
   if (filePath == NULL || *filePath == '\0') {
     cerr << "invalid filepath" << endl;
@@ -351,9 +351,9 @@ int getFileSize(const char *filePath, int64_t &fileLen)
   return 0;
 }
 
-int writen(int fd, const void *buf, int size)
+int writen(int fd, const void* buf, int size)
 {
-  const char *tmp = (const char *)buf;
+  const char* tmp = (const char*)buf;
   while (size > 0) {
     const ssize_t ret = ::write(fd, tmp, size);
     if (ret >= 0) {
@@ -368,9 +368,9 @@ int writen(int fd, const void *buf, int size)
   return 0;
 }
 
-int readn(int fd, void *buf, int size)
+int readn(int fd, void* buf, int size)
 {
-  char *tmp = (char *)buf;
+  char* tmp = (char*)buf;
   while (size > 0) {
     const ssize_t ret = ::read(fd, tmp, size);
     if (ret > 0) {

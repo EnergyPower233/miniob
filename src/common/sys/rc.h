@@ -93,7 +93,7 @@ enum class RC
 #undef DEFINE_RC
 };
 
-extern const char *strrc(RC rc);
+extern const char* strrc(RC rc);
 
 extern bool OB_SUCC(RC rc);
 extern bool OB_FAIL(RC rc);

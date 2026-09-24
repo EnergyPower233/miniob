@@ -34,7 +34,7 @@ public:
 
   StmtType type() const override { return StmtType::SHOW_TABLES; }
 
-  static RC create(Db *db, Stmt *&stmt)
+  static RC create(Db* db, Stmt*& stmt)
   {
     stmt = new ShowTablesStmt();
     return RC::SUCCESS;

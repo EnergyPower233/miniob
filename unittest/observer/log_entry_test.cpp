@@ -59,7 +59,7 @@ TEST(LogEntry, size)
   ASSERT_NE(entry.init(1, LogModule::Id::BPLUS_TREE, std::move(data2)), RC::SUCCESS);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

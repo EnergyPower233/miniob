@@ -16,13 +16,9 @@ See the Mulan PSL v2 for more details. */
 #include "storage/index/index.h"
 #include "storage/trx/trx.h"
 
-IndexScanPhysicalOperator::IndexScanPhysicalOperator(Table *table, Index *index, ReadWriteMode mode, const Value *left_value,
-    bool left_inclusive, const Value *right_value, bool right_inclusive)
-    : table_(table),
-      index_(index),
-      mode_(mode),
-      left_inclusive_(left_inclusive),
-      right_inclusive_(right_inclusive)
+IndexScanPhysicalOperator::IndexScanPhysicalOperator(Table* table, Index* index, ReadWriteMode mode,
+    const Value* left_value, bool left_inclusive, const Value* right_value, bool right_inclusive)
+    : table_(table), index_(index), mode_(mode), left_inclusive_(left_inclusive), right_inclusive_(right_inclusive)
 {
   if (left_value) {
     left_value_ = *left_value;
@@ -32,13 +28,13 @@ IndexScanPhysicalOperator::IndexScanPhysicalOperator(Table *table, Index *index,
   }
 }
 
-RC IndexScanPhysicalOperator::open(Trx *trx)
+RC IndexScanPhysicalOperator::open(Trx* trx)
 {
   if (nullptr == table_ || nullptr == index_) {
     return RC::INTERNAL;
   }
 
-  IndexScanner *index_scanner = index_->create_scanner(left_value_.data(),
+  IndexScanner* index_scanner = index_->create_scanner(left_value_.data(),
       left_value_.length(),
       left_inclusive_,
       right_value_.data(),
@@ -103,22 +99,20 @@ RC IndexScanPhysicalOperator::close()
   return RC::SUCCESS;
 }
 
-Tuple *IndexScanPhysicalOperator::current_tuple()
+Tuple* IndexScanPhysicalOperator::current_tuple()
 {
   tuple_.set_record(&current_record_);
   return &tuple_;
 }
 
-void IndexScanPhysicalOperator::set_predicates(vector<unique_ptr<Expression>> &&exprs)
-{
-  predicates_ = std::move(exprs);
-}
+void IndexScanPhysicalOperator::set_predicates(vector<unique_ptr<Expression>>&& exprs)
+{ predicates_ = std::move(exprs); }
 
-RC IndexScanPhysicalOperator::filter(RowTuple &tuple, bool &result)
+RC IndexScanPhysicalOperator::filter(RowTuple& tuple, bool& result)
 {
   RC    rc = RC::SUCCESS;
   Value value;
-  for (unique_ptr<Expression> &expr : predicates_) {
+  for (unique_ptr<Expression>& expr : predicates_) {
     rc = expr->get_value(tuple, value);
     if (rc != RC::SUCCESS) {
       return rc;
@@ -136,6 +130,4 @@ RC IndexScanPhysicalOperator::filter(RowTuple &tuple, bool &result)
 }
 
 string IndexScanPhysicalOperator::param() const
-{
-  return string(index_->index_meta().name()) + " ON " + table_->name();
-}
+{ return string(index_->index_meta().name()) + " ON " + table_->name(); }

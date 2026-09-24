@@ -57,7 +57,12 @@ ENDIF(WIN32)
 
 # This is for clangd plugin for vscode
 # mute sign-compare error in lex/yacc
-SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -Wall -Werror -Wno-error=sign-compare -Wno-error=shorten-64-to-32")
+SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -Wall -Werror -Wno-error=sign-compare")
+# -Wshorten-64-to-32 is a Clang-only warning. GCC rejects the unknown option
+# (even in the -Wno-error= form), so only add it when compiling with Clang.
+IF (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -Wno-error=shorten-64-to-32")
+ENDIF()
 IF ("${CMAKE_BUILD_TYPE_LOWER}" STREQUAL "debug")
     SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS} -DDEBUG -g -O0")
 ELSEIF ("${CMAKE_BUILD_TYPE_LOWER}" STREQUAL "release")

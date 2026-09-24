@@ -27,24 +27,24 @@ public:
   BplusTreeIndex() = default;
   virtual ~BplusTreeIndex() noexcept;
 
-  RC create(Table *table, const char *file_name, const IndexMeta &index_meta, const FieldMeta &field_meta) override;
-  RC open(Table *table, const char *file_name, const IndexMeta &index_meta, const FieldMeta &field_meta) override;
+  RC create(Table* table, const char* file_name, const IndexMeta& index_meta, const FieldMeta& field_meta) override;
+  RC open(Table* table, const char* file_name, const IndexMeta& index_meta, const FieldMeta& field_meta) override;
   RC close();
 
-  RC insert_entry(const char *record, const RID *rid) override;
-  RC delete_entry(const char *record, const RID *rid) override;
+  RC insert_entry(const char* record, const RID* rid) override;
+  RC delete_entry(const char* record, const RID* rid) override;
 
   /**
    * 扫描指定范围的数据
    */
-  IndexScanner *create_scanner(const char *left_key, int left_len, bool left_inclusive, const char *right_key,
+  IndexScanner* create_scanner(const char* left_key, int left_len, bool left_inclusive, const char* right_key,
       int right_len, bool right_inclusive) override;
 
   RC sync() override;
 
 private:
   bool             inited_ = false;
-  Table           *table_  = nullptr;
+  Table*           table_  = nullptr;
   BplusTreeHandler index_handler_;
 };
 
@@ -55,13 +55,13 @@ private:
 class BplusTreeIndexScanner : public IndexScanner
 {
 public:
-  BplusTreeIndexScanner(BplusTreeHandler &tree_handle);
+  BplusTreeIndexScanner(BplusTreeHandler& tree_handle);
   ~BplusTreeIndexScanner() noexcept override;
 
-  RC next_entry(RID *rid) override;
+  RC next_entry(RID* rid) override;
   RC destroy() override;
 
-  RC open(const char *left_key, int left_len, bool left_inclusive, const char *right_key, int right_len,
+  RC open(const char* left_key, int left_len, bool left_inclusive, const char* right_key, int right_len,
       bool right_inclusive);
 
 private:

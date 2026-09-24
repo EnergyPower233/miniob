@@ -26,7 +26,7 @@ See the Mulan PSL v2 for more details. */
 class TableGetLogicalOperator : public LogicalOperator
 {
 public:
-  TableGetLogicalOperator(Table *table, ReadWriteMode mode);
+  TableGetLogicalOperator(Table* table, ReadWriteMode mode);
   virtual ~TableGetLogicalOperator() = default;
 
   LogicalOperatorType type() const override { return LogicalOperatorType::TABLE_GET; }
@@ -40,26 +40,26 @@ public:
     return hash;
   }
 
-  virtual bool operator==(const OperatorNode &other) const override
+  virtual bool operator==(const OperatorNode& other) const override
   {
     if (get_op_type() != other.get_op_type())
       return false;
-    const auto &other_get = dynamic_cast<const TableGetLogicalOperator *>(&other);
+    const auto& other_get = dynamic_cast<const TableGetLogicalOperator*>(&other);
     if (table_->table_id() != other_get->table()->table_id())
       return false;
     return true;
   }
 
-  unique_ptr<LogicalProperty> find_log_prop(const vector<LogicalProperty *> &log_props) override;
+  unique_ptr<LogicalProperty> find_log_prop(const vector<LogicalProperty*>& log_props) override;
 
-  Table        *table() const { return table_; }
+  Table*        table() const { return table_; }
   ReadWriteMode read_write_mode() const { return mode_; }
 
-  void set_predicates(vector<unique_ptr<Expression>> &&exprs);
-  auto predicates() -> vector<unique_ptr<Expression>> & { return predicates_; }
+  void set_predicates(vector<unique_ptr<Expression>>&& exprs);
+  auto predicates() -> vector<unique_ptr<Expression>>& { return predicates_; }
 
 private:
-  Table        *table_ = nullptr;
+  Table*        table_ = nullptr;
   ReadWriteMode mode_  = ReadWriteMode::READ_WRITE;
 
   // 与当前表相关的过滤操作，可以尝试在遍历数据时执行

@@ -42,7 +42,7 @@ public:
    * @param value 任务数据
    * @return int 成功返回0
    */
-  virtual int push(value_type &&value) = 0;
+  virtual int push(value_type&& value) = 0;
 
   /**
    * @brief 从队列中取出一个任务
@@ -50,7 +50,7 @@ public:
    * @param value 任务数据
    * @return int 成功返回0。如果队列为空，也不是成功的
    */
-  virtual int pop(value_type &value) = 0;
+  virtual int pop(value_type& value) = 0;
 
   /**
    * @brief 当前队列中任务的数量

@@ -29,7 +29,7 @@ using namespace common;
 
 TEST(LogFileWriter, basic)
 {
-  const char *filename = "test_log_file_writer.log";
+  const char* filename = "test_log_file_writer.log";
 
   // test LogFileWriter open, close, valid
   LogFileWriter writer;
@@ -78,7 +78,7 @@ TEST(LogFileWriter, basic)
 
 TEST(LogFileReader, basic)
 {
-  const char *log_file = "test_log_file_reader.log";
+  const char* log_file = "test_log_file_reader.log";
 
   filesystem::remove(log_file);
 
@@ -101,7 +101,7 @@ TEST(LogFileReader, basic)
   ASSERT_EQ(RC::SUCCESS, reader.open(log_file));
 
   int  count    = 0;
-  auto callback = [&count](LogEntry &entry) -> RC {
+  auto callback = [&count](LogEntry& entry) -> RC {
     LOG_DEBUG("entry=%s", entry.to_string().c_str());
     count++;
     return RC::SUCCESS;
@@ -126,7 +126,7 @@ TEST(LogFileReader, basic)
 
 TEST(LogFileReadWrite, test_read_write)
 {
-  const char *log_file = "test_log_file_read_write.log";
+  const char* log_file = "test_log_file_read_write.log";
 
   filesystem::remove(log_file);
 
@@ -150,7 +150,7 @@ TEST(LogFileReadWrite, test_read_write)
   ASSERT_EQ(RC::SUCCESS, reader.open(log_file));
 
   int  count    = 0;
-  auto callback = [&count](LogEntry &entry) -> RC {
+  auto callback = [&count](LogEntry& entry) -> RC {
     count++;
     return RC::SUCCESS;
   };
@@ -180,8 +180,8 @@ TEST(LogFileReadWrite, test_read_write)
 
 TEST(LogFileManager, get_lsn_from_filename)
 {
-  const char *file_prefix = LogFileManager::file_prefix_;
-  const char *file_suffix = LogFileManager::file_suffix_;
+  const char* file_prefix = LogFileManager::file_prefix_;
+  const char* file_suffix = LogFileManager::file_suffix_;
 
   vector<LSN>  test_lsn{0, 1, 10, 100, 1000, 10000, 100000, 1000000};
   stringstream filename_ss;
@@ -202,7 +202,7 @@ TEST(LogFileManager, get_lsn_from_filename)
 
 TEST(LogFileManager, init_not_exists)
 {
-  const char *directory                 = "not_exists/not_exists2";
+  const char* directory                 = "not_exists/not_exists2";
   int         max_entry_number_per_file = 1000;
 
   LogFileManager manager;
@@ -218,7 +218,7 @@ TEST(LogFileManager, init_not_exists)
 
 TEST(LogFileManager, init_empty_directory)
 {
-  const char *directory                 = "empty_directory";
+  const char* directory                 = "empty_directory";
   int         max_entry_number_per_file = 1000;
 
   ASSERT_TRUE(filesystem::create_directory(directory));
@@ -236,7 +236,7 @@ TEST(LogFileManager, init_empty_directory)
 
 TEST(LogFileManager, init_with_files)
 {
-  const char *directory                 = "init_with_files";
+  const char* directory                 = "init_with_files";
   int         max_entry_number_per_file = 1000;
 
   filesystem::remove_all(directory);
@@ -298,7 +298,7 @@ TEST(LogFileManager, init_with_files)
 TEST(LogFileManager, last_file)
 {
   // create an empty directory and try to open last file
-  const char *directory                 = "last_file";
+  const char* directory                 = "last_file";
   int         max_entry_number_per_file = 1000;
 
   filesystem::remove_all(directory);
@@ -345,7 +345,7 @@ TEST(LogFileManager, last_file)
 TEST(LogFileManager, next_file)
 {
   // create an empty directory and try to open next file
-  const char *directory                 = "next_file";
+  const char* directory                 = "next_file";
   int         max_entry_number_per_file = 1000;
 
   filesystem::remove_all(directory);
@@ -390,7 +390,7 @@ TEST(LogFileManager, next_file)
   filesystem::remove_all(directory);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   LoggerFactory::init_default("log_file_test.log", LOG_LEVEL_TRACE);

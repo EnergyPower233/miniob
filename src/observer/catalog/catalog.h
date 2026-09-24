@@ -29,9 +29,9 @@ public:
 
   ~Catalog() = default;
 
-  Catalog(const Catalog &) = delete;
+  Catalog(const Catalog&) = delete;
 
-  Catalog &operator=(const Catalog &) = delete;
+  Catalog& operator=(const Catalog&) = delete;
 
   /**
    * @brief Retrieves table statistics for a given table_id.
@@ -39,7 +39,7 @@ public:
    * @param table_id The identifier of the table for which statistics are requested.
    * @return A constant reference to the TableStats of the specified table_id.
    */
-  const TableStats &get_table_stats(int table_id);
+  const TableStats& get_table_stats(int table_id);
 
   /**
    * @brief Updates table statistics for a given table.
@@ -47,7 +47,7 @@ public:
    * @param table_id The identifier of the table for which statistics are updated.
    * @param table_stats The new table statistics to be set.
    */
-  void update_table_stats(int table_id, const TableStats &table_stats);
+  void update_table_stats(int table_id, const TableStats& table_stats);
 
   /**
    * @brief Gets the singleton instance of the Catalog.
@@ -56,7 +56,7 @@ public:
    *
    * @return A reference to the singleton instance of the Catalog.
    */
-  static Catalog &get_instance()
+  static Catalog& get_instance()
   {
     static Catalog instance;
     return instance;

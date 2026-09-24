@@ -59,8 +59,8 @@ public:
    * @note 数据库不是放在dbpath/name下，是直接使用dbpath目录
    * @todo 支持多个 db，例如同一个db 都是相同的存储引擎。可参考 duckdb。
    */
-  RC init(const char *name, const char *dbpath, const char *trx_kit_name, const char *log_handler_name,
-      const char *storage_engine = "heap");
+  RC init(const char* name, const char* dbpath, const char* trx_kit_name, const char* log_handler_name,
+      const char* storage_engine = "heap");
 
   /**
    * @brief 创建一个表
@@ -68,23 +68,23 @@ public:
    * @param attributes 表的属性
    * @param storage_format 表的存储格式
    */
-  RC create_table(const char *table_name, span<const AttrInfoSqlNode> attributes, const vector<string> &primary_keys,
+  RC create_table(const char* table_name, span<const AttrInfoSqlNode> attributes, const vector<string>& primary_keys,
       const StorageFormat storage_format = StorageFormat::ROW_FORMAT);
 
   /**
    * @brief 根据表名查找表
    */
-  Table *find_table(const char *table_name) const;
+  Table* find_table(const char* table_name) const;
   /**
    * @brief 根据表ID查找表
    */
-  Table *find_table(int32_t table_id) const;
+  Table* find_table(int32_t table_id) const;
 
   /// @brief 当前数据库的名称
-  const char *name() const;
+  const char* name() const;
 
   /// @brief 列出所有的表
-  void all_tables(vector<string> &table_names) const;
+  void all_tables(vector<string>& table_names) const;
 
   /**
    * @brief 将所有内存中的数据，刷新到磁盘中。
@@ -93,17 +93,17 @@ public:
   RC sync();
 
   /// @brief 获取当前数据库的日志处理器
-  LogHandler &log_handler();
+  LogHandler& log_handler();
 
   /// @brief 获取当前数据库的buffer pool管理器
-  BufferPoolManager &buffer_pool_manager();
+  BufferPoolManager& buffer_pool_manager();
 
   /// @brief 获取当前数据库的事务管理器
-  TrxKit &trx_kit();
+  TrxKit& trx_kit();
 
   string path() const { return path_; }
 
-  oceanbase::ObLsm *lsm() { return lsm_; }
+  oceanbase::ObLsm* lsm() { return lsm_; }
 
 private:
   /// @brief 打开所有的表。在数据库初始化的时候会执行
@@ -135,13 +135,13 @@ private:
   }
 
 private:
-  string                         name_;                 ///< 数据库名称
-  string                         path_;                 ///< 数据库文件存放的目录
-  unordered_map<string, Table *> opened_tables_;        ///< 当前所有打开的表
-  unique_ptr<BufferPoolManager>  buffer_pool_manager_;  ///< 当前数据库的buffer pool管理器
-  unique_ptr<LogHandler>         log_handler_;          ///< 当前数据库的日志处理器
-  unique_ptr<TrxKit>             trx_kit_;              ///< 当前数据库的事务管理器
-  oceanbase::ObLsm              *lsm_;                  ///< 当前数据库的 LSM-Tree 存储引擎
+  string                        name_;                 ///< 数据库名称
+  string                        path_;                 ///< 数据库文件存放的目录
+  unordered_map<string, Table*> opened_tables_;        ///< 当前所有打开的表
+  unique_ptr<BufferPoolManager> buffer_pool_manager_;  ///< 当前数据库的buffer pool管理器
+  unique_ptr<LogHandler>        log_handler_;          ///< 当前数据库的日志处理器
+  unique_ptr<TrxKit>            trx_kit_;              ///< 当前数据库的事务管理器
+  oceanbase::ObLsm*             lsm_;                  ///< 当前数据库的 LSM-Tree 存储引擎
 
   /// 给每个table都分配一个ID，用来记录日志。这里假设所有的DDL都不会并发操作，所以相关的数据都不上锁
   int32_t next_table_id_ = 0;

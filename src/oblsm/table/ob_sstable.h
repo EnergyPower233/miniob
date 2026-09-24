@@ -66,16 +66,14 @@ public:
    * @param comparator A pointer to the comparator used for key comparison.
    * @param block_cache A pointer to the LRU block cache for caching block-level data.
    */
-  ObSSTable(uint32_t sst_id, const string &file_name, const ObComparator *comparator,
-      ObLRUCache<uint64_t, shared_ptr<ObBlock>> *block_cache)
+  ObSSTable(uint32_t sst_id, const string& file_name, const ObComparator* comparator,
+      ObLRUCache<uint64_t, shared_ptr<ObBlock>>* block_cache)
       : sst_id_(sst_id),
         file_name_(file_name),
         comparator_(comparator),
         file_reader_(nullptr),
         block_cache_(block_cache)
-  {
-    (void)block_cache_;
-  }
+  { (void)block_cache_; }
 
   ~ObSSTable() = default;
 
@@ -93,7 +91,7 @@ public:
 
   shared_ptr<ObSSTable> get_shared_ptr() { return shared_from_this(); }
 
-  ObLsmIterator *new_iterator();
+  ObLsmIterator* new_iterator();
 
   /**
    * @brief Reads a block from the SSTable using the block cache.
@@ -125,7 +123,7 @@ public:
 
   const BlockMeta block_meta(int i) const { return block_metas_[i]; }
 
-  const ObComparator *comparator() const { return comparator_; }
+  const ObComparator* comparator() const { return comparator_; }
 
   void   remove();
   string first_key() const { return block_metas_.empty() ? "" : block_metas_[0].first_key_; }
@@ -134,20 +132,20 @@ public:
 private:
   uint32_t                 sst_id_;
   string                   file_name_;
-  const ObComparator      *comparator_ = nullptr;
+  const ObComparator*      comparator_ = nullptr;
   unique_ptr<ObFileReader> file_reader_;
   vector<BlockMeta>        block_metas_;
 
-  ObLRUCache<uint64_t, shared_ptr<ObBlock>> *block_cache_;
+  ObLRUCache<uint64_t, shared_ptr<ObBlock>>* block_cache_;
 };
 
 class TableIterator : public ObLsmIterator
 {
 public:
-  TableIterator(const shared_ptr<ObSSTable> &sst) : sst_(sst), block_cnt_(sst->block_count()) {}
+  TableIterator(const shared_ptr<ObSSTable>& sst) : sst_(sst), block_cnt_(sst->block_count()) {}
   ~TableIterator() override = default;
 
-  void        seek(const string_view &key) override;
+  void        seek(const string_view& key) override;
   void        seek_to_first() override;
   void        seek_to_last() override;
   void        next() override;

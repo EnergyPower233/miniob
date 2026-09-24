@@ -30,7 +30,7 @@ class Table;
 class TableScanPhysicalOperator : public PhysicalOperator
 {
 public:
-  TableScanPhysicalOperator(Table *table, ReadWriteMode mode) : table_(table), mode_(mode) {}
+  TableScanPhysicalOperator(Table* table, ReadWriteMode mode) : table_(table), mode_(mode) {}
 
   virtual ~TableScanPhysicalOperator() = default;
 
@@ -45,39 +45,37 @@ public:
     return hash;
   }
 
-  virtual bool operator==(const OperatorNode &other) const override
+  virtual bool operator==(const OperatorNode& other) const override
   {
     if (get_op_type() != other.get_op_type())
       return false;
-    const auto &other_get = dynamic_cast<const TableScanPhysicalOperator *>(&other);
+    const auto& other_get = dynamic_cast<const TableScanPhysicalOperator*>(&other);
     if (table_->table_id() != other_get->table_id())
       return false;
     return true;
   }
 
-  double calculate_cost(LogicalProperty *prop, const vector<LogicalProperty *> &child_log_props, CostModel *cm) override
-  {
-    return (cm->io() + cm->cpu_op()) * prop->get_card();
-  }
+  double calculate_cost(LogicalProperty* prop, const vector<LogicalProperty*>& child_log_props, CostModel* cm) override
+  { return (cm->io() + cm->cpu_op()) * prop->get_card(); }
 
-  RC open(Trx *trx) override;
+  RC open(Trx* trx) override;
   RC next() override;
   RC close() override;
 
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
   int table_id() const { return table_->table_id(); }
 
-  void set_predicates(vector<unique_ptr<Expression>> &&exprs);
+  void set_predicates(vector<unique_ptr<Expression>>&& exprs);
 
 private:
-  RC filter(RowTuple &tuple, bool &result);
+  RC filter(RowTuple& tuple, bool& result);
 
 private:
-  Table                         *table_ = nullptr;
-  Trx                           *trx_   = nullptr;
+  Table*                         table_ = nullptr;
+  Trx*                           trx_   = nullptr;
   ReadWriteMode                  mode_  = ReadWriteMode::READ_WRITE;
-  RecordScanner                 *record_scanner_;
+  RecordScanner*                 record_scanner_;
   Record                         current_record_;
   RowTuple                       tuple_;
   vector<unique_ptr<Expression>> predicates_;  // TODO chang predicate to table tuple filter

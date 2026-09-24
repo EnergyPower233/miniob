@@ -28,9 +28,7 @@ using namespace common;
 class Worker
 {
 public:
-  Worker(ThreadHandler &host, Communicator *communicator) 
-    : host_(host), communicator_(communicator)
-  {}
+  Worker(ThreadHandler& host, Communicator* communicator) : host_(host), communicator_(communicator) {}
   ~Worker()
   {
     if (thread_ != nullptr) {
@@ -55,7 +53,7 @@ public:
   {
     if (thread_) {
       if (thread_->get_id() == this_thread::get_id()) {
-        thread_->detach(); // 如果当前线程join当前线程，就会卡死
+        thread_->detach();  // 如果当前线程join当前线程，就会卡死
       } else {
         thread_->join();
       }
@@ -74,8 +72,8 @@ public:
     }
 
     struct pollfd poll_fd;
-    poll_fd.fd = communicator_->fd();
-    poll_fd.events = POLLIN;
+    poll_fd.fd      = communicator_->fd();
+    poll_fd.events  = POLLIN;
     poll_fd.revents = 0;
 
     while (running_) {
@@ -101,15 +99,15 @@ public:
     }
 
     LOG_INFO("worker thread stop. communicator = %p", communicator_);
-    host_.close_connection(communicator_); /// 连接关闭后，当前对象会被删除
+    host_.close_connection(communicator_);  /// 连接关闭后，当前对象会被删除
   }
 
 private:
-  ThreadHandler &host_;
+  ThreadHandler& host_;
   SqlTaskHandler task_handler_;
-  Communicator *communicator_ = nullptr;
-  thread *thread_ = nullptr;
-  volatile bool running_ = true;
+  Communicator*  communicator_ = nullptr;
+  thread*        thread_       = nullptr;
+  volatile bool  running_      = true;
 };
 
 OneThreadPerConnectionThreadHandler::~OneThreadPerConnectionThreadHandler()
@@ -118,7 +116,7 @@ OneThreadPerConnectionThreadHandler::~OneThreadPerConnectionThreadHandler()
   await_stop();
 }
 
-RC OneThreadPerConnectionThreadHandler::new_connection(Communicator *communicator)
+RC OneThreadPerConnectionThreadHandler::new_connection(Communicator* communicator)
 {
   lock_guard guard(lock_);
 
@@ -128,12 +126,12 @@ RC OneThreadPerConnectionThreadHandler::new_connection(Communicator *communicato
     return RC::FILE_EXIST;
   }
 
-  Worker *worker = new Worker(*this, communicator);
+  Worker* worker            = new Worker(*this, communicator);
   thread_map_[communicator] = worker;
   return worker->start();
 }
 
-RC OneThreadPerConnectionThreadHandler::close_connection(Communicator *communicator)
+RC OneThreadPerConnectionThreadHandler::close_connection(Communicator* communicator)
 {
   lock_.lock();
   auto iter = thread_map_.find(communicator);
@@ -143,7 +141,7 @@ RC OneThreadPerConnectionThreadHandler::close_connection(Communicator *communica
     return RC::FILE_NOT_EXIST;
   }
 
-  Worker *worker = iter->second;
+  Worker* worker = iter->second;
   thread_map_.erase(iter);
   lock_.unlock();
 
@@ -159,7 +157,7 @@ RC OneThreadPerConnectionThreadHandler::stop()
 {
   lock_guard guard(lock_);
   for (auto iter = thread_map_.begin(); iter != thread_map_.end(); ++iter) {
-    Worker *worker = iter->second;
+    Worker* worker = iter->second;
     worker->stop();
   }
   return RC::SUCCESS;

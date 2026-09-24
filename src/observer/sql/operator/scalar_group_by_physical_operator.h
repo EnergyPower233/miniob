@@ -23,17 +23,17 @@ See the Mulan PSL v2 for more details. */
 class ScalarGroupByPhysicalOperator : public GroupByPhysicalOperator
 {
 public:
-  ScalarGroupByPhysicalOperator(vector<Expression *> &&expressions);
+  ScalarGroupByPhysicalOperator(vector<Expression*>&& expressions);
   virtual ~ScalarGroupByPhysicalOperator() = default;
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::SCALAR_GROUP_BY; }
   OpType               get_op_type() const override { return OpType::SCALARGROUPBY; }
 
-  RC open(Trx *trx) override;
+  RC open(Trx* trx) override;
   RC next() override;
   RC close() override;
 
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
 private:
   unique_ptr<GroupValueType> group_value_;

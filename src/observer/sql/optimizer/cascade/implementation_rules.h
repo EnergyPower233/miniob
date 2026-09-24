@@ -20,8 +20,8 @@ class LogicalGetToPhysicalSeqScan : public Rule
 public:
   LogicalGetToPhysicalSeqScan();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 // TODO: support index scan
@@ -36,8 +36,8 @@ class LogicalProjectionToProjection : public Rule
 public:
   LogicalProjectionToProjection();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**
@@ -48,8 +48,8 @@ class LogicalInsertToInsert : public Rule
 public:
   LogicalInsertToInsert();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**
@@ -60,8 +60,8 @@ class LogicalExplainToExplain : public Rule
 public:
   LogicalExplainToExplain();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**
@@ -72,8 +72,8 @@ class LogicalCalcToCalc : public Rule
 public:
   LogicalCalcToCalc();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**
@@ -84,8 +84,8 @@ class LogicalDeleteToDelete : public Rule
 public:
   LogicalDeleteToDelete();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**
@@ -97,8 +97,8 @@ class LogicalPredicateToPredicate : public Rule
 public:
   LogicalPredicateToPredicate();
 
-  void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const override;
+  void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const override;
 };
 
 /**

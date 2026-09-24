@@ -25,7 +25,7 @@ public:
   class Scanner
   {
   public:
-    explicit Scanner(AggregateHashTable *hash_table) : hash_table_(hash_table) {}
+    explicit Scanner(AggregateHashTable* hash_table) : hash_table_(hash_table) {}
     virtual ~Scanner() = default;
 
     virtual void open_scan() = 0;
@@ -33,18 +33,18 @@ public:
     /**
      * 通过扫描哈希表，将哈希表中的聚合结果写入 chunk 中。
      */
-    virtual RC next(Chunk &chunk) = 0;
+    virtual RC next(Chunk& chunk) = 0;
 
     virtual void close_scan() {}
 
   protected:
-    AggregateHashTable *hash_table_;
+    AggregateHashTable* hash_table_;
   };
 
   /**
    * @brief 将 groups_chunk 和 aggrs_chunk 写入到哈希表中。哈希表中记录了聚合结果。
    */
-  virtual RC add_chunk(Chunk &groups_chunk, Chunk &aggrs_chunk) = 0;
+  virtual RC add_chunk(Chunk& groups_chunk, Chunk& aggrs_chunk) = 0;
 
   virtual ~AggregateHashTable() = default;
   vector<AggregateExpr::Type> aggr_types_;
@@ -56,49 +56,49 @@ class StandardAggregateHashTable : public AggregateHashTable
 private:
   struct VectorHash
   {
-    size_t operator()(const vector<Value> &vec) const;
+    size_t operator()(const vector<Value>& vec) const;
   };
 
   struct VectorEqual
   {
-    bool operator()(const vector<Value> &lhs, const vector<Value> &rhs) const;
+    bool operator()(const vector<Value>& lhs, const vector<Value>& rhs) const;
   };
 
 public:
-  using StandardHashTable = unordered_map<vector<Value>, vector<void *>, VectorHash, VectorEqual>;
+  using StandardHashTable = unordered_map<vector<Value>, vector<void*>, VectorHash, VectorEqual>;
   class Scanner : public AggregateHashTable::Scanner
   {
   public:
-    explicit Scanner(AggregateHashTable *hash_table) : AggregateHashTable::Scanner(hash_table) {}
+    explicit Scanner(AggregateHashTable* hash_table) : AggregateHashTable::Scanner(hash_table) {}
     ~Scanner() = default;
 
     void open_scan() override;
 
-    RC next(Chunk &chunk) override;
+    RC next(Chunk& chunk) override;
 
   private:
     StandardHashTable::iterator end_;
     StandardHashTable::iterator it_;
   };
-  StandardAggregateHashTable(const vector<Expression *> aggregations)
+  StandardAggregateHashTable(const vector<Expression*> aggregations)
   {
-    for (auto &expr : aggregations) {
+    for (auto& expr : aggregations) {
       ASSERT(expr->type() == ExprType::AGGREGATION, "expect aggregate expression");
-      auto *aggregation_expr = static_cast<AggregateExpr *>(expr);
+      auto* aggregation_expr = static_cast<AggregateExpr*>(expr);
       aggr_types_.push_back(aggregation_expr->aggregate_type());
       aggr_child_types_.push_back(aggregation_expr->value_type());
     }
   }
   virtual ~StandardAggregateHashTable()
   {
-    for (auto &aggr : aggr_values_) {
-      for (auto &state : aggr.second) {
+    for (auto& aggr : aggr_values_) {
+      for (auto& state : aggr.second) {
         free(state);
       }
     }
   }
 
-  RC add_chunk(Chunk &groups_chunk, Chunk &aggrs_chunk) override;
+  RC add_chunk(Chunk& groups_chunk, Chunk& aggrs_chunk) override;
 
   StandardHashTable::iterator begin() { return aggr_values_.begin(); }
   StandardHashTable::iterator end() { return aggr_values_.end(); }
@@ -119,12 +119,12 @@ public:
   class Scanner : public AggregateHashTable::Scanner
   {
   public:
-    explicit Scanner(AggregateHashTable *hash_table) : AggregateHashTable::Scanner(hash_table) {}
+    explicit Scanner(AggregateHashTable* hash_table) : AggregateHashTable::Scanner(hash_table) {}
     ~Scanner() = default;
 
     void open_scan() override;
 
-    RC next(Chunk &chunk) override;
+    RC next(Chunk& chunk) override;
 
     void close_scan() override;
 
@@ -140,11 +140,11 @@ public:
   {}
   virtual ~LinearProbingAggregateHashTable() {}
 
-  RC get(int key, V &value);
+  RC get(int key, V& value);
 
-  RC iter_get(int pos, int &key, V &value);
+  RC iter_get(int pos, int& key, V& value);
 
-  RC add_chunk(Chunk &group_chunk, Chunk &aggr_chunk) override;
+  RC add_chunk(Chunk& group_chunk, Chunk& aggr_chunk) override;
 
   int capacity() { return capacity_; }
   int size() { return size_; }
@@ -157,9 +157,9 @@ private:
    * @param input_values 输入的值数组，与键数组一一对应。
    * @param len 键值对数组的长度
    */
-  void add_batch(int *input_keys, V *input_values, int len);
+  void add_batch(int* input_keys, V* input_values, int len);
 
-  void aggregate(V *value, V value_to_aggregate);
+  void aggregate(V* value, V value_to_aggregate);
 
   void resize();
 

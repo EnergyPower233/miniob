@@ -33,7 +33,7 @@ public:
    * @details This method computes hash values for the given object and sets corresponding bits in the filter.
    * @param object The object to be inserted.
    */
-  void insert(const string &object) {}
+  void insert(const string& object) {}
 
   /**
    * @brief Clears all entries in the Bloom filter.
@@ -48,7 +48,7 @@ public:
    * @param object The object to be checked.
    * @return true if the object might be in the filter, false if definitely not.
    */
-  bool contains(const string &object) const { return false; }
+  bool contains(const string& object) const { return false; }
 
   /**
    * @brief Returns the count of objects inserted into the Bloom filter.

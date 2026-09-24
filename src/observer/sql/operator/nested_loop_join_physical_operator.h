@@ -33,15 +33,13 @@ public:
   OpType get_op_type() const override { return OpType::INNERNLJOIN; }
 
   virtual double calculate_cost(
-      LogicalProperty *prop, const vector<LogicalProperty *> &child_log_props, CostModel *cm) override
-  {
-    return 0.0;
-  }
+      LogicalProperty* prop, const vector<LogicalProperty*>& child_log_props, CostModel* cm) override
+  { return 0.0; }
 
-  RC     open(Trx *trx) override;
+  RC     open(Trx* trx) override;
   RC     next() override;
   RC     close() override;
-  Tuple *current_tuple() override;
+  Tuple* current_tuple() override;
 
 private:
   RC left_next();   //! 左表遍历下一条数据
@@ -51,13 +49,13 @@ private:
   // Expression *predicate() { return predicate_; }
 
 private:
-  Trx *trx_ = nullptr;
+  Trx* trx_ = nullptr;
 
   //! 左表右表的真实对象是在PhysicalOperator::children_中，这里是为了写的时候更简单
-  PhysicalOperator *left_        = nullptr;
-  PhysicalOperator *right_       = nullptr;
-  Tuple            *left_tuple_  = nullptr;
-  Tuple            *right_tuple_ = nullptr;
+  PhysicalOperator* left_        = nullptr;
+  PhysicalOperator* right_       = nullptr;
+  Tuple*            left_tuple_  = nullptr;
+  Tuple*            right_tuple_ = nullptr;
   JoinedTuple       joined_tuple_;         //! 当前关联的左右两个tuple
   bool              round_done_   = true;  //! 右表遍历的一轮是否结束
   bool              right_closed_ = true;  //! 右表算子是否已经关闭

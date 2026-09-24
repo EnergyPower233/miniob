@@ -32,24 +32,24 @@ public:
    * @brief 获取默认的会话数据，新生成的会话都基于默认会话设置参数
    * @note 当前并没有会话参数
    */
-  static Session &default_session();
+  static Session& default_session();
 
 public:
   Session() = default;
   ~Session();
 
-  Session(const Session &other);
-  void operator=(Session &) = delete;
+  Session(const Session& other);
+  void operator=(Session&) = delete;
 
-  const char *get_current_db_name() const;
-  Db         *get_current_db() const;
+  const char* get_current_db_name() const;
+  Db*         get_current_db() const;
 
   /**
    * @brief 设置当前会话关联的数据库
    *
    * @param dbname 数据库名字
    */
-  void set_current_db(const string &dbname);
+  void set_current_db(const string& dbname);
 
   /**
    * @brief 设置当前事务为多语句模式，需要明确的指出提交或回滚
@@ -65,19 +65,19 @@ public:
    * @brief 当前会话关联的事务
    *
    */
-  Trx *current_trx();
+  Trx* current_trx();
 
   void destroy_trx();
 
   /**
    * @brief 设置当前正在处理的请求
    */
-  void set_current_request(SessionEvent *request);
+  void set_current_request(SessionEvent* request);
 
   /**
    * @brief 获取当前正在处理的请求
    */
-  SessionEvent *current_request() const;
+  SessionEvent* current_request() const;
 
   void set_sql_debug(bool sql_debug) { sql_debug_ = sql_debug; }
   bool sql_debug_on() const { return sql_debug_; }
@@ -99,18 +99,18 @@ public:
    * @brief 将指定会话设置到线程变量中
    *
    */
-  static void set_current_session(Session *session);
+  static void set_current_session(Session* session);
 
   /**
    * @brief 获取当前的会话
    * @details 当前某个请求开始时，会将会话设置到线程变量中，在整个请求处理过程中不会改变
    */
-  static Session *current_session();
+  static Session* current_session();
 
 private:
-  Db           *db_              = nullptr;
-  Trx          *trx_             = nullptr;
-  SessionEvent *current_request_ = nullptr;  ///< 当前正在处理的请求
+  Db*           db_              = nullptr;
+  Trx*          trx_             = nullptr;
+  SessionEvent* current_request_ = nullptr;  ///< 当前正在处理的请求
 
   bool trx_multi_operation_mode_ = false;  ///< 当前事务的模式，是否多语句模式. 单语句模式自动提交
 

@@ -20,9 +20,9 @@ See the Mulan PSL v2 for more details. */
 #include "common/log/log.h"
 #include "common/lang/string.h"
 
-ThreadHandler * ThreadHandler::create(const char *name)
+ThreadHandler* ThreadHandler::create(const char* name)
 {
-  const char *default_name = "one-thread-per-connection";
+  const char* default_name = "one-thread-per-connection";
   if (nullptr == name || common::is_blank(name)) {
     name = default_name;
   }

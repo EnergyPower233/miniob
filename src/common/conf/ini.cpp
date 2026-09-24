@@ -34,7 +34,7 @@ Ini::Ini() {}
 
 Ini::~Ini() {}
 
-void Ini::insert_session(const string &session_name)
+void Ini::insert_session(const string& session_name)
 {
   map<string, string>               session_map;
   pair<string, map<string, string>> entry = pair<string, map<string, string>>(session_name, session_map);
@@ -42,7 +42,7 @@ void Ini::insert_session(const string &session_name)
   sections_.insert(entry);
 }
 
-map<string, string> *Ini::switch_session(const string &session_name)
+map<string, string>* Ini::switch_session(const string& session_name)
 {
   SessionsMap::iterator it = sections_.find(session_name);
   if (it != sections_.end()) {
@@ -60,7 +60,7 @@ map<string, string> *Ini::switch_session(const string &session_name)
   return nullptr;
 }
 
-const map<string, string> &Ini::get(const string &section)
+const map<string, string>& Ini::get(const string& section)
 {
   SessionsMap::iterator it = sections_.find(section);
   if (it == sections_.end()) {
@@ -70,7 +70,7 @@ const map<string, string> &Ini::get(const string &section)
   return it->second;
 }
 
-string Ini::get(const string &key, const string &defaultValue, const string &section)
+string Ini::get(const string& key, const string& defaultValue, const string& section)
 {
   map<string, string> section_map = get(section);
 
@@ -82,16 +82,16 @@ string Ini::get(const string &key, const string &defaultValue, const string &sec
   return it->second;
 }
 
-int Ini::put(const string &key, const string &value, const string &section)
+int Ini::put(const string& key, const string& value, const string& section)
 {
-  map<string, string> *section_map = switch_session(section);
+  map<string, string>* section_map = switch_session(section);
 
   section_map->insert(pair<string, string>(key, value));
 
   return 0;
 }
 
-int Ini::insert_entry(map<string, string> *session_map, const string &line)
+int Ini::insert_entry(map<string, string>* session_map, const string& line)
 {
   if (session_map == nullptr) {
     cerr << __FILE__ << __FUNCTION__ << " session map is null" << endl;
@@ -114,7 +114,7 @@ int Ini::insert_entry(map<string, string> *session_map, const string &line)
   return 0;
 }
 
-int Ini::load(const string &file_name)
+int Ini::load(const string& file_name)
 {
   ifstream ifs;
 
@@ -122,7 +122,7 @@ int Ini::load(const string &file_name)
 
     bool continue_last_line = false;
 
-    map<string, string> *current_session = switch_session(DEFAULT_SECTION);
+    map<string, string>* current_session = switch_session(DEFAULT_SECTION);
 
     char line[MAX_CFG_LINE_LEN];
 
@@ -135,7 +135,7 @@ int Ini::load(const string &file_name)
 
       ifs.getline(line, sizeof(line));
 
-      char *read_buf = strip(line);
+      char* read_buf = strip(line);
 
       if (strlen(read_buf) == 0) {
         // empty line
@@ -191,7 +191,7 @@ int Ini::load(const string &file_name)
   return 0;
 }
 
-void Ini::to_string(string &output_str)
+void Ini::to_string(string& output_str)
 {
   output_str.clear();
 
@@ -203,7 +203,7 @@ void Ini::to_string(string &output_str)
     output_str += CFG_SESSION_END_TAG;
     output_str += "\n";
 
-    map<string, string> &section_map = it->second;
+    map<string, string>& section_map = it->second;
 
     for (map<string, string>::iterator sub_it = section_map.begin(); sub_it != section_map.end(); sub_it++) {
       output_str += sub_it->first;
@@ -220,9 +220,9 @@ void Ini::to_string(string &output_str)
 }
 
 //! Accessor function which wraps global properties object
-Ini *&get_properties()
+Ini*& get_properties()
 {
-  static Ini *properties = new Ini();
+  static Ini* properties = new Ini();
   return properties;
 }
 

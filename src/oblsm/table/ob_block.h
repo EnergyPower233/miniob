@@ -51,7 +51,7 @@ class ObBlock
 {
 
 public:
-  ObBlock(const ObComparator *comparator) : comparator_(comparator) {}
+  ObBlock(const ObComparator* comparator) : comparator_(comparator) {}
 
   void add_offset(uint32_t offset) { offsets_.push_back(offset); }
 
@@ -70,29 +70,29 @@ public:
    * @param data The serialized block data as a string.
    * @return RC The result code indicating the success or failure of the decode operation.
    */
-  RC decode(const string &data);
+  RC decode(const string& data);
 
-  ObLsmIterator *new_iterator() const;
+  ObLsmIterator* new_iterator() const;
 
 private:
   string           data_;
   vector<uint32_t> offsets_;
   // TODO: remove
-  const ObComparator *comparator_;
+  const ObComparator* comparator_;
 };
 
 class BlockIterator : public ObLsmIterator
 {
 public:
-  BlockIterator(const ObComparator *comparator, const ObBlock *data, uint32_t count)
+  BlockIterator(const ObComparator* comparator, const ObBlock* data, uint32_t count)
       : comparator_(comparator), data_(data), count_(count)
   {}
-  BlockIterator(const BlockIterator &)            = delete;
-  BlockIterator &operator=(const BlockIterator &) = delete;
+  BlockIterator(const BlockIterator&)            = delete;
+  BlockIterator& operator=(const BlockIterator&) = delete;
 
   ~BlockIterator() override = default;
 
-  void seek(const string_view &lookup_key) override;
+  void seek(const string_view& lookup_key) override;
   void seek_to_first() override
   {
     index_ = 0;
@@ -119,8 +119,8 @@ private:
   void parse_entry();
 
 private:
-  const ObComparator  *comparator_;
-  const ObBlock *const data_;
+  const ObComparator*  comparator_;
+  const ObBlock* const data_;
   string_view          curr_entry_;
   string_view          key_;
   string_view          value_;
@@ -132,11 +132,11 @@ class BlockMeta
 {
 public:
   BlockMeta() {}
-  BlockMeta(const string &first_key, const string &last_key, uint32_t offset, uint32_t size)
+  BlockMeta(const string& first_key, const string& last_key, uint32_t offset, uint32_t size)
       : first_key_(first_key), last_key_(last_key), offset_(offset), size_(size)
   {}
   string encode() const;
-  RC     decode(const string &data);
+  RC     decode(const string& data);
 
   string first_key_;
   string last_key_;

@@ -7,7 +7,8 @@ AlignAfterOpenBracket: DontAlign
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 DerivePointerAlignment: false
-PointerAlignment: Right
+# Left = pointer/reference binds to the type (int* ptr / int& ref)
+PointerAlignment: Left
 ConstructorInitializerIndentWidth: 4
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: true
@@ -29,7 +30,6 @@ BreakConstructorInitializersBeforeComma: false
 BinPackParameters: true
 ColumnLimit: 120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-DerivePointerBinding: true
 ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: true
 MaxEmptyLinesToKeep: 1
@@ -43,7 +43,6 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
-PointerBindsToType: true
 Cpp11BracedListStyle: true
 Standard:        Auto
 IndentWidth:     2

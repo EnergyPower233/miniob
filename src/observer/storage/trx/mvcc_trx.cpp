@@ -21,10 +21,10 @@ See the Mulan PSL v2 for more details. */
 
 MvccTrxKit::~MvccTrxKit()
 {
-  vector<Trx *> tmp_trxes;
+  vector<Trx*> tmp_trxes;
   tmp_trxes.swap(trxes_);
 
-  for (Trx *trx : tmp_trxes) {
+  for (Trx* trx : tmp_trxes) {
     delete trx;
   }
 }
@@ -32,24 +32,25 @@ MvccTrxKit::~MvccTrxKit()
 RC MvccTrxKit::init()
 {
   // 事务使用一些特殊的字段，放到每行记录中，表示行记录的可见性。
-  fields_ = vector<FieldMeta>{
-      // field_id in trx fields is invisible.
-      FieldMeta("__trx_xid_begin", AttrType::INTS, 0 /*attr_offset*/, 4 /*attr_len*/, false /*visible*/, -1/*field_id*/),
-      FieldMeta("__trx_xid_end", AttrType::INTS, 0 /*attr_offset*/, 4 /*attr_len*/, false /*visible*/, -2/*field_id*/)};
+  fields_ = vector<FieldMeta>{// field_id in trx fields is invisible.
+      FieldMeta(
+          "__trx_xid_begin", AttrType::INTS, 0 /*attr_offset*/, 4 /*attr_len*/, false /*visible*/, -1 /*field_id*/),
+      FieldMeta(
+          "__trx_xid_end", AttrType::INTS, 0 /*attr_offset*/, 4 /*attr_len*/, false /*visible*/, -2 /*field_id*/)};
 
   LOG_INFO("init mvcc trx kit done.");
   return RC::SUCCESS;
 }
 
-const vector<FieldMeta> *MvccTrxKit::trx_fields() const { return &fields_; }
+const vector<FieldMeta>* MvccTrxKit::trx_fields() const { return &fields_; }
 
 int32_t MvccTrxKit::next_trx_id() { return ++current_trx_id_; }
 
 int32_t MvccTrxKit::max_trx_id() const { return numeric_limits<int32_t>::max(); }
 
-Trx *MvccTrxKit::create_trx(LogHandler &log_handler)
+Trx* MvccTrxKit::create_trx(LogHandler& log_handler)
 {
-  Trx *trx = new MvccTrx(*this, log_handler);
+  Trx* trx = new MvccTrx(*this, log_handler);
   if (trx != nullptr) {
     lock_.lock();
     trxes_.push_back(trx);
@@ -58,9 +59,9 @@ Trx *MvccTrxKit::create_trx(LogHandler &log_handler)
   return trx;
 }
 
-Trx *MvccTrxKit::create_trx(LogHandler &log_handler, int32_t trx_id)
+Trx* MvccTrxKit::create_trx(LogHandler& log_handler, int32_t trx_id)
 {
-  Trx *trx = new MvccTrx(*this, log_handler, trx_id);
+  Trx* trx = new MvccTrx(*this, log_handler, trx_id);
   if (trx != nullptr) {
     lock_.lock();
     trxes_.push_back(trx);
@@ -72,7 +73,7 @@ Trx *MvccTrxKit::create_trx(LogHandler &log_handler, int32_t trx_id)
   return trx;
 }
 
-void MvccTrxKit::destroy_trx(Trx *trx)
+void MvccTrxKit::destroy_trx(Trx* trx)
 {
   lock_.lock();
   for (auto iter = trxes_.begin(), itend = trxes_.end(); iter != itend; ++iter) {
@@ -86,25 +87,24 @@ void MvccTrxKit::destroy_trx(Trx *trx)
   delete trx;
 }
 
-void MvccTrxKit::all_trxes(vector<Trx *> &trxes)
+void MvccTrxKit::all_trxes(vector<Trx*>& trxes)
 {
   lock_.lock();
   trxes = trxes_;
   lock_.unlock();
 }
 
-LogReplayer *MvccTrxKit::create_log_replayer(Db &db, LogHandler &log_handler)
-{
-  return new MvccTrxLogReplayer(db, *this, log_handler);
-}
+LogReplayer* MvccTrxKit::create_log_replayer(Db& db, LogHandler& log_handler)
+{ return new MvccTrxLogReplayer(db, *this, log_handler); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-MvccTrx::MvccTrx(MvccTrxKit &kit, LogHandler &log_handler) : Trx(TrxKit::Type::MVCC), trx_kit_(kit), log_handler_(log_handler)
+MvccTrx::MvccTrx(MvccTrxKit& kit, LogHandler& log_handler)
+    : Trx(TrxKit::Type::MVCC), trx_kit_(kit), log_handler_(log_handler)
 {}
 
-MvccTrx::MvccTrx(MvccTrxKit &kit, LogHandler &log_handler, int32_t trx_id) 
-  : Trx(TrxKit::Type::MVCC), trx_kit_(kit), log_handler_(log_handler), trx_id_(trx_id)
+MvccTrx::MvccTrx(MvccTrxKit& kit, LogHandler& log_handler, int32_t trx_id)
+    : Trx(TrxKit::Type::MVCC), trx_kit_(kit), log_handler_(log_handler), trx_id_(trx_id)
 {
   started_    = true;
   recovering_ = true;
@@ -112,7 +112,7 @@ MvccTrx::MvccTrx(MvccTrxKit &kit, LogHandler &log_handler, int32_t trx_id)
 
 MvccTrx::~MvccTrx() {}
 
-RC MvccTrx::insert_record(Table *table, Record &record)
+RC MvccTrx::insert_record(Table* table, Record& record)
 {
   Field begin_field;
   Field end_field;
@@ -135,7 +135,7 @@ RC MvccTrx::insert_record(Table *table, Record &record)
   return rc;
 }
 
-RC MvccTrx::delete_record(Table *table, Record &record)
+RC MvccTrx::delete_record(Table* table, Record& record)
 {
   Field begin_field;
   Field end_field;
@@ -143,7 +143,7 @@ RC MvccTrx::delete_record(Table *table, Record &record)
 
   RC delete_result = RC::SUCCESS;
 
-  RC rc = table->visit_record(record.rid(), [this, table, &delete_result, &end_field](Record &inplace_record) -> bool {
+  RC rc = table->visit_record(record.rid(), [this, table, &delete_result, &end_field](Record& inplace_record) -> bool {
     RC rc = this->visit_record(table, inplace_record, ReadWriteMode::READ_WRITE);
     if (OB_FAIL(rc)) {
       delete_result = rc;
@@ -173,7 +173,7 @@ RC MvccTrx::delete_record(Table *table, Record &record)
   return RC::SUCCESS;
 }
 
-RC MvccTrx::visit_record(Table *table, Record &record, ReadWriteMode mode)
+RC MvccTrx::visit_record(Table* table, Record& record, ReadWriteMode mode)
 {
   Field begin_field;
   Field end_field;
@@ -235,9 +235,9 @@ RC MvccTrx::visit_record(Table *table, Record &record, ReadWriteMode mode)
  * @param begin_xid_field 返回处理begin_xid的字段
  * @param end_xid_field   返回处理end_xid的字段
  */
-void MvccTrx::trx_fields(Table *table, Field &begin_xid_field, Field &end_xid_field) const
+void MvccTrx::trx_fields(Table* table, Field& begin_xid_field, Field& end_xid_field) const
 {
-  const TableMeta      &table_meta = table->table_meta();
+  const TableMeta&      table_meta = table->table_meta();
   span<const FieldMeta> trx_fields = table_meta.trx_fields();
   ASSERT(trx_fields.size() >= 2, "invalid trx fields number. %d", trx_fields.size());
 
@@ -270,15 +270,15 @@ RC MvccTrx::commit_with_trx_id(int32_t commit_xid)
   RC rc    = RC::SUCCESS;
   started_ = false;
 
-  for (const Operation &operation : operations_) {
+  for (const Operation& operation : operations_) {
     switch (operation.type()) {
       case Operation::Type::INSERT: {
         RID    rid(operation.page_num(), operation.slot_num());
-        Table *table = operation.table();
+        Table* table = operation.table();
         Field  begin_xid_field, end_xid_field;
         trx_fields(table, begin_xid_field, end_xid_field);
 
-        auto record_updater = [this, &begin_xid_field, commit_xid](Record &record) -> bool {
+        auto record_updater = [this, &begin_xid_field, commit_xid](Record& record) -> bool {
           LOG_DEBUG("before commit insert record. trx id=%d, begin xid=%d, commit xid=%d, lbt=%s",
                     trx_id_, begin_xid_field.get_int(record), commit_xid, lbt());
           ASSERT(begin_xid_field.get_int(record) == -this->trx_id_ && (!recovering_), 
@@ -295,13 +295,13 @@ RC MvccTrx::commit_with_trx_id(int32_t commit_xid)
       } break;
 
       case Operation::Type::DELETE: {
-        Table *table = operation.table();
+        Table* table = operation.table();
         RID    rid(operation.page_num(), operation.slot_num());
 
         Field begin_xid_field, end_xid_field;
         trx_fields(table, begin_xid_field, end_xid_field);
 
-        auto record_updater = [this, &end_xid_field, commit_xid](Record &record) -> bool {
+        auto record_updater = [this, &end_xid_field, commit_xid](Record& record) -> bool {
           (void)this;
           ASSERT(end_xid_field.get_int(record) == -trx_id_, 
                  "got an invalid record while committing. end xid=%d, this trx id=%d", 
@@ -338,11 +338,11 @@ RC MvccTrx::rollback()
   started_ = false;
 
   for (auto iter = operations_.rbegin(), itend = operations_.rend(); iter != itend; ++iter) {
-    const Operation &operation = *iter;
+    const Operation& operation = *iter;
     switch (operation.type()) {
       case Operation::Type::INSERT: {
         RID    rid(operation.page_num(), operation.slot_num());
-        Table *table = operation.table();
+        Table* table = operation.table();
         // 这里也可以不删除，仅仅给数据加个标识位，等垃圾回收器来收割也行
         Record record;
         record.set_rid(rid);
@@ -369,7 +369,7 @@ RC MvccTrx::rollback()
       } break;
 
       case Operation::Type::DELETE: {
-        Table *table = operation.table();
+        Table* table = operation.table();
         RID    rid(operation.page_num(), operation.slot_num());
 
         ASSERT(rc == RC::SUCCESS, "failed to get record while rollback. rid=%s, rc=%s",
@@ -377,7 +377,7 @@ RC MvccTrx::rollback()
         Field begin_xid_field, end_xid_field;
         trx_fields(table, begin_xid_field, end_xid_field);
 
-        auto record_updater = [this, &end_xid_field](Record &record) -> bool {
+        auto record_updater = [this, &end_xid_field](Record& record) -> bool {
           if (recovering_ && end_xid_field.get_int(record) != -trx_id_) {
             return false;
           }
@@ -410,13 +410,13 @@ RC MvccTrx::rollback()
   return rc;
 }
 
-RC find_table(Db *db, const LogEntry &log_entry, Table *&table)
+RC find_table(Db* db, const LogEntry& log_entry, Table*& table)
 {
-  auto *trx_log_header = reinterpret_cast<const MvccTrxLogHeader *>(log_entry.data());
+  auto* trx_log_header = reinterpret_cast<const MvccTrxLogHeader*>(log_entry.data());
   switch (MvccTrxLogOperation(trx_log_header->operation_type).type()) {
     case MvccTrxLogOperation::Type::INSERT_RECORD:
     case MvccTrxLogOperation::Type::DELETE_RECORD: {
-      auto *trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry *>(log_entry.data());
+      auto* trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry*>(log_entry.data());
       table                = db->find_table(trx_log_record->table_id);
       if (nullptr == table) {
         LOG_WARN("no such table to redo. log record=%s", trx_log_record->to_string().c_str());
@@ -430,23 +430,23 @@ RC find_table(Db *db, const LogEntry &log_entry, Table *&table)
   return RC::SUCCESS;
 }
 
-RC MvccTrx::redo(Db *db, const LogEntry &log_entry)
+RC MvccTrx::redo(Db* db, const LogEntry& log_entry)
 {
-  auto *trx_log_header = reinterpret_cast<const MvccTrxLogHeader *>(log_entry.data());
-  Table *table = nullptr;
-  RC     rc    = find_table(db, log_entry, table);
+  auto*  trx_log_header = reinterpret_cast<const MvccTrxLogHeader*>(log_entry.data());
+  Table* table          = nullptr;
+  RC     rc             = find_table(db, log_entry, table);
   if (OB_FAIL(rc)) {
     return rc;
   }
 
   switch (MvccTrxLogOperation(trx_log_header->operation_type).type()) {
     case MvccTrxLogOperation::Type::INSERT_RECORD: {
-      auto *trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry *>(log_entry.data());
+      auto* trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry*>(log_entry.data());
       operations_.push_back(Operation(Operation::Type::INSERT, table, trx_log_record->rid));
     } break;
 
     case MvccTrxLogOperation::Type::DELETE_RECORD: {
-      auto *trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry *>(log_entry.data());
+      auto* trx_log_record = reinterpret_cast<const MvccTrxRecordLogEntry*>(log_entry.data());
       operations_.push_back(Operation(Operation::Type::DELETE, table, trx_log_record->rid));
     } break;
 

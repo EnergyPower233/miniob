@@ -27,31 +27,31 @@ class ObArena
 public:
   ObArena();
 
-  ObArena(const ObArena &)            = delete;
-  ObArena &operator=(const ObArena &) = delete;
+  ObArena(const ObArena&)            = delete;
+  ObArena& operator=(const ObArena&) = delete;
 
   ~ObArena();
 
-  char *alloc(size_t bytes);
+  char* alloc(size_t bytes);
 
   size_t memory_usage() const { return memory_usage_; }
 
 private:
   // Array of new[] allocated memory blocks
-  vector<char *> blocks_;
+  vector<char*> blocks_;
 
   // Total memory usage of the arena.
   size_t memory_usage_;
 };
 
-inline char *ObArena::alloc(size_t bytes)
+inline char* ObArena::alloc(size_t bytes)
 {
   if (bytes <= 0) {
     return nullptr;
   }
-  char *result = new char[bytes];
+  char* result = new char[bytes];
   blocks_.push_back(result);
-  memory_usage_ += bytes + sizeof(char *);
+  memory_usage_ += bytes + sizeof(char*);
   return result;
 }
 

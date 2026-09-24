@@ -43,30 +43,30 @@ extern "C" {
 
 int pipe2(int pipefd[2], int flags)
 {
-    if (pipe(pipefd) != 0) {
-        return -1;
-    }
+  if (pipe(pipefd) != 0) {
+    return -1;
+  }
 
-    if ((flags & O_CLOEXEC) != 0) {
-        if (fcntl(pipefd[0], F_SETFD, FD_CLOEXEC) == -1 || fcntl(pipefd[1], F_SETFD, FD_CLOEXEC) == -1) {
-            close(pipefd[0]);
-            close(pipefd[1]);
-            return -1;
-        }
+  if ((flags & O_CLOEXEC) != 0) {
+    if (fcntl(pipefd[0], F_SETFD, FD_CLOEXEC) == -1 || fcntl(pipefd[1], F_SETFD, FD_CLOEXEC) == -1) {
+      close(pipefd[0]);
+      close(pipefd[1]);
+      return -1;
     }
+  }
 
-    if ((flags & O_NONBLOCK) != 0) {
-        int flags0 = fcntl(pipefd[0], F_GETFL);
-        int flags1 = fcntl(pipefd[1], F_GETFL);
-        if (flags0 == -1 || flags1 == -1 || fcntl(pipefd[0], F_SETFL, flags0 | O_NONBLOCK) == -1 ||
-            fcntl(pipefd[1], F_SETFL, flags1 | O_NONBLOCK) == -1) {
-            close(pipefd[0]);
-            close(pipefd[1]);
-            return -1;
-        }
+  if ((flags & O_NONBLOCK) != 0) {
+    int flags0 = fcntl(pipefd[0], F_GETFL);
+    int flags1 = fcntl(pipefd[1], F_GETFL);
+    if (flags0 == -1 || flags1 == -1 || fcntl(pipefd[0], F_SETFL, flags0 | O_NONBLOCK) == -1 ||
+        fcntl(pipefd[1], F_SETFL, flags1 | O_NONBLOCK) == -1) {
+      close(pipefd[0]);
+      close(pipefd[1]);
+      return -1;
     }
+  }
 
-    return 0;
+  return 0;
 }
 
 #ifdef __cplusplus

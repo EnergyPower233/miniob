@@ -30,10 +30,10 @@ public:
   SetVariableExecutor()          = default;
   virtual ~SetVariableExecutor() = default;
 
-  RC execute(SQLStageEvent *sql_event);
+  RC execute(SQLStageEvent* sql_event);
 
 private:
-  RC var_value_to_boolean(const Value &var_value, bool &bool_value) const;
+  RC var_value_to_boolean(const Value& var_value, bool& bool_value) const;
 
-  RC get_execution_mode(const Value &var_value, ExecutionMode &execution_mode) const;
+  RC get_execution_mode(const Value& var_value, ExecutionMode& execution_mode) const;
 };

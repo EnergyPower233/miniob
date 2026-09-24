@@ -15,7 +15,7 @@ See the Mulan PSL v2 for more details. */
 #include "memtracer/mt_info.h"
 
 #ifdef __linux__
-extern "C" void *__libc_malloc(size_t size);
+extern "C" void* __libc_malloc(size_t size);
 #endif
 
 class Foo
@@ -27,7 +27,7 @@ public:
 
 void allocate_and_free_with_new_delete(size_t size)
 {
-  char *memory = new char[size];
+  char* memory = new char[size];
   memset(memory, 0, size);
   delete[] memory;
 }
@@ -36,7 +36,7 @@ void thread_function(void (*allocator)(size_t), size_t size) { allocator(size); 
 
 void allocate_and_free_with_malloc_free(size_t size)
 {
-  char *memory = static_cast<char *>(malloc(size));
+  char* memory = static_cast<char*>(malloc(size));
   memset(memory, 0, size);
   free(memory);
 }
@@ -47,7 +47,7 @@ void perform_multi_threads_allocation(void (*allocator)(size_t), size_t size, si
   for (size_t i = 0; i < num_threads; ++i) {
     threads.emplace_back(thread_function, allocator, size);
   }
-  for (auto &t : threads) {
+  for (auto& t : threads) {
     t.join();
   }
 }
@@ -60,19 +60,19 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
   size_t mem_base = memtracer::allocated_memory();
   // malloc/free
   {
-    void *ptr = malloc(1024);
+    void* ptr = malloc(1024);
     memset(ptr, 0, 1024);
     // if no use the memory that allocate by malloc,
     // the compiler may optimize it out,
     // so we need to use it here (even memset is also optimized)
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
 
     ptr = malloc(1024 * 1024 * 1024);
     memset(ptr, 0, 1024 * 1024 * 1024);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024 * 1024 * 1024);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
@@ -80,7 +80,7 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
     for (int i = 0; i < 1024; ++i) {
       ptr = malloc(1);
       memset(ptr, 0, 1);
-      *(char *)ptr = 'f';
+      *(char*)ptr = 'f';
       ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1);
       free(ptr);
       ASSERT_EQ(memtracer::allocated_memory(), mem_base);
@@ -90,7 +90,7 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // new/delete
   {
-    char *ptr = new char;
+    char* ptr = new char;
     *ptr      = 'a';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1);
     delete ptr;
@@ -99,7 +99,7 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // new/delete obj
   {
-    Foo *ptr = new Foo;
+    Foo* ptr = new Foo;
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + sizeof(Foo));
     ASSERT_EQ(1, ptr->val);
     delete ptr;
@@ -108,7 +108,7 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // new/delete array
   {
-    char *ptr = new char[1024];
+    char* ptr = new char[1024];
     memset(ptr, 0, 1024);
     *ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024);
@@ -118,9 +118,9 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // calloc/free
   {
-    void *ptr = calloc(10, 100);
+    void* ptr = calloc(10, 100);
     memset(ptr, 0, 10 * 100);
-    *(char *)ptr = 'a';
+    *(char*)ptr = 'a';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 10 * 100);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
@@ -128,25 +128,25 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // realloc/free
   {
-    void *ptr = realloc(NULL, 10);
+    void* ptr = realloc(NULL, 10);
     memset(ptr, 0, 10);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 10);
     ptr = realloc(ptr, 1);
     memset(ptr, 0, 1);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 10);
     ptr = realloc(ptr, 100);
     memset(ptr, 0, 100);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 100);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
   }
   // mmap/munmap
   {
-    void *ptr    = mmap(nullptr, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    *(char *)ptr = 'f';
+    void* ptr   = mmap(nullptr, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    *(char*)ptr = 'f';
     ASSERT_NE(ptr, nullptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024);
     munmap(ptr, 1024);
@@ -156,9 +156,9 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 // __libc_malloc
 #ifdef __linux__
   {
-    void *ptr = __libc_malloc(1024);
+    void* ptr = __libc_malloc(1024);
     memset(ptr, 0, 1024);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
@@ -167,9 +167,9 @@ TEST(test_mem_tracer, test_mem_tracer_basic)
 
   // __builtin_malloc
   {
-    void *ptr = __builtin_malloc(1024);
+    void* ptr = __builtin_malloc(1024);
     memset(ptr, 0, 1024);
-    *(char *)ptr = 'f';
+    *(char*)ptr = 'f';
     ASSERT_EQ(memtracer::allocated_memory(), mem_base + 1024);
     free(ptr);
     ASSERT_EQ(memtracer::allocated_memory(), mem_base);
@@ -217,7 +217,7 @@ TEST(test_mem_tracer, test_mem_tracer_multi_threads)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

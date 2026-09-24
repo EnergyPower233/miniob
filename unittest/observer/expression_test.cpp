@@ -143,13 +143,13 @@ TEST(ArithmeticExpr, get_column)
 {
   // constant value
   {
-    Value int_value1(1);
-    Value int_value2(2);
-    Value float_value1((float)1.1);
-    Value float_value2((float)2.2);
-    Chunk chunk;
+    Value                   int_value1(1);
+    Value                   int_value2(2);
+    Value                   float_value1((float)1.1);
+    Value                   float_value2((float)2.2);
+    Chunk                   chunk;
     std::unique_ptr<Column> column_tmp = std::make_unique<Column>(AttrType::INTS, sizeof(int), 1);
-    char data[sizeof(int)];
+    char                    data[sizeof(int)];
     memcpy(data, &int_value1, sizeof(int));
     column_tmp->append_one(data);
     chunk.add_column(std::move(column_tmp), 0);
@@ -191,7 +191,7 @@ TEST(ArithmeticExpr, get_column)
     unique_ptr<ValueExpr>   right_expr(new ValueExpr(float_value));
     for (int i = 0; i < count; ++i) {
       float left_value = i;
-      column_left->append_one((char *)&left_value);
+      column_left->append_one((char*)&left_value);
     }
     Chunk chunk;
     chunk.add_column(std::move(column_left), 0);
@@ -216,8 +216,8 @@ TEST(ArithmeticExpr, get_column)
     for (int i = 0; i < count; ++i) {
       int left_value  = i;
       int right_value = i;
-      column_left->append_one((char *)&left_value);
-      column_right->append_one((char *)&right_value);
+      column_left->append_one((char*)&left_value);
+      column_right->append_one((char*)&right_value);
     }
     Chunk chunk;
     chunk.add_column(std::move(column_left), 0);
@@ -287,12 +287,12 @@ TEST(ComparisonExpr, comparison_expr_test)
     Value                   int_value(1);
     FieldMeta               field_meta("col1", AttrType::INTS, 0, int_len, true, 0);
     Field                   field(nullptr, &field_meta);
-    unique_ptr<Expression>  right_expr  = std::make_unique<FieldExpr>(field);
-    int                     count       = 1024;
+    unique_ptr<Expression>  right_expr   = std::make_unique<FieldExpr>(field);
+    int                     count        = 1024;
     std::unique_ptr<Column> column_right = std::make_unique<Column>(AttrType::INTS, int_len, count);
     for (int i = 0; i < count; ++i) {
       int right_value = i;
-      column_right->append_one((char *)&right_value);
+      column_right->append_one((char*)&right_value);
     }
     Chunk                chunk;
     std::vector<uint8_t> select(count, 1);
@@ -340,7 +340,7 @@ TEST(AggregateExpr, aggregate_expr_test)
   ASSERT_EQ(RC::INVALID_ARGUMENT, AggregateExpr::type_from_string("invalid type", aggr_type));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

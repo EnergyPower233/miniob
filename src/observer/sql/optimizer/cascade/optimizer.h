@@ -24,14 +24,14 @@ class Optimizer
 public:
   Optimizer() : context_(std::make_unique<OptimizerContext>()) {}
 
-  std::unique_ptr<PhysicalOperator> optimize(OperatorNode *op_tree);
+  std::unique_ptr<PhysicalOperator> optimize(OperatorNode* op_tree);
 
   std::unique_ptr<PhysicalOperator> choose_best_plan(int root_id);
 
 private:
   void optimize_loop(int root_group_id);
 
-  void execute_task_stack(PendingTasks *task_stack, int root_group_id, OptimizerContext *root_context);
+  void execute_task_stack(PendingTasks* task_stack, int root_group_id, OptimizerContext* root_context);
 
   CostModel                         cost_model_;
   std::unique_ptr<OptimizerContext> context_;

@@ -40,18 +40,14 @@ public:
   Index()          = default;
   virtual ~Index() = default;
 
-  virtual RC create(Table *table, const char *file_name, const IndexMeta &index_meta, const FieldMeta &field_meta)
-  {
-    return RC::UNSUPPORTED;
-  }
-  virtual RC open(Table *table, const char *file_name, const IndexMeta &index_meta, const FieldMeta &field_meta)
-  {
-    return RC::UNSUPPORTED;
-  }
+  virtual RC create(Table* table, const char* file_name, const IndexMeta& index_meta, const FieldMeta& field_meta)
+  { return RC::UNSUPPORTED; }
+  virtual RC open(Table* table, const char* file_name, const IndexMeta& index_meta, const FieldMeta& field_meta)
+  { return RC::UNSUPPORTED; }
 
   virtual bool is_vector_index() { return false; }
 
-  const IndexMeta &index_meta() const { return index_meta_; }
+  const IndexMeta& index_meta() const { return index_meta_; }
 
   /**
    * @brief 插入一条数据
@@ -59,7 +55,7 @@ public:
    * @param record 插入的记录，当前假设记录是定长的
    * @param[out] rid    插入的记录的位置
    */
-  virtual RC insert_entry(const char *record, const RID *rid) = 0;
+  virtual RC insert_entry(const char* record, const RID* rid) = 0;
 
   /**
    * @brief 删除一条数据
@@ -67,7 +63,7 @@ public:
    * @param record 删除的记录，当前假设记录是定长的
    * @param[in] rid   删除的记录的位置
    */
-  virtual RC delete_entry(const char *record, const RID *rid) = 0;
+  virtual RC delete_entry(const char* record, const RID* rid) = 0;
 
   /**
    * @brief 创建一个索引数据的扫描器
@@ -79,7 +75,7 @@ public:
    * @param right_len 右边界的长度
    * @param right_inclusive 是否包含右边界
    */
-  virtual IndexScanner *create_scanner(const char *left_key, int left_len, bool left_inclusive, const char *right_key,
+  virtual IndexScanner* create_scanner(const char* left_key, int left_len, bool left_inclusive, const char* right_key,
       int right_len, bool right_inclusive) = 0;
 
   /**
@@ -89,7 +85,7 @@ public:
   virtual RC sync() = 0;
 
 protected:
-  RC init(const IndexMeta &index_meta, const FieldMeta &field_meta);
+  RC init(const IndexMeta& index_meta, const FieldMeta& field_meta);
 
 protected:
   IndexMeta index_meta_;  ///< 索引的元数据
@@ -110,6 +106,6 @@ public:
    * 遍历元素数据
    * 如果没有更多的元素，返回RECORD_EOF
    */
-  virtual RC next_entry(RID *rid) = 0;
+  virtual RC next_entry(RID* rid) = 0;
   virtual RC destroy()            = 0;
 };

@@ -28,22 +28,22 @@ public:
   virtual ~CompositeTuple() = default;
 
   /// @brief 删除默认构造函数
-  CompositeTuple(const CompositeTuple &) = delete;
+  CompositeTuple(const CompositeTuple&) = delete;
   /// @brief 删除默认赋值函数
-  CompositeTuple &operator=(const CompositeTuple &) = delete;
+  CompositeTuple& operator=(const CompositeTuple&) = delete;
 
   /// @brief 保留移动构造函数
-  CompositeTuple(CompositeTuple &&) = default;
+  CompositeTuple(CompositeTuple&&) = default;
   /// @brief 保留移动赋值函数
-  CompositeTuple &operator=(CompositeTuple &&) = default;
+  CompositeTuple& operator=(CompositeTuple&&) = default;
 
   int cell_num() const override;
-  RC  cell_at(int index, Value &cell) const override;
-  RC  spec_at(int index, TupleCellSpec &spec) const override;
-  RC  find_cell(const TupleCellSpec &spec, Value &cell) const override;
+  RC  cell_at(int index, Value& cell) const override;
+  RC  spec_at(int index, TupleCellSpec& spec) const override;
+  RC  find_cell(const TupleCellSpec& spec, Value& cell) const override;
 
   void   add_tuple(unique_ptr<Tuple> tuple);
-  Tuple &tuple_at(size_t index);
+  Tuple& tuple_at(size_t index);
 
 private:
   vector<unique_ptr<Tuple>> tuples_;

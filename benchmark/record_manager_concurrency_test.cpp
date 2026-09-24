@@ -56,10 +56,10 @@ class TestConditionFilter : public ConditionFilter
 public:
   TestConditionFilter(int32_t begin, int32_t end) : begin_(begin), end_(end) {}
 
-  bool filter(const Record &rec) const override
+  bool filter(const Record& rec) const override
   {
-    const char *data  = rec.data();
-    int32_t     value = *(int32_t *)data;
+    const char* data  = rec.data();
+    int32_t     value = *(int32_t*)data;
     return value >= begin_ && value <= end_;
   }
 
@@ -79,7 +79,7 @@ public:
 
   string record_filename() const { return this->Name() + ".record"; }
 
-  virtual void SetUp(const State &state)
+  virtual void SetUp(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -115,7 +115,7 @@ public:
              this->Name().c_str(), state.threads(), state.thread_index());
   }
 
-  virtual void TearDown(const State &state)
+  virtual void TearDown(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -135,7 +135,7 @@ public:
         state.thread_index());
   }
 
-  void FillUp(int32_t min, int32_t max, vector<RID> &rids)
+  void FillUp(int32_t min, int32_t max, vector<RID>& rids)
   {
     rids.reserve(max - min);
     RID             rid;
@@ -152,7 +152,7 @@ public:
 
     for (int32_t record_value : record_values) {
       record.int_fields[0]   = record_value;
-      [[maybe_unused]] RC rc = handler_->insert_record(reinterpret_cast<const char *>(&record), sizeof(record), &rid);
+      [[maybe_unused]] RC rc = handler_->insert_record(reinterpret_cast<const char*>(&record), sizeof(record), &rid);
       ASSERT(rc == RC::SUCCESS, "failed to insert record into record file. record value=%" PRIu32, record_value);
       rids.push_back(rid);
     }
@@ -160,7 +160,7 @@ public:
     LOG_INFO("fill up done. min=%" PRIu32 ", max=%" PRIu32 ", distance=%" PRIu32, min, max, (max - min));
   }
 
-  uint32_t GetRangeMax(const State &state) const
+  uint32_t GetRangeMax(const State& state) const
   {
     int32_t max = static_cast<int32_t>(state.range(0) * 3);
     if (max <= 0) {
@@ -169,12 +169,12 @@ public:
     return max;
   }
 
-  void Insert(int32_t value, Stat &stat, RID &rid)
+  void Insert(int32_t value, Stat& stat, RID& rid)
   {
     TestRecord record;
     record.int_fields[0] = value;
 
-    RC rc = handler_->insert_record(reinterpret_cast<const char *>(&record), sizeof(record), &rid);
+    RC rc = handler_->insert_record(reinterpret_cast<const char*>(&record), sizeof(record), &rid);
     switch (rc) {
       case RC::SUCCESS: {
         stat.insert_success_count++;
@@ -185,7 +185,7 @@ public:
     }
   }
 
-  void Delete(const RID &rid, Stat &stat)
+  void Delete(const RID& rid, Stat& stat)
   {
     RC rc = handler_->delete_record(&rid);
     switch (rc) {
@@ -201,7 +201,7 @@ public:
     }
   }
 
-  void Scan(int32_t begin, int32_t end, Stat &stat)
+  void Scan(int32_t begin, int32_t end, Stat& stat)
   {
     TestConditionFilter condition_filter(begin, end);
     VacuousTrx          trx;
@@ -231,8 +231,8 @@ public:
 
 protected:
   BufferPoolManager  bpm_{512};
-  DiskBufferPool    *buffer_pool_ = nullptr;
-  RecordFileHandler *handler_;
+  DiskBufferPool*    buffer_pool_ = nullptr;
+  RecordFileHandler* handler_;
   VacuousLogHandler  log_handler_;
 };
 
@@ -243,7 +243,7 @@ struct InsertionBenchmark : public BenchmarkBase
   string Name() const override { return "insertion"; }
 };
 
-BENCHMARK_DEFINE_F(InsertionBenchmark, Insertion)(State &state)
+BENCHMARK_DEFINE_F(InsertionBenchmark, Insertion)(State& state)
 {
   IntegerGenerator generator(1, 1 << 31);
   Stat             stat;
@@ -266,7 +266,7 @@ class DeletionBenchmark : public BenchmarkBase
 public:
   string Name() const override { return "deletion"; }
 
-  void SetUp(const State &state) override
+  void SetUp(const State& state) override
   {
     BenchmarkBase::SetUp(state);
 
@@ -292,7 +292,7 @@ protected:
   vector<RID>   rids_;
 };
 
-BENCHMARK_DEFINE_F(DeletionBenchmark, Deletion)(State &state)
+BENCHMARK_DEFINE_F(DeletionBenchmark, Deletion)(State& state)
 {
   IntegerGenerator generator(0, static_cast<int>(rids_.size() - 1));
   Stat             stat;
@@ -317,7 +317,7 @@ class ScanBenchmark : public BenchmarkBase
 public:
   string Name() const override { return "scan"; }
 
-  void SetUp(const State &state) override
+  void SetUp(const State& state) override
   {
     if (0 != state.thread_index()) {
       return;
@@ -332,7 +332,7 @@ public:
   }
 };
 
-BENCHMARK_DEFINE_F(ScanBenchmark, Scan)(State &state)
+BENCHMARK_DEFINE_F(ScanBenchmark, Scan)(State& state)
 {
   int              max_range_size = 100;
   uint32_t         max            = GetRangeMax(state);
@@ -361,7 +361,7 @@ struct MixtureBenchmark : public BenchmarkBase
   string Name() const override { return "mixture"; }
 };
 
-BENCHMARK_DEFINE_F(MixtureBenchmark, Mixture)(State &state)
+BENCHMARK_DEFINE_F(MixtureBenchmark, Mixture)(State& state)
 {
   pair<int32_t, int32_t> data_range{0, GetRangeMax(state)};
   pair<int32_t, int32_t> scan_range{1, 100};

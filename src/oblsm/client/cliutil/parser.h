@@ -69,7 +69,7 @@ public:
 private:
   bool out_of_range() { return p_ >= command_.size(); }
   void skip_blank_space();
-  RC   parse_string(string &res);
+  RC   parse_string(string& res);
 
   std::map<string, ObLsmCliCmdType> token_map_;
 

@@ -9,7 +9,7 @@ class VectorBuffer
 public:
   VectorBuffer() = default;
 
-  string_t add_string(const char *data, int len)
+  string_t add_string(const char* data, int len)
   {
     if (len <= string_t::INLINE_LENGTH) {
       return string_t(data, len);

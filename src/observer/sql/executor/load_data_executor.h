@@ -30,8 +30,8 @@ public:
   LoadDataExecutor()          = default;
   virtual ~LoadDataExecutor() = default;
 
-  RC execute(SQLStageEvent *sql_event);
+  RC execute(SQLStageEvent* sql_event);
 
 private:
-  RC load_data(Table *table, const char *file_name, char terminated, char enclosed, SqlResult *sql_result);
+  RC load_data(Table* table, const char* file_name, char terminated, char enclosed, SqlResult* sql_result);
 };

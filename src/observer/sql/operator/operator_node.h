@@ -93,7 +93,7 @@ public:
    * TODO: complete it if needed
    */
   virtual uint64_t hash() const { return std::hash<int>()(static_cast<int>(get_op_type())); }
-  virtual bool     operator==(const OperatorNode &other) const
+  virtual bool     operator==(const OperatorNode& other) const
   {
     if (get_op_type() != other.get_op_type())
       return false;
@@ -101,8 +101,8 @@ public:
       return false;
 
     for (size_t idx = 0; idx < general_children_.size(); idx++) {
-      auto &child       = general_children_[idx];
-      auto &other_child = other.general_children_[idx];
+      auto& child       = general_children_[idx];
+      auto& other_child = other.general_children_[idx];
 
       if (*child != *other_child)
         return false;
@@ -114,7 +114,7 @@ public:
    * @param log_props Input logical properties of the operator node.
    * @return Logical property of the operator node.
    */
-  virtual unique_ptr<LogicalProperty> find_log_prop(const vector<LogicalProperty *> &log_props) { return nullptr; }
+  virtual unique_ptr<LogicalProperty> find_log_prop(const vector<LogicalProperty*>& log_props) { return nullptr; }
 
   /**
    * @brief Calculates the cost of a logical operation.
@@ -128,17 +128,15 @@ public:
    * @param cm A pointer to the cost model used for calculating the cost.
    * @return The calculated cost as a double.
    */
-  virtual double calculate_cost(LogicalProperty *prop, const vector<LogicalProperty *> &child_log_props, CostModel *cm)
-  {
-    return 0.0;
-  }
+  virtual double calculate_cost(LogicalProperty* prop, const vector<LogicalProperty*>& child_log_props, CostModel* cm)
+  { return 0.0; }
 
-  void add_general_child(OperatorNode *child) { general_children_.push_back(child); }
+  void add_general_child(OperatorNode* child) { general_children_.push_back(child); }
 
-  vector<OperatorNode *> &get_general_children() { return general_children_; }
+  vector<OperatorNode*>& get_general_children() { return general_children_; }
 
 protected:
   // TODO: refactor
   // cascade optimizer 中使用，为了logical/physical operator 可以统一在 cascade 中迭代
-  vector<OperatorNode *> general_children_;
+  vector<OperatorNode*> general_children_;
 };

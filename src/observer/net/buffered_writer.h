@@ -42,7 +42,7 @@ public:
    * @param size 要写入的数据大小
    * @param write_size 实际写入的数据大小
    */
-  RC write(const char *data, int32_t size, int32_t &write_size);
+  RC write(const char* data, int32_t size, int32_t& write_size);
 
   /**
    * @brief 写数据到文件/socket，全部写入成功返回成功
@@ -50,7 +50,7 @@ public:
    * @param data 要写入的数据
    * @param size 要写入的数据大小
    */
-  RC writen(const char *data, int32_t size);
+  RC writen(const char* data, int32_t size);
 
   /**
    * @brief 刷新缓存

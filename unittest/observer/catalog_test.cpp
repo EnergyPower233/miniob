@@ -15,8 +15,8 @@ See the Mulan PSL v2 for more details. */
 TEST(CatalogTest, catalog_test)
 {
   Catalog& catalog = Catalog::get_instance();
-    
-  int table_id = 1;
+
+  int        table_id = 1;
   TableStats initial_stats(100);
   TableStats updated_stats(150);
 
@@ -29,7 +29,7 @@ TEST(CatalogTest, catalog_test)
   EXPECT_EQ(catalog.get_table_stats(-1).row_nums, 0);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

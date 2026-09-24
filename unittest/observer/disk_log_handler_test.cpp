@@ -29,7 +29,7 @@ class TestLogReplayer : public LogReplayer
 {
 public:
   virtual ~TestLogReplayer() = default;
-  RC replay(const LogEntry &entry) override
+  RC replay(const LogEntry& entry) override
   {
     count_++;
     return RC::SUCCESS;
@@ -44,7 +44,7 @@ private:
 TEST(DiskLogHandler, empty)
 {
   // specific an empty directory and test DiskLogHandler start/stop and so on
-  const char    *path = "test_log_handler";
+  const char*    path = "test_log_handler";
   DiskLogHandler handler;
   ASSERT_EQ(RC::SUCCESS, handler.init(path));
   ASSERT_EQ(RC::SUCCESS, handler.start());
@@ -57,7 +57,7 @@ TEST(DiskLogHandler, empty)
 TEST(DiskLogHandler, test_append_and_wait)
 {
   // specific an empty directory and call DiskLogHandler::append 10000 times and stop it
-  const char *path = "test_log_handler";
+  const char* path = "test_log_handler";
   filesystem::remove_all(path);
 
   DiskLogHandler handler;
@@ -87,7 +87,7 @@ TEST(DiskLogHandler, test_replay)
 {
   // create an empty directory and init a DiskLogHandler and then test replay
   // We will do nothing as there is no log file in the directory
-  const char *path = "test_log_handler";
+  const char* path = "test_log_handler";
   filesystem::remove_all(path);
 
   DiskLogHandler  handler;
@@ -109,7 +109,7 @@ TEST(DiskLogHandler, test_replay)
   ASSERT_EQ(RC::SUCCESS, handler.await_termination());
 
   int  count             = 0;
-  auto log_entry_counter = [&count](LogEntry &) -> RC {
+  auto log_entry_counter = [&count](LogEntry&) -> RC {
     count++;
     return RC::SUCCESS;
   };
@@ -154,7 +154,7 @@ TEST(DiskLogHandler, test_replay)
 
 TEST(DiskLogHandler, multi_thread)
 {
-  const char *directory = "test_log_handler_multi_thread";
+  const char* directory = "test_log_handler_multi_thread";
   filesystem::remove_all(directory);
 
   DiskLogHandler  handler;
@@ -181,7 +181,7 @@ TEST(DiskLogHandler, multi_thread)
   ASSERT_EQ(RC::SUCCESS, handler.await_termination());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   LoggerFactory::init_default(string(argv[0]) + ".log", LOG_LEVEL_TRACE);

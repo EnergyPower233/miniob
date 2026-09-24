@@ -30,13 +30,13 @@ struct FilterObj
   Field field;
   Value value;
 
-  void init_attr(const Field &field)
+  void init_attr(const Field& field)
   {
     is_attr     = true;
     this->field = field;
   }
 
-  void init_value(const Value &value)
+  void init_value(const Value& value)
   {
     is_attr     = false;
     this->value = value;
@@ -53,11 +53,11 @@ public:
 
   CompOp comp() const { return comp_; }
 
-  void set_left(const FilterObj &obj) { left_ = obj; }
-  void set_right(const FilterObj &obj) { right_ = obj; }
+  void set_left(const FilterObj& obj) { left_ = obj; }
+  void set_right(const FilterObj& obj) { right_ = obj; }
 
-  const FilterObj &left() const { return left_; }
-  const FilterObj &right() const { return right_; }
+  const FilterObj& left() const { return left_; }
+  const FilterObj& right() const { return right_; }
 
 private:
   CompOp    comp_ = NO_OP;
@@ -76,15 +76,15 @@ public:
   virtual ~FilterStmt();
 
 public:
-  const vector<FilterUnit *> &filter_units() const { return filter_units_; }
+  const vector<FilterUnit*>& filter_units() const { return filter_units_; }
 
 public:
-  static RC create(Db *db, Table *default_table, unordered_map<string, Table *> *tables,
-      const ConditionSqlNode *conditions, int condition_num, FilterStmt *&stmt);
+  static RC create(Db* db, Table* default_table, unordered_map<string, Table*>* tables,
+      const ConditionSqlNode* conditions, int condition_num, FilterStmt*& stmt);
 
-  static RC create_filter_unit(Db *db, Table *default_table, unordered_map<string, Table *> *tables,
-      const ConditionSqlNode &condition, FilterUnit *&filter_unit);
+  static RC create_filter_unit(Db* db, Table* default_table, unordered_map<string, Table*>* tables,
+      const ConditionSqlNode& condition, FilterUnit*& filter_unit);
 
 private:
-  vector<FilterUnit *> filter_units_;  // 默认当前都是AND关系
+  vector<FilterUnit*> filter_units_;  // 默认当前都是AND关系
 };

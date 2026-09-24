@@ -65,7 +65,7 @@ public:
 
   int attr_length() const { return attr_length_; }
 
-  int operator()(const char *v1, const char *v2) const
+  int operator()(const char* v1, const char* v2) const
   {
     // TODO: optimized the comparison
     Value left;
@@ -92,17 +92,17 @@ class KeyComparator
 public:
   void init(AttrType type, int length) { attr_comparator_.init(type, length); }
 
-  const AttrComparator &attr_comparator() const { return attr_comparator_; }
+  const AttrComparator& attr_comparator() const { return attr_comparator_; }
 
-  int operator()(const char *v1, const char *v2) const
+  int operator()(const char* v1, const char* v2) const
   {
     int result = attr_comparator_(v1, v2);
     if (result != 0) {
       return result;
     }
 
-    const RID *rid1 = (const RID *)(v1 + attr_comparator_.attr_length());
-    const RID *rid2 = (const RID *)(v2 + attr_comparator_.attr_length());
+    const RID* rid1 = (const RID*)(v1 + attr_comparator_.attr_length());
+    const RID* rid2 = (const RID*)(v2 + attr_comparator_.attr_length());
     return RID::compare(rid1, rid2);
   }
 
@@ -125,9 +125,9 @@ public:
 
   int attr_length() const { return attr_length_; }
 
-  string operator()(const char *v) const
+  string operator()(const char* v) const
   {
-    Value value(attr_type_, const_cast<char *>(v), attr_length_);
+    Value value(attr_type_, const_cast<char*>(v), attr_length_);
     return value.to_string();
   }
 
@@ -145,14 +145,14 @@ class KeyPrinter
 public:
   void init(AttrType type, int length) { attr_printer_.init(type, length); }
 
-  const AttrPrinter &attr_printer() const { return attr_printer_; }
+  const AttrPrinter& attr_printer() const { return attr_printer_; }
 
-  string operator()(const char *v) const
+  string operator()(const char* v) const
   {
     stringstream ss;
     ss << "{key:" << attr_printer_(v) << ",";
 
-    const RID *rid = (const RID *)(v + attr_printer_.attr_length());
+    const RID* rid = (const RID*)(v + attr_printer_.attr_length());
     ss << "rid:{" << rid->to_string() << "}}";
     return ss.str();
   }
@@ -267,7 +267,7 @@ struct InternalIndexNode : public IndexNode
 class IndexNodeHandler
 {
 public:
-  IndexNodeHandler(BplusTreeMiniTransaction &mtr, const IndexFileHeader &header, Frame *frame);
+  IndexNodeHandler(BplusTreeMiniTransaction& mtr, const IndexFileHeader& header, Frame* frame);
   virtual ~IndexNodeHandler() = default;
 
   /// @brief 初始化一个新的页面
@@ -305,11 +305,11 @@ public:
    */
   bool validate() const;
 
-  Frame *frame() const { return frame_; }
+  Frame* frame() const { return frame_; }
 
-  friend string to_string(const IndexNodeHandler &handler);
+  friend string to_string(const IndexNodeHandler& handler);
 
-  RC recover_insert_items(int index, const char *items, int num);
+  RC recover_insert_items(int index, const char* items, int num);
   RC recover_remove_items(int index, int num);
 
 protected:
@@ -318,15 +318,15 @@ protected:
    * @note 这并不是一个纯虚函数，是为了可以直接使用 IndexNodeHandler 类。
    * 但是使用这个类时，注意不能使用与这个函数相关的函数。
    */
-  virtual char *__item_at(int index) const { return nullptr; }
-  char         *__key_at(int index) const { return __item_at(index); }
-  char         *__value_at(int index) const { return __item_at(index) + key_size(); };
+  virtual char* __item_at(int index) const { return nullptr; }
+  char*         __key_at(int index) const { return __item_at(index); }
+  char*         __value_at(int index) const { return __item_at(index) + key_size(); };
 
 protected:
-  BplusTreeMiniTransaction &mtr_;
-  const IndexFileHeader    &header_;
-  Frame                    *frame_ = nullptr;
-  IndexNode                *node_  = nullptr;
+  BplusTreeMiniTransaction& mtr_;
+  const IndexFileHeader&    header_;
+  Frame*                    frame_ = nullptr;
+  IndexNode*                node_  = nullptr;
 };
 
 /**
@@ -336,46 +336,46 @@ protected:
 class LeafIndexNodeHandler final : public IndexNodeHandler
 {
 public:
-  LeafIndexNodeHandler(BplusTreeMiniTransaction &mtr, const IndexFileHeader &header, Frame *frame);
+  LeafIndexNodeHandler(BplusTreeMiniTransaction& mtr, const IndexFileHeader& header, Frame* frame);
   virtual ~LeafIndexNodeHandler() = default;
 
   RC      init_empty();
   RC      set_next_page(PageNum page_num);
   PageNum next_page() const;
 
-  char *key_at(int index);
-  char *value_at(int index);
+  char* key_at(int index);
+  char* value_at(int index);
 
   /**
    * 查找指定key的插入位置(注意不是key本身)
    * 如果key已经存在，会设置found的值。
    */
-  int lookup(const KeyComparator &comparator, const char *key, bool *found = nullptr) const;
+  int lookup(const KeyComparator& comparator, const char* key, bool* found = nullptr) const;
 
-  RC  insert(int index, const char *key, const char *value);
+  RC  insert(int index, const char* key, const char* value);
   RC  remove(int index);
-  int remove(const char *key, const KeyComparator &comparator);
-  RC  move_half_to(LeafIndexNodeHandler &other);
-  RC  move_first_to_end(LeafIndexNodeHandler &other);
-  RC  move_last_to_front(LeafIndexNodeHandler &other);
+  int remove(const char* key, const KeyComparator& comparator);
+  RC  move_half_to(LeafIndexNodeHandler& other);
+  RC  move_first_to_end(LeafIndexNodeHandler& other);
+  RC  move_last_to_front(LeafIndexNodeHandler& other);
   /**
    * move all items to left page
    */
-  RC move_to(LeafIndexNodeHandler &other);
+  RC move_to(LeafIndexNodeHandler& other);
 
-  bool validate(const KeyComparator &comparator, DiskBufferPool *bp) const;
+  bool validate(const KeyComparator& comparator, DiskBufferPool* bp) const;
 
-  friend string to_string(const LeafIndexNodeHandler &handler, const KeyPrinter &printer);
+  friend string to_string(const LeafIndexNodeHandler& handler, const KeyPrinter& printer);
 
 protected:
-  char *__item_at(int index) const override;
+  char* __item_at(int index) const override;
 
-  RC append(const char *items, int num);
-  RC append(const char *item);
-  RC preappend(const char *item);
+  RC append(const char* items, int num);
+  RC append(const char* item);
+  RC preappend(const char* item);
 
 private:
-  LeafIndexNode *leaf_node_ = nullptr;
+  LeafIndexNode* leaf_node_ = nullptr;
 };
 
 /**
@@ -385,21 +385,21 @@ private:
 class InternalIndexNodeHandler final : public IndexNodeHandler
 {
 public:
-  InternalIndexNodeHandler(BplusTreeMiniTransaction &mtr, const IndexFileHeader &header, Frame *frame);
+  InternalIndexNodeHandler(BplusTreeMiniTransaction& mtr, const IndexFileHeader& header, Frame* frame);
   virtual ~InternalIndexNodeHandler() = default;
 
   RC init_empty();
-  RC create_new_root(PageNum first_page_num, const char *key, PageNum page_num);
+  RC create_new_root(PageNum first_page_num, const char* key, PageNum page_num);
 
-  RC      insert(const char *key, PageNum page_num, const KeyComparator &comparator);
-  char   *key_at(int index);
+  RC      insert(const char* key, PageNum page_num, const KeyComparator& comparator);
+  char*   key_at(int index);
   PageNum value_at(int index);
 
   /**
    * 返回指定子节点在当前节点中的索引
    */
   int  value_index(PageNum page_num);
-  void set_key_at(int index, const char *key);
+  void set_key_at(int index, const char* key);
   void remove(int index);
 
   /**
@@ -411,36 +411,36 @@ public:
    * @param[out] insert_position 如果是有效指针，将会返回可以插入指定键值的位置
    */
   int lookup(
-      const KeyComparator &comparator, const char *key, bool *found = nullptr, int *insert_position = nullptr) const;
+      const KeyComparator& comparator, const char* key, bool* found = nullptr, int* insert_position = nullptr) const;
 
   /**
    * @brief 把当前节点的所有数据都迁移到另一个节点上
    *
    * @param other 数据迁移的目标节点
    */
-  RC move_to(InternalIndexNodeHandler &other);
-  RC move_first_to_end(InternalIndexNodeHandler &other);
-  RC move_last_to_front(InternalIndexNodeHandler &other);
-  RC move_half_to(InternalIndexNodeHandler &other);
+  RC move_to(InternalIndexNodeHandler& other);
+  RC move_first_to_end(InternalIndexNodeHandler& other);
+  RC move_last_to_front(InternalIndexNodeHandler& other);
+  RC move_half_to(InternalIndexNodeHandler& other);
 
-  bool validate(const KeyComparator &comparator, DiskBufferPool *bp) const;
+  bool validate(const KeyComparator& comparator, DiskBufferPool* bp) const;
 
-  friend string to_string(const InternalIndexNodeHandler &handler, const KeyPrinter &printer);
-
-private:
-  RC insert_items(int index, const char *items, int num);
-  RC append(const char *items, int num);
-  RC append(const char *item);
-  RC preappend(const char *item);
+  friend string to_string(const InternalIndexNodeHandler& handler, const KeyPrinter& printer);
 
 private:
-  char *__item_at(int index) const override;
+  RC insert_items(int index, const char* items, int num);
+  RC append(const char* items, int num);
+  RC append(const char* item);
+  RC preappend(const char* item);
+
+private:
+  char* __item_at(int index) const override;
 
   int value_size() const override;
   int item_size() const override;
 
 private:
-  InternalIndexNode *internal_node_ = nullptr;
+  InternalIndexNode* internal_node_ = nullptr;
 };
 
 /**
@@ -460,9 +460,9 @@ public:
    * @param internal_max_size 内部节点最大大小
    * @param leaf_max_size 叶子节点最大大小
    */
-  RC create(LogHandler &log_handler, BufferPoolManager &bpm, const char *file_name, AttrType attr_type, int attr_length,
+  RC create(LogHandler& log_handler, BufferPoolManager& bpm, const char* file_name, AttrType attr_type, int attr_length,
       int internal_max_size = -1, int leaf_max_size = -1);
-  RC create(LogHandler &log_handler, DiskBufferPool &buffer_pool, AttrType attr_type, int attr_length,
+  RC create(LogHandler& log_handler, DiskBufferPool& buffer_pool, AttrType attr_type, int attr_length,
       int internal_max_size = -1, int leaf_max_size = -1);
 
   /**
@@ -471,8 +471,8 @@ public:
    * @param bpm 缓冲池管理器
    * @param file_name 文件名
    */
-  RC open(LogHandler &log_handler, BufferPoolManager &bpm, const char *file_name);
-  RC open(LogHandler &log_handler, DiskBufferPool &buffer_pool);
+  RC open(LogHandler& log_handler, BufferPoolManager& bpm, const char* file_name);
+  RC open(LogHandler& log_handler, DiskBufferPool& buffer_pool);
 
   /**
    * 关闭句柄indexHandle对应的索引文件
@@ -485,14 +485,14 @@ public:
    * 即向索引中插入一个值为（user_key，rid）的键值对
    * @note 这里假设user_key的内存大小与attr_length 一致
    */
-  RC insert_entry(const char *user_key, const RID *rid);
+  RC insert_entry(const char* user_key, const RID* rid);
 
   /**
    * @brief 从IndexHandle句柄对应的索引中删除一个值为（user_key，rid）的索引项
    * @return RECORD_INVALID_KEY 指定值不存在
    * @note 这里假设user_key的内存大小与attr_length 一致
    */
-  RC delete_entry(const char *user_key, const RID *rid);
+  RC delete_entry(const char* user_key, const RID* rid);
 
   bool is_empty() const;
 
@@ -501,7 +501,7 @@ public:
    * @param key_len user_key的长度
    * @param rid  返回值，记录记录所在的页面号和slot
    */
-  RC get_entry(const char *user_key, int key_len, list<RID> &rids);
+  RC get_entry(const char* user_key, int key_len, list<RID>& rids);
 
   RC sync();
 
@@ -513,21 +513,21 @@ public:
   bool validate_tree();
 
 public:
-  const IndexFileHeader &file_header() const { return file_header_; }
-  DiskBufferPool        &buffer_pool() const { return *disk_buffer_pool_; }
-  LogHandler            &log_handler() const { return *log_handler_; }
+  const IndexFileHeader& file_header() const { return file_header_; }
+  DiskBufferPool&        buffer_pool() const { return *disk_buffer_pool_; }
+  LogHandler&            log_handler() const { return *log_handler_; }
 
 public:
   /**
    * @brief 恢复更新ROOT页面
    * @details 重做日志时调用的接口
    */
-  RC recover_update_root_page(BplusTreeMiniTransaction &mtr, PageNum root_page_num);
+  RC recover_update_root_page(BplusTreeMiniTransaction& mtr, PageNum root_page_num);
   /**
    * @brief 恢复初始化头页面
    * @details 重做日志时调用的接口
    */
-  RC recover_init_header_page(BplusTreeMiniTransaction &mtr, Frame *frame, const IndexFileHeader &header);
+  RC recover_init_header_page(BplusTreeMiniTransaction& mtr, Frame* frame, const IndexFileHeader& header);
 
 public:
   /**
@@ -540,11 +540,11 @@ private:
   /**
    * 这些函数都是线程不安全的，不要在多线程的环境下调用
    */
-  RC print_leaf(Frame *frame);
-  RC print_internal_node_recursive(Frame *frame);
+  RC print_leaf(Frame* frame);
+  RC print_internal_node_recursive(Frame* frame);
 
-  bool validate_leaf_link(BplusTreeMiniTransaction &mtr);
-  bool validate_node_recursive(BplusTreeMiniTransaction &mtr, Frame *frame);
+  bool validate_leaf_link(BplusTreeMiniTransaction& mtr);
+  bool validate_node_recursive(BplusTreeMiniTransaction& mtr, Frame* frame);
 
 protected:
   /**
@@ -553,12 +553,12 @@ protected:
    * @param key 查找的键值
    * @param[out] frame 返回找到的叶子节点
    */
-  RC find_leaf(BplusTreeMiniTransaction &mtr, BplusTreeOperationType op, const char *key, Frame *&frame);
+  RC find_leaf(BplusTreeMiniTransaction& mtr, BplusTreeOperationType op, const char* key, Frame*& frame);
 
   /**
    * @brief 找到最左边的叶子节点
    */
-  RC left_most_page(BplusTreeMiniTransaction &mtr, Frame *&frame);
+  RC left_most_page(BplusTreeMiniTransaction& mtr, Frame*& frame);
 
   /**
    * @brief 查找指定的叶子节点
@@ -566,79 +566,79 @@ protected:
    * @param child_page_getter 用于获取子节点的函数
    * @param[out] frame 返回找到的叶子节点
    */
-  RC find_leaf_internal(BplusTreeMiniTransaction &mtr, BplusTreeOperationType op,
-      const function<PageNum(InternalIndexNodeHandler &)> &child_page_getter, Frame *&frame);
+  RC find_leaf_internal(BplusTreeMiniTransaction& mtr, BplusTreeOperationType op,
+      const function<PageNum(InternalIndexNodeHandler&)>& child_page_getter, Frame*& frame);
 
   /**
    * @brief 使用crabing protocol 获取页面
    */
   RC crabing_protocal_fetch_page(
-      BplusTreeMiniTransaction &mtr, BplusTreeOperationType op, PageNum page_num, bool is_root_page, Frame *&frame);
+      BplusTreeMiniTransaction& mtr, BplusTreeOperationType op, PageNum page_num, bool is_root_page, Frame*& frame);
 
   /**
    * @brief 从叶子节点中删除指定的键值对
    */
-  RC delete_entry_internal(BplusTreeMiniTransaction &mtr, Frame *leaf_frame, const char *key);
+  RC delete_entry_internal(BplusTreeMiniTransaction& mtr, Frame* leaf_frame, const char* key);
 
   /**
    * @brief 拆分节点
    * @details 当节点中的键值对超过最大值时，需要拆分节点
    */
   template <typename IndexNodeHandlerType>
-  RC split(BplusTreeMiniTransaction &mtr, Frame *frame, Frame *&new_frame);
+  RC split(BplusTreeMiniTransaction& mtr, Frame* frame, Frame*& new_frame);
 
   /**
    * @brief 合并或重新分配
    * @details 当节点中的键值对小于最小值时，需要合并或重新分配
    */
   template <typename IndexNodeHandlerType>
-  RC coalesce_or_redistribute(BplusTreeMiniTransaction &mtr, Frame *frame);
+  RC coalesce_or_redistribute(BplusTreeMiniTransaction& mtr, Frame* frame);
 
   /**
    * @brief 合并两个相邻节点
    * @details 当节点中的键值对小于最小值并且相邻两个节点总和不超过最大节点个数时，需要合并两个相邻节点
    */
   template <typename IndexNodeHandlerType>
-  RC coalesce(BplusTreeMiniTransaction &mtr, Frame *neighbor_frame, Frame *frame, Frame *parent_frame, int index);
+  RC coalesce(BplusTreeMiniTransaction& mtr, Frame* neighbor_frame, Frame* frame, Frame* parent_frame, int index);
 
   /**
    * @brief 重新分配两个相邻节点
    * @details 删除某个元素后，对应节点的元素个数比较少，并且与相邻节点不能合并，就将邻居节点的元素移动一些过来
    */
   template <typename IndexNodeHandlerType>
-  RC redistribute(BplusTreeMiniTransaction &mtr, Frame *neighbor_frame, Frame *frame, Frame *parent_frame, int index);
+  RC redistribute(BplusTreeMiniTransaction& mtr, Frame* neighbor_frame, Frame* frame, Frame* parent_frame, int index);
 
   /**
    * @brief 在父节点插入一个元素
    */
-  RC insert_entry_into_parent(BplusTreeMiniTransaction &mtr, Frame *frame, Frame *new_frame, const char *key);
+  RC insert_entry_into_parent(BplusTreeMiniTransaction& mtr, Frame* frame, Frame* new_frame, const char* key);
 
   /**
    * @brief 在叶子节点插入一个元素
    */
-  RC insert_entry_into_leaf_node(BplusTreeMiniTransaction &mtr, Frame *frame, const char *pkey, const RID *rid);
+  RC insert_entry_into_leaf_node(BplusTreeMiniTransaction& mtr, Frame* frame, const char* pkey, const RID* rid);
 
   /**
    * @brief 创建一个新的B+树
    */
-  RC create_new_tree(BplusTreeMiniTransaction &mtr, const char *key, const RID *rid);
+  RC create_new_tree(BplusTreeMiniTransaction& mtr, const char* key, const RID* rid);
 
   /**
    * @brief 更新根节点的页号
    */
-  void update_root_page_num_locked(BplusTreeMiniTransaction &mtr, PageNum root_page_num);
+  void update_root_page_num_locked(BplusTreeMiniTransaction& mtr, PageNum root_page_num);
 
   /**
    * @brief 调整根节点
    */
-  RC adjust_root(BplusTreeMiniTransaction &mtr, Frame *root_frame);
+  RC adjust_root(BplusTreeMiniTransaction& mtr, Frame* root_frame);
 
 private:
-  common::MemPoolItem::item_unique_ptr make_key(const char *user_key, const RID &rid);
+  common::MemPoolItem::item_unique_ptr make_key(const char* user_key, const RID& rid);
 
 protected:
-  LogHandler     *log_handler_      = nullptr;  /// 日志处理器
-  DiskBufferPool *disk_buffer_pool_ = nullptr;  /// 磁盘缓冲池
+  LogHandler*     log_handler_      = nullptr;  /// 日志处理器
+  DiskBufferPool* disk_buffer_pool_ = nullptr;  /// 磁盘缓冲池
   bool            header_dirty_     = false;    /// 是否需要更新头页面
   IndexFileHeader file_header_;
 
@@ -663,7 +663,7 @@ private:
 class BplusTreeScanner
 {
 public:
-  BplusTreeScanner(BplusTreeHandler &tree_handler);
+  BplusTreeScanner(BplusTreeHandler& tree_handler);
   ~BplusTreeScanner();
 
   /**
@@ -676,7 +676,7 @@ public:
    * @param right_inclusive 右边界的值是否包含在内
    * TODO 重构参数表示方法
    */
-  RC open(const char *left_user_key, int left_len, bool left_inclusive, const char *right_user_key, int right_len,
+  RC open(const char* left_user_key, int left_len, bool left_inclusive, const char* right_user_key, int right_len,
       bool right_inclusive);
 
   /**
@@ -688,7 +688,7 @@ public:
    * @warning 不要在遍历时删除数据。删除数据会导致遍历器失效。
    * 当前默认的走索引删除的逻辑就是这样做的，所以删除逻辑有BUG。
    */
-  RC next_entry(RID &rid);
+  RC next_entry(RID& rid);
 
   /**
    * @brief 关闭当前扫描器
@@ -700,9 +700,9 @@ private:
   /**
    * 如果key的类型是CHARS, 扩展或缩减user_key的大小刚好是schema中定义的大小
    */
-  RC fix_user_key(const char *user_key, int key_len, bool want_greater, char **fixed_key, bool *should_inclusive);
+  RC fix_user_key(const char* user_key, int key_len, bool want_greater, char** fixed_key, bool* should_inclusive);
 
-  void fetch_item(RID &rid);
+  void fetch_item(RID& rid);
 
   /**
    * @brief 判断是否到了扫描的结束位置
@@ -711,12 +711,12 @@ private:
 
 private:
   bool                     inited_ = false;
-  BplusTreeHandler        &tree_handler_;
+  BplusTreeHandler&        tree_handler_;
   BplusTreeMiniTransaction mtr_;
 
   /// 使用左右叶子节点和位置来表示扫描的起始位置和终止位置
   /// 起始位置和终止位置都是有效的数据
-  Frame *current_frame_ = nullptr;
+  Frame* current_frame_ = nullptr;
 
   common::MemPoolItem::item_unique_ptr right_key_;
   int                                  iter_index_    = -1;

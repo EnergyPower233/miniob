@@ -30,13 +30,13 @@ class FieldMeta
 {
 public:
   FieldMeta();
-  FieldMeta(const char *name, AttrType attr_type, int attr_offset, int attr_len, bool visible, int field_id);
+  FieldMeta(const char* name, AttrType attr_type, int attr_offset, int attr_len, bool visible, int field_id);
   ~FieldMeta() = default;
 
-  RC init(const char *name, AttrType attr_type, int attr_offset, int attr_len, bool visible, int field_id);
+  RC init(const char* name, AttrType attr_type, int attr_offset, int attr_len, bool visible, int field_id);
 
 public:
-  const char *name() const;
+  const char* name() const;
   AttrType    type() const;
   int         offset() const;
   int         len() const;
@@ -44,11 +44,11 @@ public:
   int         field_id() const;
 
 public:
-  void desc(ostream &os) const;
+  void desc(ostream& os) const;
 
 public:
-  void      to_json(Json::Value &json_value) const;
-  static RC from_json(const Json::Value &json_value, FieldMeta &field);
+  void      to_json(Json::Value& json_value) const;
+  static RC from_json(const Json::Value& json_value, FieldMeta& field);
 
 protected:
   string   name_;

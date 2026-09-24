@@ -42,7 +42,7 @@ string LogOperation::to_string() const
 
 ///////////////////////////////////////////////////////////////////////////////
 // LogEntry
-LogEntryHandler::LogEntryHandler(LogOperation operation, Frame *frame) : operation_type_(operation), frame_(frame)
+LogEntryHandler::LogEntryHandler(LogOperation operation, Frame* frame) : operation_type_(operation), frame_(frame)
 {
   if (frame_ != nullptr) {
     set_page_num(frame->page_num());
@@ -57,7 +57,7 @@ PageNum LogEntryHandler::page_num() const
   return page_num_;
 }
 
-RC LogEntryHandler::serialize(Serializer &buffer) const
+RC LogEntryHandler::serialize(Serializer& buffer) const
 {
   RC rc = serialize_header(buffer);
   if (OB_FAIL(rc)) {
@@ -66,7 +66,7 @@ RC LogEntryHandler::serialize(Serializer &buffer) const
   return serialize_body(buffer);
 }
 
-RC LogEntryHandler::serialize_header(Serializer &buffer) const
+RC LogEntryHandler::serialize_header(Serializer& buffer) const
 {
   int32_t type     = this->operation_type().index();
   PageNum page_num = frame_->page_num();
@@ -89,9 +89,9 @@ string LogEntryHandler::to_string() const
   return ss.str();
 }
 
-RC LogEntryHandler::from_buffer(Deserializer &deserializer, unique_ptr<LogEntryHandler> &handler)
+RC LogEntryHandler::from_buffer(Deserializer& deserializer, unique_ptr<LogEntryHandler>& handler)
 {
-  auto fake_frame_getter = [](PageNum, Frame *&frame) -> RC {
+  auto fake_frame_getter = [](PageNum, Frame*& frame) -> RC {
     frame = nullptr;
     return RC::SUCCESS;
   };
@@ -99,16 +99,16 @@ RC LogEntryHandler::from_buffer(Deserializer &deserializer, unique_ptr<LogEntryH
 }
 
 RC LogEntryHandler::from_buffer(
-    DiskBufferPool &buffer_pool, common::Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    DiskBufferPool& buffer_pool, common::Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
-  auto frame_getter = [&buffer_pool](PageNum page_num, Frame *&frame) -> RC {
+  auto frame_getter = [&buffer_pool](PageNum page_num, Frame*& frame) -> RC {
     return buffer_pool.get_this_page(page_num, &frame);
   };
   return from_buffer(frame_getter, buffer, handler);
 }
 
 RC LogEntryHandler::from_buffer(
-    function<RC(PageNum, Frame *&)> frame_getter, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    function<RC(PageNum, Frame*&)> frame_getter, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int32_t type     = -1;
   PageNum page_num = -1;
@@ -126,7 +126,7 @@ RC LogEntryHandler::from_buffer(
     return RC::INVALID_ARGUMENT;
   }
 
-  Frame *frame = nullptr;
+  Frame* frame = nullptr;
   RC     rc    = frame_getter(page_num, frame);
   if (OB_FAIL(rc)) {
     LOG_WARN("failed to get frame. page_num=%d, rc=%s", page_num, strrc(rc));
@@ -187,13 +187,13 @@ RC LogEntryHandler::from_buffer(
 
 ///////////////////////////////////////////////////////////////////////////////
 // InitHeaderPageLogEntryHandler
-InitHeaderPageLogEntryHandler::InitHeaderPageLogEntryHandler(Frame *frame, const IndexFileHeader &file_header)
+InitHeaderPageLogEntryHandler::InitHeaderPageLogEntryHandler(Frame* frame, const IndexFileHeader& file_header)
     : LogEntryHandler(LogOperation::Type::INIT_HEADER_PAGE, frame), file_header_(file_header)
 {}
 
-RC InitHeaderPageLogEntryHandler::serialize_body(Serializer &buffer) const
+RC InitHeaderPageLogEntryHandler::serialize_body(Serializer& buffer) const
 {
-  buffer.write(span<const char>(reinterpret_cast<const char *>(&file_header_), sizeof(file_header_)));
+  buffer.write(span<const char>(reinterpret_cast<const char*>(&file_header_), sizeof(file_header_)));
   return RC::SUCCESS;
 }
 
@@ -204,10 +204,10 @@ string InitHeaderPageLogEntryHandler::to_string() const
   return ss.str();
 }
 
-RC InitHeaderPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+RC InitHeaderPageLogEntryHandler::deserialize(Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   IndexFileHeader header;
-  int             ret = buffer.read(span<char>(reinterpret_cast<char *>(&header), sizeof(header)));
+  int             ret = buffer.read(span<char>(reinterpret_cast<char*>(&header), sizeof(header)));
   if (ret != 0) {
     return RC::INTERNAL;
   }
@@ -216,27 +216,25 @@ RC InitHeaderPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer
   return RC::SUCCESS;
 }
 
-RC InitHeaderPageLogEntryHandler::rollback(BplusTreeMiniTransaction &, BplusTreeHandler &)
+RC InitHeaderPageLogEntryHandler::rollback(BplusTreeMiniTransaction&, BplusTreeHandler&)
 {
   // do nothing
   return RC::SUCCESS;
 }
 
-RC InitHeaderPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
-{
-  return tree_handler.recover_init_header_page(mtr, frame(), file_header_);
-}
+RC InitHeaderPageLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
+{ return tree_handler.recover_init_header_page(mtr, frame(), file_header_); }
 
 ///////////////////////////////////////////////////////////////////////////////
 // SetParentPageLogEntryHandler
 SetParentPageLogEntryHandler::SetParentPageLogEntryHandler(
-    Frame *frame, PageNum parent_page_num, PageNum old_parent_page_num)
+    Frame* frame, PageNum parent_page_num, PageNum old_parent_page_num)
     : NodeLogEntryHandler(LogOperation::Type::SET_PARENT_PAGE, frame),
       parent_page_num_(parent_page_num),
       old_parent_page_num_(old_parent_page_num)
 {}
 
-RC SetParentPageLogEntryHandler::serialize_body(Serializer &buffer) const
+RC SetParentPageLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   int ret = buffer.write_int32(parent_page_num_);
   return ret == 0 ? RC::SUCCESS : RC::INTERNAL;
@@ -249,7 +247,7 @@ string SetParentPageLogEntryHandler::to_string() const
   return ss.str();
 }
 
-RC SetParentPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+RC SetParentPageLogEntryHandler::deserialize(Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int     ret             = 0;
   int32_t parent_page_num = -1;
@@ -261,7 +259,7 @@ RC SetParentPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer,
   return RC::SUCCESS;
 }
 
-RC SetParentPageLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC SetParentPageLogEntryHandler::rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   if (nullptr == frame()) {
     return RC::INTERNAL;
@@ -270,7 +268,7 @@ RC SetParentPageLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTr
   return node_handler.set_parent_page_num(old_parent_page_num_);
 }
 
-RC SetParentPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC SetParentPageLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   IndexNodeHandler node_handler(mtr, tree_handler.file_header(), frame());
   return node_handler.set_parent_page_num(parent_page_num_);
@@ -279,11 +277,11 @@ RC SetParentPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHa
 ///////////////////////////////////////////////////////////////////////////////
 // NormalOperationLogEntryHandler
 NormalOperationLogEntryHandler::NormalOperationLogEntryHandler(
-    Frame *frame, LogOperation operation, int index, span<const char> items, int item_num)
+    Frame* frame, LogOperation operation, int index, span<const char> items, int item_num)
     : NodeLogEntryHandler(operation, frame), index_(index), item_num_(item_num), items_(items.begin(), items.end())
 {}
 
-RC NormalOperationLogEntryHandler::serialize_body(Serializer &buffer) const
+RC NormalOperationLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   int     ret        = 0;
   int32_t item_bytes = static_cast<int32_t>(items_.size());
@@ -303,7 +301,7 @@ string NormalOperationLogEntryHandler::to_string() const
 }
 
 RC NormalOperationLogEntryHandler::deserialize(
-    Frame *frame, LogOperation operation, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    Frame* frame, LogOperation operation, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int ret = 0;
 
@@ -324,7 +322,7 @@ RC NormalOperationLogEntryHandler::deserialize(
   return RC::SUCCESS;
 }
 
-RC NormalOperationLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC NormalOperationLogEntryHandler::rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   if (nullptr == frame()) {
     return RC::INTERNAL;
@@ -337,12 +335,12 @@ RC NormalOperationLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, Bplus
   }
 }
 
-RC NormalOperationLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC NormalOperationLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   InternalIndexNodeHandler internal_node(mtr, tree_handler.file_header(), frame());
   LeafIndexNodeHandler     leaf_node(mtr, tree_handler.file_header(), frame());
   IndexNodeHandler         node_handler(mtr, tree_handler.file_header(), frame());
-  IndexNodeHandler        *real_handler = nullptr;
+  IndexNodeHandler*        real_handler = nullptr;
   if (node_handler.is_leaf()) {
     real_handler = &leaf_node;
   } else {
@@ -357,18 +355,18 @@ RC NormalOperationLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTree
 
 ///////////////////////////////////////////////////////////////////////////////
 // LeafInitEmptyLogEntryHandler
-LeafInitEmptyLogEntryHandler::LeafInitEmptyLogEntryHandler(Frame *frame)
+LeafInitEmptyLogEntryHandler::LeafInitEmptyLogEntryHandler(Frame* frame)
     : NodeLogEntryHandler(LogOperation::Type::LEAF_INIT_EMPTY, frame)
 {}
 
-RC LeafInitEmptyLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC LeafInitEmptyLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   LeafIndexNodeHandler leaf_handler(mtr, tree_handler.file_header(), frame());
-  RC rc = leaf_handler.init_empty();
+  RC                   rc = leaf_handler.init_empty();
   return rc;
 }
 
-RC LeafInitEmptyLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+RC LeafInitEmptyLogEntryHandler::deserialize(Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   handler = make_unique<LeafInitEmptyLogEntryHandler>(frame);
   return RC::SUCCESS;
@@ -376,13 +374,13 @@ RC LeafInitEmptyLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer,
 
 ///////////////////////////////////////////////////////////////////////////////
 // LeafSetNextPageLogEntryHandler
-LeafSetNextPageLogEntryHandler::LeafSetNextPageLogEntryHandler(Frame *frame, PageNum new_page_num, PageNum old_page_num)
+LeafSetNextPageLogEntryHandler::LeafSetNextPageLogEntryHandler(Frame* frame, PageNum new_page_num, PageNum old_page_num)
     : NodeLogEntryHandler(LogOperation::Type::LEAF_SET_NEXT_PAGE, frame),
       new_page_num_(new_page_num),
       old_page_num_(old_page_num)
 {}
 
-RC LeafSetNextPageLogEntryHandler::serialize_body(Serializer &buffer) const
+RC LeafSetNextPageLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   buffer.write_int32(new_page_num_);
   return RC::SUCCESS;
@@ -395,7 +393,7 @@ string LeafSetNextPageLogEntryHandler::to_string() const
   return ss.str();
 }
 
-RC LeafSetNextPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+RC LeafSetNextPageLogEntryHandler::deserialize(Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int     ret      = 0;
   int32_t page_num = -1;
@@ -407,7 +405,7 @@ RC LeafSetNextPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffe
   return RC::SUCCESS;
 }
 
-RC LeafSetNextPageLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC LeafSetNextPageLogEntryHandler::rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   if (nullptr == frame()) {
     return RC::INTERNAL;
@@ -417,7 +415,7 @@ RC LeafSetNextPageLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, Bplus
   return RC::SUCCESS;
 }
 
-RC LeafSetNextPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC LeafSetNextPageLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   LeafIndexNodeHandler leaf_handler(mtr, tree_handler.file_header(), frame());
 
@@ -427,18 +425,18 @@ RC LeafSetNextPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTree
 
 ///////////////////////////////////////////////////////////////////////////////
 // InternalInitEmptyLogEntryHandler
-InternalInitEmptyLogEntryHandler::InternalInitEmptyLogEntryHandler(Frame *frame)
+InternalInitEmptyLogEntryHandler::InternalInitEmptyLogEntryHandler(Frame* frame)
     : NodeLogEntryHandler(LogOperation::Type::INTERNAL_INIT_EMPTY, frame)
 {}
 
-RC InternalInitEmptyLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC InternalInitEmptyLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   InternalIndexNodeHandler internal_handler(mtr, tree_handler.file_header(), frame());
   return internal_handler.init_empty();
 }
 
 RC InternalInitEmptyLogEntryHandler::deserialize(
-    Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   handler = make_unique<InternalInitEmptyLogEntryHandler>(frame);
   return RC::SUCCESS;
@@ -447,14 +445,14 @@ RC InternalInitEmptyLogEntryHandler::deserialize(
 ///////////////////////////////////////////////////////////////////////////////
 // InternalCreateNewRootLogEntryHandler
 InternalCreateNewRootLogEntryHandler::InternalCreateNewRootLogEntryHandler(
-    Frame *frame, PageNum first_page_num, span<const char> key, PageNum page_num)
+    Frame* frame, PageNum first_page_num, span<const char> key, PageNum page_num)
     : NodeLogEntryHandler(LogOperation::Type::INTERNAL_CREATE_NEW_ROOT, frame),
       first_page_num_(first_page_num),
       page_num_(page_num),
       key_(key.begin(), key.end())
 {}
 
-RC InternalCreateNewRootLogEntryHandler::serialize_body(Serializer &buffer) const
+RC InternalCreateNewRootLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   buffer.write_int32(first_page_num_);
   buffer.write_int32(page_num_);
@@ -471,7 +469,7 @@ string InternalCreateNewRootLogEntryHandler::to_string() const
 }
 
 RC InternalCreateNewRootLogEntryHandler::deserialize(
-    Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int ret = 0;
 
@@ -492,24 +490,24 @@ RC InternalCreateNewRootLogEntryHandler::deserialize(
   return RC::SUCCESS;
 }
 
-RC InternalCreateNewRootLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC InternalCreateNewRootLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   InternalIndexNodeHandler internal_handler(mtr, tree_handler.file_header(), frame());
-  RC rc = internal_handler.create_new_root(first_page_num_, key_.data(), page_num_);
+  RC                       rc = internal_handler.create_new_root(first_page_num_, key_.data(), page_num_);
   return rc;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // InternalUpdateKeyLogEntryHandler
 InternalUpdateKeyLogEntryHandler::InternalUpdateKeyLogEntryHandler(
-    Frame *frame, int index, span<const char> key, span<const char> old_key)
+    Frame* frame, int index, span<const char> key, span<const char> old_key)
     : NodeLogEntryHandler(LogOperation::Type::INTERNAL_UPDATE_KEY, frame),
       index_(index),
       key_(key.begin(), key.end()),
       old_key_(old_key.begin(), old_key.end())
 {}
 
-RC InternalUpdateKeyLogEntryHandler::serialize_body(Serializer &buffer) const
+RC InternalUpdateKeyLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   buffer.write_int32(index_);
   buffer.write_int32(static_cast<int32_t>(key_.size()));
@@ -525,7 +523,7 @@ string InternalUpdateKeyLogEntryHandler::to_string() const
 }
 
 RC InternalUpdateKeyLogEntryHandler::deserialize(
-    Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+    Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int ret = 0;
 
@@ -545,7 +543,7 @@ RC InternalUpdateKeyLogEntryHandler::deserialize(
   return RC::SUCCESS;
 }
 
-RC InternalUpdateKeyLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC InternalUpdateKeyLogEntryHandler::rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   if (nullptr == frame()) {
     return RC::INTERNAL;
@@ -555,7 +553,7 @@ RC InternalUpdateKeyLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, Bpl
   return RC::SUCCESS;
 }
 
-RC InternalUpdateKeyLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
+RC InternalUpdateKeyLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
 {
   InternalIndexNodeHandler node_handler(mtr, tree_handler.file_header(), frame());
   node_handler.set_key_at(index_, key_.data());
@@ -565,13 +563,13 @@ RC InternalUpdateKeyLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTr
 ///////////////////////////////////////////////////////////////////////////////
 // UpdateRootPageLogEntryHandler
 
-UpdateRootPageLogEntryHandler::UpdateRootPageLogEntryHandler(Frame *frame, PageNum root_page_num, PageNum old_page_num)
+UpdateRootPageLogEntryHandler::UpdateRootPageLogEntryHandler(Frame* frame, PageNum root_page_num, PageNum old_page_num)
     : LogEntryHandler(LogOperation::Type::UPDATE_ROOT_PAGE, frame),
       root_page_num_(root_page_num),
       old_page_num_(old_page_num)
 {}
 
-RC UpdateRootPageLogEntryHandler::serialize_body(Serializer &buffer) const
+RC UpdateRootPageLogEntryHandler::serialize_body(Serializer& buffer) const
 {
   buffer.write_int32(root_page_num_);
   return RC::SUCCESS;
@@ -584,7 +582,7 @@ string UpdateRootPageLogEntryHandler::to_string() const
   return ss.str();
 }
 
-RC UpdateRootPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer, unique_ptr<LogEntryHandler> &handler)
+RC UpdateRootPageLogEntryHandler::deserialize(Frame* frame, Deserializer& buffer, unique_ptr<LogEntryHandler>& handler)
 {
   int     ret           = 0;
   int32_t root_page_num = -1;
@@ -596,14 +594,10 @@ RC UpdateRootPageLogEntryHandler::deserialize(Frame *frame, Deserializer &buffer
   return RC::SUCCESS;
 }
 
-RC UpdateRootPageLogEntryHandler::rollback(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
-{
-  return tree_handler.recover_update_root_page(mtr, old_page_num_);
-}
+RC UpdateRootPageLogEntryHandler::rollback(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
+{ return tree_handler.recover_update_root_page(mtr, old_page_num_); }
 
-RC UpdateRootPageLogEntryHandler::redo(BplusTreeMiniTransaction &mtr, BplusTreeHandler &tree_handler)
-{
-  return tree_handler.recover_update_root_page(mtr, root_page_num_);
-}
+RC UpdateRootPageLogEntryHandler::redo(BplusTreeMiniTransaction& mtr, BplusTreeHandler& tree_handler)
+{ return tree_handler.recover_update_root_page(mtr, root_page_num_); }
 
 }  // namespace bplus_tree

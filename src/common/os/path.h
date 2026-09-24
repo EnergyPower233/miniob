@@ -27,8 +27,8 @@ namespace common {
  * input: happy         --> return : happy
  * input: ""            --> return : ""
  */
-string getFileName(const string &fullPath);
-void   getFileName(const char *path, string &fileName);
+string getFileName(const string& fullPath);
+void   getFileName(const char* path, string& fileName);
 
 /**
  * get file path from full path
@@ -38,33 +38,33 @@ void   getFileName(const char *path, string &fileName);
  * input: happy         --> return : happy
  * input: ""            --> return : ""
  */
-string getFilePath(const string &fullPath);
-void   getDirName(const char *path, string &parent);
+string getFilePath(const string& fullPath);
+void   getDirName(const char* path, string& parent);
 
 /**
  *  Get absolute path
  * input: path
  * reutrn absolutely path
  */
-string getAboslutPath(const char *path);
+string getAboslutPath(const char* path);
 
 /**
  * 判断给定目录是否是文件夹
  */
-bool is_directory(const char *path);
+bool is_directory(const char* path);
 
 /**
  * 判断指定路径是否存在并且是文件夹
  * 如果不存在将会逐级创建
  * @return 创建失败，或者不是文件夹将会返回失败
  */
-bool check_directory(string &path);
+bool check_directory(string& path);
 
 /**
  * 列出指定文件夹下符合指定模式的所有文件
  * @param filter_pattern  示例 ^miniob.*bin$
  * @return 成功返回找到的文件个数，否则返回-1
  */
-int list_file(const char *path, const char *filter_pattern, vector<string> &files);  // io/io.h::getFileList
+int list_file(const char* path, const char* filter_pattern, vector<string>& files);  // io/io.h::getFileList
 
 }  // namespace common

@@ -28,9 +28,9 @@ public:
   CliCommunicator() = default;
   virtual ~CliCommunicator();
 
-  RC init(int fd, unique_ptr<Session> session, const string &addr) override;
-  RC read_event(SessionEvent *&event) override;
-  RC write_result(SessionEvent *event, bool &need_disconnect) override;
+  RC init(int fd, unique_ptr<Session> session, const string& addr) override;
+  RC read_event(SessionEvent*& event) override;
+  RC write_result(SessionEvent* event, bool& need_disconnect) override;
 
   bool exit() const { return exit_; }
 

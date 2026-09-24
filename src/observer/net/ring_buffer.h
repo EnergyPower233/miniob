@@ -45,7 +45,7 @@ public:
    * @param size 读取数据的大小
    * @param read_size 实际读取的数据大小
    */
-  RC read(char *buf, int32_t size, int32_t &read_size);
+  RC read(char* buf, int32_t size, int32_t& read_size);
 
   /**
    * @brief 从缓存中读取数据，不会移动读指针
@@ -53,7 +53,7 @@ public:
    * @param buf 读取的数据
    * @param read_size 数据大小
    */
-  RC buffer(const char *&buf, int32_t &read_size);
+  RC buffer(const char*& buf, int32_t& read_size);
 
   /**
    * @brief 将读指针向前移动size个字节
@@ -68,7 +68,7 @@ public:
    * @param size 待写入的数据大小
    * @param write_size 实际写入的数据大小
    */
-  RC write(const char *buf, int32_t size, int32_t &write_size);
+  RC write(const char* buf, int32_t size, int32_t& write_size);
 
   /**
    * @brief 缓存的总容量

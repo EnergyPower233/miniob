@@ -25,8 +25,8 @@ public:
   AnalyzeTableExecutor() = default;
   virtual ~AnalyzeTableExecutor();
 
-  RC execute(SQLStageEvent *sql_event);
+  RC execute(SQLStageEvent* sql_event);
 
 private:
-  RecordScanner *scanner_ = nullptr;
+  RecordScanner* scanner_ = nullptr;
 };

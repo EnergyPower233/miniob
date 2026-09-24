@@ -85,7 +85,7 @@ public:
    * Gets the match pattern for the rule
    * @returns match pattern
    */
-  Pattern *get_match_pattern() const { return match_pattern_.get(); }
+  Pattern* get_match_pattern() const { return match_pattern_.get(); }
 
   /**
    * @returns whether the rule is a physical transformation
@@ -113,7 +113,7 @@ public:
    *
    * @return The promise, the higher the promise, the rule should be applied sooner
    */
-  virtual RulePromise promise(GroupExpr *group_expr) const
+  virtual RulePromise promise(GroupExpr* group_expr) const
   {
     if (is_physical())
       return RulePromise::PHYSICAL_PROMISE;
@@ -127,8 +127,8 @@ public:
    * @param transformed Vector of "after" operator trees
    * @param context The current optimization context
    */
-  virtual void transform(OperatorNode *input, std::vector<std::unique_ptr<OperatorNode>> *transformed,
-      OptimizerContext *context) const = 0;
+  virtual void transform(OperatorNode* input, std::vector<std::unique_ptr<OperatorNode>>* transformed,
+      OptimizerContext* context) const = 0;
 
 protected:
   RuleType            type_;
@@ -138,9 +138,9 @@ protected:
 class RuleWithPromise
 {
 public:
-  RuleWithPromise(Rule *rule, RulePromise promise) : rule_(rule), promise_(promise) {}
+  RuleWithPromise(Rule* rule, RulePromise promise) : rule_(rule), promise_(promise) {}
 
-  Rule *get_rule() { return rule_; }
+  Rule* get_rule() { return rule_; }
 
   /**
    * Gets the promise
@@ -148,15 +148,15 @@ public:
    */
   RulePromise get_promise() { return promise_; }
 
-  bool operator<(const RuleWithPromise &r) const { return promise_ < r.promise_; }
+  bool operator<(const RuleWithPromise& r) const { return promise_ < r.promise_; }
 
-  bool operator>(const RuleWithPromise &r) const { return promise_ > r.promise_; }
+  bool operator>(const RuleWithPromise& r) const { return promise_ > r.promise_; }
 
 private:
   /**
    * Rule
    */
-  Rule *rule_;
+  Rule* rule_;
 
   /**
    * Promise
@@ -171,7 +171,7 @@ public:
 
   ~RuleSet()
   {
-    for (auto &it : rules_map_) {
+    for (auto& it : rules_map_) {
       for (auto rule : it.second) {
         delete rule;
       }
@@ -181,17 +181,17 @@ public:
   /**
    * Adds a rule to the RuleSet
    */
-  void add_rule(RuleSetName set, Rule *rule) { rules_map_[static_cast<uint32_t>(set)].push_back(rule); }
+  void add_rule(RuleSetName set, Rule* rule) { rules_map_[static_cast<uint32_t>(set)].push_back(rule); }
 
   /**
    * Gets all stored rules in a given RuleSet
    */
-  std::vector<Rule *> &get_rules_by_name(RuleSetName set) { return rules_map_[static_cast<uint32_t>(set)]; }
+  std::vector<Rule*>& get_rules_by_name(RuleSetName set) { return rules_map_[static_cast<uint32_t>(set)]; }
 
 private:
   /**
    * Map from RuleSetName (uint32_t) -> vector of rules
    * TODO: use unique_ptr
    */
-  std::unordered_map<uint32_t, std::vector<Rule *>> rules_map_;
+  std::unordered_map<uint32_t, std::vector<Rule*>> rules_map_;
 };

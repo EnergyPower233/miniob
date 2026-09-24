@@ -25,14 +25,14 @@ using namespace common;
 class TestRunnable : public Runnable
 {
 public:
-  TestRunnable(atomic<int> &counter) : counter_(counter) {}
+  TestRunnable(atomic<int>& counter) : counter_(counter) {}
 
   virtual ~TestRunnable() = default;
 
   virtual void run() override { ++counter_; }
 
 private:
-  atomic<int> &counter_;
+  atomic<int>& counter_;
 };
 
 class RandomSleepRunnable : public Runnable
@@ -53,7 +53,7 @@ private:
   int max_ms_ = 0;
 };
 
-void test(int core_size, int max_pool_size, int keep_alive_time_ms, int test_num, function<Runnable *()> task_factory)
+void test(int core_size, int max_pool_size, int keep_alive_time_ms, int test_num, function<Runnable*()> task_factory)
 {
   ThreadPoolExecutor executor;
 
@@ -92,7 +92,7 @@ TEST(ThreadPoolExecutor, test3)
   test(2, 8, 60 * 1000, 1000, []() { return new RandomSleepRunnable(10, 100); });
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

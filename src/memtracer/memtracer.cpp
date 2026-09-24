@@ -38,7 +38,7 @@ extern memtracer::munmap_func_t orig_munmap;
 
 namespace memtracer {
 // used only for getting memory size from `/proc/self/status`
-long get_memory_size(const std::string &line)
+long get_memory_size(const std::string& line)
 {
   std::string        token;
   std::istringstream iss(line);
@@ -49,7 +49,7 @@ long get_memory_size(const std::string &line)
   return size;  // KB
 }
 
-MemTracer &MemTracer::get_instance()
+MemTracer& MemTracer::get_instance()
 {
   static MemTracer instance;
   return instance;
@@ -60,9 +60,9 @@ void MemTracer::init()
   MT.init_hook_funcs();
 
   // init memory limit
-  const char *memory_limit_str = std::getenv("MT_MEMORY_LIMIT");
+  const char* memory_limit_str = std::getenv("MT_MEMORY_LIMIT");
   if (memory_limit_str != nullptr) {
-    char              *end;
+    char*              end;
     unsigned long long value = std::strtoull(memory_limit_str, &end, 10);
     if (end != memory_limit_str && *end == '\0') {
       MT.set_memory_limit(static_cast<size_t>(value));
@@ -72,9 +72,9 @@ void MemTracer::init()
   }
 
   // init print_interval
-  const char *print_interval_ms_str = std::getenv("MT_PRINT_INTERVAL_MS");
+  const char* print_interval_ms_str = std::getenv("MT_PRINT_INTERVAL_MS");
   if (print_interval_ms_str != nullptr) {
-    char              *end;
+    char*              end;
     unsigned long long value = std::strtoull(print_interval_ms_str, &end, 10);
     if (end != print_interval_ms_str && *end == '\0') {
       MT.set_print_interval(static_cast<size_t>(value));
@@ -140,10 +140,10 @@ void MemTracer::stop()
 
 void MemTracer::init_hook_funcs_impl()
 {
-  orig_malloc = (void *(*)(size_t size))dlsym(RTLD_NEXT, "malloc");
-  orig_free   = (void (*)(void *ptr))dlsym(RTLD_NEXT, "free");
-  orig_mmap = (void *(*)(void *addr, size_t length, int prot, int flags, int fd, off_t offset))dlsym(RTLD_NEXT, "mmap");
-  orig_munmap = (int (*)(void *addr, size_t length))dlsym(RTLD_NEXT, "munmap");
+  orig_malloc = (void* (*)(size_t size))dlsym(RTLD_NEXT, "malloc");
+  orig_free   = (void (*)(void* ptr))dlsym(RTLD_NEXT, "free");
+  orig_mmap = (void* (*)(void* addr, size_t length, int prot, int flags, int fd, off_t offset))dlsym(RTLD_NEXT, "mmap");
+  orig_munmap = (int (*)(void* addr, size_t length))dlsym(RTLD_NEXT, "munmap");
 }
 
 void MemTracer::stat()

@@ -132,7 +132,7 @@ TEST(test_persist, test_persist_file_io)
   ASSERT_EQ(access(file_name_1.c_str(), F_OK), -1);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

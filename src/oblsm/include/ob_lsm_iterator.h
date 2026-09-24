@@ -40,13 +40,13 @@ namespace oceanbase {
 class ObLsmIterator
 {
 public:
-  ObLsmIterator(){};
+  ObLsmIterator() {};
 
-  ObLsmIterator(const ObLsmIterator &) = delete;
+  ObLsmIterator(const ObLsmIterator&) = delete;
 
-  ObLsmIterator &operator=(const ObLsmIterator &) = delete;
+  ObLsmIterator& operator=(const ObLsmIterator&) = delete;
 
-  virtual ~ObLsmIterator(){};
+  virtual ~ObLsmIterator() {};
 
   /**
    * @brief Checks if the iterator is currently positioned at a valid key-value pair.
@@ -85,7 +85,7 @@ public:
    *
    * @param k The key to search for.
    */
-  virtual void seek(const string_view &k) = 0;
+  virtual void seek(const string_view& k) = 0;
 
   /**
    * @brief Positions the iterator at the first key-value pair in the source.

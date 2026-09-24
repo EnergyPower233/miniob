@@ -27,35 +27,35 @@ class MiniobLineReader
 private:
   MiniobLineReader();
   ~MiniobLineReader();
-  MiniobLineReader(const MiniobLineReader &)            = delete;
-  MiniobLineReader &operator=(const MiniobLineReader &) = delete;
+  MiniobLineReader(const MiniobLineReader&)            = delete;
+  MiniobLineReader& operator=(const MiniobLineReader&) = delete;
 
 public:
   /**
    * @brief Get the singleton instance
    * @return Reference to the singleton instance
    */
-  static MiniobLineReader &instance();
+  static MiniobLineReader& instance();
 
   /**
    * @brief Initialize the lineReader with history file
    * @param history_file path/to/file
    */
-  void init(const std::string &history_file);
+  void init(const std::string& history_file);
 
   /**
    * @brief Read a line from input
    * @param prompt The prompt to display
    * @return input string
    */
-  std::string my_readline(const std::string &prompt);
+  std::string my_readline(const std::string& prompt);
 
   /**
    * @brief Check if the command is an exit command
    * @param cmd The input command
    * @return True if the command is an exit command
    */
-  bool is_exit_command(const std::string &cmd);
+  bool is_exit_command(const std::string& cmd);
 
 private:
   /**

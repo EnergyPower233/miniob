@@ -28,7 +28,7 @@ public:
 
   StmtType type() const override { return StmtType::EXIT; }
 
-  static RC create(Stmt *&stmt)
+  static RC create(Stmt*& stmt)
   {
     stmt = new ExitStmt();
     return RC::SUCCESS;

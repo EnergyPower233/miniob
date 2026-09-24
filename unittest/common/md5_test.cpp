@@ -39,7 +39,7 @@ void Md5Test::string()
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   Md5Test test;
   test.string();

@@ -27,14 +27,14 @@ namespace common {
  * if success, store file continent to data
  * if fail, return -1 and don't change data
  */
-int readFromFile(const string &fileName, char *&data, size_t &fileSize);
+int readFromFile(const string& fileName, char*& data, size_t& fileSize);
 
-int writeToFile(const string &fileName, const char *data, uint32_t dataSize, const char *openMode);
+int writeToFile(const string& fileName, const char* data, uint32_t dataSize, const char* openMode);
 
 /**
  * return the line number which line.strip() isn't empty
  */
-int getFileLines(const string &fileName, uint64_t &lineNum);
+int getFileLines(const string& fileName, uint64_t& lineNum);
 
 /** Get file list from the dir
  * don't care ".", "..", ".****" hidden files
@@ -46,16 +46,16 @@ int getFileLines(const string &fileName, uint64_t &lineNum);
  * @param[in]   resursion  if this has been set, it will search subdirs
  * @return  0   if success, error code otherwise
  */
-int getFileList(vector<string> &fileList, const string &path, const string &pattern, bool recursive);
-int getFileNum(uint64_t &fileNum, const string &path, const string &pattern, bool recursive);
-int getDirList(vector<string> &dirList, const string &path, const string &pattern);
+int getFileList(vector<string>& fileList, const string& path, const string& pattern, bool recursive);
+int getFileNum(uint64_t& fileNum, const string& path, const string& pattern, bool recursive);
+int getDirList(vector<string>& dirList, const string& path, const string& pattern);
 
-int touch(const string &fileName);
+int touch(const string& fileName);
 
 /**
  * get file size
  */
-int getFileSize(const char *filePath, int64_t &fileLen);
+int getFileSize(const char* filePath, int64_t& fileLen);
 
 /**
  * @brief 一次性写入所有指定数据
@@ -65,7 +65,7 @@ int getFileSize(const char *filePath, int64_t &fileLen);
  * @param size 写入多少数据
  * @return int 0 表示成功，否则返回errno
  */
-int writen(int fd, const void *buf, int size);
+int writen(int fd, const void* buf, int size);
 
 /**
  * @brief 一次性读取指定长度的数据
@@ -75,6 +75,6 @@ int writen(int fd, const void *buf, int size);
  * @param size 读取的数据长度
  * @return int 返回0表示成功。-1 表示读取到文件尾，并且没有读到size大小数据，其它表示errno
  */
-int readn(int fd, void *buf, int size);
+int readn(int fd, void* buf, int size);
 
 }  // namespace common

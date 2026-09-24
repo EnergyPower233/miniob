@@ -32,13 +32,13 @@ namespace common {
 #define DEFAULT_ITEM_NUM_PER_POOL 128
 #define DEFAULT_POOL_NUM 1
 
-typedef bool (*match)(void *item, void *input_arg);
+typedef bool (*match)(void* item, void* input_arg);
 
 template <class T>
 class MemPool
 {
 public:
-  MemPool(const char *tag) : name(tag)
+  MemPool(const char* tag) : name(tag)
   {
     this->size = 0;
 
@@ -74,13 +74,13 @@ public:
    * Alloc one frame from memory Pool
    * @return
    */
-  virtual T *alloc() = 0;
+  virtual T* alloc() = 0;
 
   /**
    * Free one item, the resouce will return to memory Pool
    * @param item
    */
-  virtual void free(T *item) = 0;
+  virtual void free(T* item) = 0;
 
   /**
    * Print the MemPool status
@@ -108,7 +108,7 @@ template <class T>
 class MemPoolSimple : public MemPool<T>
 {
 public:
-  MemPoolSimple(const char *tag) : MemPool<T>(tag) {}
+  MemPoolSimple(const char* tag) : MemPool<T>(tag) {}
 
   virtual ~MemPoolSimple() { cleanup(); }
 
@@ -134,13 +134,13 @@ public:
    * Alloc one frame from memory Pool
    * @return
    */
-  T *alloc();
+  T* alloc();
 
   /**
    * Free one item, the resouce will return to memory Pool
    * @param item
    */
-  void free(T *item);
+  void free(T* item);
 
   /**
    * Print the MemPool status
@@ -159,14 +159,14 @@ public:
   }
 
 protected:
-  list<T *> pools;
-  set<T *>  used;
-  list<T *> frees;
-  int       item_num_per_pool;
+  list<T*> pools;
+  set<T*>  used;
+  list<T*> frees;
+  int      item_num_per_pool;
 
 private:
-  inline void asan_poison(void *addr, size_t size) { ASAN_POISON_MEMORY_REGION(addr, size); }
-  inline void asan_unpoison(void *addr, size_t size) { ASAN_UNPOISON_MEMORY_REGION(addr, size); }
+  inline void asan_poison(void* addr, size_t size) { ASAN_POISON_MEMORY_REGION(addr, size); }
+  inline void asan_unpoison(void* addr, size_t size) { ASAN_UNPOISON_MEMORY_REGION(addr, size); }
 };
 
 template <class T>
@@ -207,15 +207,15 @@ void MemPoolSimple<T>::cleanup()
     return;
   }
   MUTEX_LOCK(&this->mutex);
-  for (auto &&i : frees) {
+  for (auto&& i : frees) {
     asan_unpoison(i, sizeof(T));
   }
   used.clear();
   frees.clear();
   this->size = 0;
 
-  for (typename list<T *>::iterator iter = pools.begin(); iter != pools.end(); iter++) {
-    T *pool = *iter;
+  for (typename list<T*>::iterator iter = pools.begin(); iter != pools.end(); iter++) {
+    T* pool = *iter;
     delete[] pool;
   }
   pools.clear();
@@ -232,7 +232,7 @@ int MemPoolSimple<T>::extend()
   }
 
   MUTEX_LOCK(&this->mutex);
-  T *pool = new T[item_num_per_pool];
+  T* pool = new T[item_num_per_pool];
   if (pool == nullptr) {
     MUTEX_UNLOCK(&this->mutex);
     LOG_ERROR("Failed to extend memory pool, this->size:%d, item_num_per_pool:%d, this->name:%s.",
@@ -254,7 +254,7 @@ int MemPoolSimple<T>::extend()
 }
 
 template <class T>
-T *MemPoolSimple<T>::alloc()
+T* MemPoolSimple<T>::alloc()
 {
   MUTEX_LOCK(&this->mutex);
   if (frees.empty() == true) {
@@ -268,7 +268,7 @@ T *MemPoolSimple<T>::alloc()
       return nullptr;
     }
   }
-  T *buffer = frees.front();
+  T* buffer = frees.front();
   asan_unpoison(buffer, sizeof(T));
   frees.pop_front();
 
@@ -280,7 +280,7 @@ T *MemPoolSimple<T>::alloc()
 }
 
 template <class T>
-void MemPoolSimple<T>::free(T *buf)
+void MemPoolSimple<T>::free(T* buf)
 {
   buf->reset();
 
@@ -317,10 +317,10 @@ string MemPoolSimple<T>::to_string()
 class MemPoolItem
 {
 public:
-  using item_unique_ptr = unique_ptr<void, function<void(void *const)>>;
+  using item_unique_ptr = unique_ptr<void, function<void(void* const)>>;
 
 public:
-  MemPoolItem(const char *tag) : name(tag)
+  MemPoolItem(const char* tag) : name(tag)
   {
     this->size = 0;
 
@@ -360,21 +360,21 @@ public:
    * Alloc one frame from memory Pool
    * @return
    */
-  void           *alloc();
+  void*           alloc();
   item_unique_ptr alloc_unique_ptr();
 
   /**
    * Free one item, the resouce will return to memory Pool
    * @param item
    */
-  void free(void *item);
+  void free(void* item);
 
   /**
    * Check whether this item has been used before.
    * @param item
    * @return
    */
-  bool is_used(void *item)
+  bool is_used(void* item)
   {
     MUTEX_LOCK(&mutex);
     auto it = used.find(item);
@@ -418,9 +418,9 @@ protected:
   int             item_size;
   int             item_num_per_pool;
 
-  list<void *> pools;
-  set<void *>  used;
-  list<void *> frees;
+  list<void*> pools;
+  set<void*>  used;
+  list<void*> frees;
 };
 
 }  // namespace common

@@ -51,7 +51,7 @@ public:
 
   virtual string Name() const = 0;
 
-  virtual void SetUp(const State &state)
+  virtual void SetUp(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -68,7 +68,7 @@ public:
     const int internal_max_size = 200;
     const int leaf_max_size     = 200;
 
-    const char *filename = btree_filename.c_str();
+    const char* filename = btree_filename.c_str();
 
     RC rc = handler_.create(
         log_handler_, bpm_, filename, AttrType::INTS, sizeof(int32_t) /*attr_len*/, internal_max_size, leaf_max_size);
@@ -79,7 +79,7 @@ public:
              this->Name().c_str(), state.threads(), state.thread_index());
   }
 
-  virtual void TearDown(const State &state)
+  virtual void TearDown(const State& state)
   {
     if (0 != state.thread_index()) {
       return;
@@ -95,7 +95,7 @@ public:
   void FillUp(uint32_t min, uint32_t max)
   {
     for (uint32_t value = min; value < max; ++value) {
-      const char *key = reinterpret_cast<const char *>(&value);
+      const char* key = reinterpret_cast<const char*>(&value);
       RID         rid(value, value);
 
       [[maybe_unused]] RC rc = handler_.insert_entry(key, &rid);
@@ -103,7 +103,7 @@ public:
     }
   }
 
-  uint32_t GetRangeMax(const State &state) const
+  uint32_t GetRangeMax(const State& state) const
   {
     uint32_t max = static_cast<uint32_t>(state.range(0) * 3);
     if (max <= 0) {
@@ -112,9 +112,9 @@ public:
     return max;
   }
 
-  void Insert(uint32_t value, Stat &stat)
+  void Insert(uint32_t value, Stat& stat)
   {
-    const char *key = reinterpret_cast<const char *>(&value);
+    const char* key = reinterpret_cast<const char*>(&value);
     RID         rid(value, value);
 
     RC rc = handler_.insert_entry(key, &rid);
@@ -131,9 +131,9 @@ public:
     }
   }
 
-  void Delete(uint32_t value, Stat &stat)
+  void Delete(uint32_t value, Stat& stat)
   {
-    const char *key = reinterpret_cast<const char *>(&value);
+    const char* key = reinterpret_cast<const char*>(&value);
     RID         rid(value, value);
 
     RC rc = handler_.delete_entry(key, &rid);
@@ -150,10 +150,10 @@ public:
     }
   }
 
-  void Scan(uint32_t begin, uint32_t end, Stat &stat)
+  void Scan(uint32_t begin, uint32_t end, Stat& stat)
   {
-    const char *begin_key = reinterpret_cast<const char *>(&begin);
-    const char *end_key   = reinterpret_cast<const char *>(&end);
+    const char* begin_key = reinterpret_cast<const char*>(&begin);
+    const char* end_key   = reinterpret_cast<const char*>(&end);
 
     BplusTreeScanner scanner(handler_);
 
@@ -193,7 +193,7 @@ struct InsertionBenchmark : public BenchmarkBase
   string Name() const override { return "insertion"; }
 };
 
-BENCHMARK_DEFINE_F(InsertionBenchmark, Insertion)(State &state)
+BENCHMARK_DEFINE_F(InsertionBenchmark, Insertion)(State& state)
 {
   IntegerGenerator generator(1, 1 << 31);
   Stat             stat;
@@ -217,7 +217,7 @@ class DeletionBenchmark : public BenchmarkBase
 public:
   string Name() const override { return "deletion"; }
 
-  void SetUp(const State &state) override
+  void SetUp(const State& state) override
   {
     if (0 != state.thread_index()) {
       return;
@@ -231,7 +231,7 @@ public:
   }
 };
 
-BENCHMARK_DEFINE_F(DeletionBenchmark, Deletion)(State &state)
+BENCHMARK_DEFINE_F(DeletionBenchmark, Deletion)(State& state)
 {
   uint32_t         max = GetRangeMax(state);
   IntegerGenerator generator(0, max);
@@ -256,7 +256,7 @@ class ScanBenchmark : public BenchmarkBase
 public:
   string Name() const override { return "scan"; }
 
-  void SetUp(const State &state) override
+  void SetUp(const State& state) override
   {
     if (0 != state.thread_index()) {
       return;
@@ -270,7 +270,7 @@ public:
   }
 };
 
-BENCHMARK_DEFINE_F(ScanBenchmark, Scan)(State &state)
+BENCHMARK_DEFINE_F(ScanBenchmark, Scan)(State& state)
 {
   int              max_range_size = 100;
   uint32_t         max            = GetRangeMax(state);
@@ -299,7 +299,7 @@ struct MixtureBenchmark : public BenchmarkBase
   string Name() const override { return "mixture"; }
 };
 
-BENCHMARK_DEFINE_F(MixtureBenchmark, Mixture)(State &state)
+BENCHMARK_DEFINE_F(MixtureBenchmark, Mixture)(State& state)
 {
   pair<uint32_t, uint32_t> data_range{0, GetRangeMax(state)};
   pair<uint32_t, uint32_t> scan_range{1, 100};

@@ -24,9 +24,7 @@ const int32_t LogHeader::SIZE = sizeof(LogHeader);
 string LogHeader::to_string() const
 {
   stringstream ss;
-  ss << "lsn=" << lsn 
-     << ", size=" << size 
-     << ", module_id=" << module_id << ":" << LogModule(module_id).name();
+  ss << "lsn=" << lsn << ", size=" << size << ", module_id=" << module_id << ":" << LogModule(module_id).name();
 
   return ss.str();
 }
@@ -35,54 +33,49 @@ string LogHeader::to_string() const
 // class LogEntry
 LogEntry::LogEntry()
 {
-  header_.lsn = 0;
+  header_.lsn  = 0;
   header_.size = 0;
 }
 
-LogEntry::LogEntry(LogEntry &&other)
+LogEntry::LogEntry(LogEntry&& other)
 {
   header_ = other.header_;
-  data_ = std::move(other.data_);
+  data_   = std::move(other.data_);
 
-  other.header_.lsn = 0;
+  other.header_.lsn  = 0;
   other.header_.size = 0;
 }
 
-LogEntry &LogEntry::operator=(LogEntry &&other)
+LogEntry& LogEntry::operator=(LogEntry&& other)
 {
   if (this == &other) {
     return *this;
   }
 
   header_ = other.header_;
-  data_ = std::move(other.data_);
+  data_   = std::move(other.data_);
 
-  other.header_.lsn = 0;
+  other.header_.lsn  = 0;
   other.header_.size = 0;
 
   return *this;
 }
 
-RC LogEntry::init(LSN lsn, LogModule::Id module_id, vector<char> &&data)
-{
-  return init(lsn, LogModule(module_id), std::move(data));
-}
+RC LogEntry::init(LSN lsn, LogModule::Id module_id, vector<char>&& data)
+{ return init(lsn, LogModule(module_id), std::move(data)); }
 
-RC LogEntry::init(LSN lsn, LogModule module, vector<char> &&data)
+RC LogEntry::init(LSN lsn, LogModule module, vector<char>&& data)
 {
   if (static_cast<int32_t>(data.size()) > max_payload_size()) {
     LOG_DEBUG("log entry size is too large. size=%d, max_payload_size=%d", data.size(), max_payload_size());
     return RC::INVALID_ARGUMENT;
   }
 
-  header_.lsn = lsn;
+  header_.lsn       = lsn;
   header_.module_id = module.index();
-  header_.size = static_cast<int32_t>(data.size());
-  data_ = std::move(data);
+  header_.size      = static_cast<int32_t>(data.size());
+  data_             = std::move(data);
   return RC::SUCCESS;
 }
 
-string LogEntry::to_string() const
-{
-  return header_.to_string();
-}
+string LogEntry::to_string() const { return header_.to_string(); }

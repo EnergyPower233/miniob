@@ -31,7 +31,7 @@ public:
 
   StmtType type() const override { return StmtType::HELP; }
 
-  static RC create(Stmt *&stmt)
+  static RC create(Stmt*& stmt)
   {
     stmt = new HelpStmt();
     return RC::SUCCESS;

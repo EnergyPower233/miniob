@@ -30,7 +30,7 @@ public:
   /**
    * @param options Pointer to the LSM-Tree options configuration.
    */
-  ObCompactionPicker(ObLsmOptions *options) : options_(options) {}
+  ObCompactionPicker(ObLsmOptions* options) : options_(options) {}
 
   virtual ~ObCompactionPicker() = default;
 
@@ -47,10 +47,10 @@ public:
    * @param options Pointer to the LSM-Tree options configuration.
    * @return A pointer to the created ObCompactionPicker instance.
    */
-  static ObCompactionPicker *create(CompactionType type, ObLsmOptions *options);
+  static ObCompactionPicker* create(CompactionType type, ObLsmOptions* options);
 
 protected:
-  ObLsmOptions *options_;  ///< Pointer to the LSM-Tree options configuration.
+  ObLsmOptions* options_;  ///< Pointer to the LSM-Tree options configuration.
 };
 
 /**
@@ -64,7 +64,7 @@ public:
   /**
    * @param options Pointer to the LSM-Tree options configuration.
    */
-  TiredCompactionPicker(ObLsmOptions *options) : ObCompactionPicker(options) {}
+  TiredCompactionPicker(ObLsmOptions* options) : ObCompactionPicker(options) {}
 
   ~TiredCompactionPicker() = default;
 

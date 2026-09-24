@@ -30,7 +30,7 @@ public:
 
   Column() = default;
 
-  Column(const Column &other)
+  Column(const Column& other)
   {
     count_       = other.count_;
     capacity_    = other.capacity_;
@@ -42,7 +42,7 @@ public:
     memcpy(data_, other.data_, capacity_ * attr_len_);
     vector_buffer_ = make_unique<VectorBuffer>();
   }
-  Column(Column &&other)
+  Column(Column&& other)
   {
     data_           = other.data_;
     count_          = other.count_;
@@ -58,12 +58,12 @@ public:
     other.own_      = false;
   }
 
-  Column(const FieldMeta &meta, size_t size = DEFAULT_CAPACITY);
+  Column(const FieldMeta& meta, size_t size = DEFAULT_CAPACITY);
   Column(AttrType attr_type, int attr_len, size_t size = DEFAULT_CAPACITY);
 
-  void init(const FieldMeta &meta, size_t size = DEFAULT_CAPACITY);
+  void init(const FieldMeta& meta, size_t size = DEFAULT_CAPACITY);
   void init(AttrType attr_type, int attr_len, size_t size = DEFAULT_CAPACITY);
-  void init(const Value &value, size_t size);
+  void init(const Value& value, size_t size);
 
   unique_ptr<Column> clone() const { return make_unique<Column>(*this); }
 
@@ -71,23 +71,23 @@ public:
 
   void reset();
 
-  RC append_one(const char *data);
+  RC append_one(const char* data);
 
-  RC append_value(const Value &val);
+  RC append_value(const Value& val);
 
   /**
    * @brief 向 Column 追加写入数据
    * @param data 要被写入数据的起始地址
    * @param count 要写入数据的长度（这里指列值的个数，而不是字节）
    */
-  RC append(const char *data, int count);
+  RC append(const char* data, int count);
 
   /**
    * @brief 获取 index 位置的列值
    */
   Value get_value(int index) const;
 
-  RC copy_to(void *dest, int start_rows, int insert_rows) const
+  RC copy_to(void* dest, int start_rows, int insert_rows) const
   {
     memcpy(dest, data_ + start_rows * attr_len_, insert_rows * attr_len_);
     return RC::SUCCESS;
@@ -98,9 +98,9 @@ public:
    */
   int data_len() const { return count_ * attr_len_; }
 
-  char *data() const { return data_; }
+  char* data() const { return data_; }
 
-  string_t add_text(const char *str, int len);
+  string_t add_text(const char* str, int len);
 
   /**
    * @brief 重置列数据，但不修改元信息
@@ -114,7 +114,7 @@ public:
   /**
    * @brief 引用另一个 Column
    */
-  void reference(const Column &column);
+  void reference(const Column& column);
 
   void set_column_type(Type column_type) { column_type_ = column_type; }
   void set_attr_type(AttrType attr_type) { attr_type_ = attr_type; }
@@ -128,7 +128,7 @@ public:
   static constexpr size_t DEFAULT_CAPACITY = 8192;
 
 private:
-  char *data_ = nullptr;
+  char* data_ = nullptr;
   /// 当前列值数量
   int count_ = 0;
   /// 当前容量，count_ <= capacity_

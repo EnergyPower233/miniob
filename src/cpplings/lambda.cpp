@@ -33,7 +33,7 @@ int main()
 
   // 使用 lambda 表达式来累计所有偶数的和
   int even_sum = 0;
-  for (const auto &num : numbers) {
+  for (const auto& num : numbers) {
     (void)(num);
     // TODO: 在实现 lambda 表达式后将下面的注释取消注释
     if (is_even(num)) {

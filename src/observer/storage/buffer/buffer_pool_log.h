@@ -80,7 +80,7 @@ struct BufferPoolLogEntry
 class BufferPoolLogHandler final
 {
 public:
-  BufferPoolLogHandler(DiskBufferPool &buffer_pool, LogHandler &log_handler);
+  BufferPoolLogHandler(DiskBufferPool& buffer_pool, LogHandler& log_handler);
   ~BufferPoolLogHandler() = default;
 
   /**
@@ -89,27 +89,27 @@ public:
    * @param[out] lsn 分配页面的日志序列号
    * @note TODO 可以把frame传过来，记录完日志，直接更新页面的lsn
    */
-  RC allocate_page(PageNum page_num, LSN &lsn);
+  RC allocate_page(PageNum page_num, LSN& lsn);
 
   /**
    * @brief 释放一个页面
    * @param page_num 释放的页面编号
    * @param[out] lsn 释放页面的日志序列号
    */
-  RC deallocate_page(PageNum page_num, LSN &lsn);
+  RC deallocate_page(PageNum page_num, LSN& lsn);
 
   /**
    * @brief 刷新页面到磁盘之前，需要保证页面对应的日志也已经刷新到磁盘
    * @details 如果页面刷新到磁盘了，但是日志很落后，在重启恢复时，就会出现异常，无法让所有的页面都恢复到一致的状态。
    */
-  RC flush_page(Page &page);
+  RC flush_page(Page& page);
 
 private:
-  RC append_log(BufferPoolOperation::Type type, PageNum page_num, LSN &lsn);
+  RC append_log(BufferPoolOperation::Type type, PageNum page_num, LSN& lsn);
 
 private:
-  DiskBufferPool &buffer_pool_;
-  LogHandler     &log_handler_;
+  DiskBufferPool& buffer_pool_;
+  LogHandler&     log_handler_;
 };
 
 /**
@@ -119,12 +119,12 @@ private:
 class BufferPoolLogReplayer final : public LogReplayer
 {
 public:
-  BufferPoolLogReplayer(BufferPoolManager &bp_manager);
+  BufferPoolLogReplayer(BufferPoolManager& bp_manager);
   virtual ~BufferPoolLogReplayer() = default;
 
   ///! @copydoc LogReplayer::replay
-  RC replay(const LogEntry &entry) override;
+  RC replay(const LogEntry& entry) override;
 
 private:
-  BufferPoolManager &bp_manager_;
+  BufferPoolManager& bp_manager_;
 };

@@ -25,10 +25,10 @@ using common::MiniobLineReader;
 
 const string prompt = "\033[32moblsm> \033[0m";
 bool         quit   = false;
-ObLsm       *lsm    = nullptr;
+ObLsm*       lsm    = nullptr;
 ObLsmOptions opt;
 
-const char *startup_tips = R"(
+const char* startup_tips = R"(
 Welcome to the OceanBase database implementation course.
 
 Copyright (c) 2021 OceanBase and/or its affiliates.
@@ -57,7 +57,7 @@ void print_sys_msg(string_view msg)
 }
 
 std::vector<std::pair<string, string>> scan(
-    const std::string *strs, const bool *bounds, ObDefaultComparator &comparator)
+    const std::string* strs, const bool* bounds, ObDefaultComparator& comparator)
 {
   std::vector<std::pair<string, string>> res;
 
@@ -111,7 +111,7 @@ void help()
   }
 }
 
-int main(int, char **)
+int main(int, char**)
 {
   print_sys_msg(startup_tips);
   print_sys_msg("Enter the help command to view the usage of oblsm_cli");
@@ -126,7 +126,7 @@ int main(int, char **)
     }
 
     ObLsmCliCmdParser parser;
-    auto            &&result     = parser.result;
+    auto&&            result     = parser.result;
     RC                rc         = parser.parse(command_input);
     auto              comparator = ObDefaultComparator{};
     if (OB_FAIL(rc)) {
@@ -176,7 +176,7 @@ int main(int, char **)
       }
       case ObLsmCliCmdType::SCAN: {
         auto scan_res = scan(result.args, result.bounds, comparator);
-        for (const auto &[k, v] : scan_res) {
+        for (const auto& [k, v] : scan_res) {
           std::cout << k << " " << v << "\n";
         }
         std::cout << std::endl;

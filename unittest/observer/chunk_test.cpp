@@ -35,11 +35,11 @@ TEST(ChunkTest, chunk_test)
     ASSERT_EQ(chunk.rows(), 0);
     for (int i = 0; i < row_num; i++) {
       int value1 = i;
-      chunk.column(0).append_one((char *)&value1);
+      chunk.column(0).append_one((char*)&value1);
     }
     for (int i = 0; i < row_num; i++) {
       float value2 = i + 0.5f;
-      chunk.column(1).append_one((char *)&value2);
+      chunk.column(1).append_one((char*)&value2);
     }
     ASSERT_EQ(chunk.rows(), row_num);
 
@@ -60,7 +60,7 @@ TEST(ChunkTest, chunk_test)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
   // 分析gtest程序的命令行参数

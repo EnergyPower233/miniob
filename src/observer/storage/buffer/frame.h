@@ -35,8 +35,8 @@ class FrameId
 public:
   FrameId() = default;
   FrameId(int buffer_pool_id, PageNum page_num);
-  bool    equal_to(const FrameId &other) const;
-  bool    operator==(const FrameId &other) const;
+  bool    equal_to(const FrameId& other) const;
+  bool    operator==(const FrameId& other) const;
   size_t  hash() const;
   int     buffer_pool_id() const;
   PageNum page_num() const;
@@ -89,7 +89,7 @@ public:
    * @details 磁盘文件划分为一个个页面，每次从磁盘加载到内存中，也是一个页面，就是 Page。
    * frame 是为了管理这些页面而维护的一个数据结构。
    */
-  Page &page() { return page_; }
+  Page& page() { return page_; }
 
   /**
    * @brief 每个页面都有一个编号
@@ -136,7 +136,7 @@ public:
   void clear_dirty() { dirty_ = false; }
   bool dirty() const { return dirty_; }
 
-  char *data() { return page_.data; }
+  char* data() { return page_.data; }
 
   bool can_purge() { return pin_count_.load() == 0; }
 

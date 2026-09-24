@@ -56,7 +56,7 @@ public:
    *
    * @param path 日志文件存放的目录
    */
-  RC init(const char *path) override;
+  RC init(const char* path) override;
 
   /**
    * @brief 启动线程刷新日志到磁盘
@@ -80,7 +80,7 @@ public:
    * @param replayer 回放日志接口
    * @param start_lsn 从哪个位置开始回放
    */
-  RC replay(LogReplayer &replayer, LSN start_lsn) override;
+  RC replay(LogReplayer& replayer, LSN start_lsn) override;
 
   /**
    * @brief 迭代日志
@@ -88,7 +88,7 @@ public:
    * @param consumer 消费者
    * @param start_lsn 从哪个位置开始迭代
    */
-  RC iterate(function<RC(LogEntry &)> consumer, LSN start_lsn) override;
+  RC iterate(function<RC(LogEntry&)> consumer, LSN start_lsn) override;
 
   /**
    * @brief 等待指定的日志刷盘
@@ -110,7 +110,7 @@ private:
    * @param[in] module  日志模块
    * @param[in] data    日志数据。具体的数据由各个模块自己定义
    */
-  RC _append(LSN &lsn, LogModule module, vector<char> &&data) override;
+  RC _append(LSN& lsn, LogModule module, vector<char>&& data) override;
 
 private:
   /**

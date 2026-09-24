@@ -35,28 +35,28 @@ class Db;
 class TableEngine
 {
 public:
-  TableEngine(TableMeta *table_meta) : table_meta_(table_meta) {}
+  TableEngine(TableMeta* table_meta) : table_meta_(table_meta) {}
   virtual ~TableEngine() = default;
 
-  virtual RC insert_record(Record &record)                                                        = 0;
-  virtual RC insert_chunk(const Chunk &chunk)                                                     = 0;
-  virtual RC delete_record(const Record &record)                                                  = 0;
-  virtual RC insert_record_with_trx(Record &record, Trx *trx)                                     = 0;
-  virtual RC delete_record_with_trx(const Record &record, Trx *trx)                               = 0;
-  virtual RC update_record_with_trx(const Record &old_record, const Record &new_record, Trx *trx) = 0;
-  virtual RC get_record(const RID &rid, Record &record)                                           = 0;
+  virtual RC insert_record(Record& record)                                                        = 0;
+  virtual RC insert_chunk(const Chunk& chunk)                                                     = 0;
+  virtual RC delete_record(const Record& record)                                                  = 0;
+  virtual RC insert_record_with_trx(Record& record, Trx* trx)                                     = 0;
+  virtual RC delete_record_with_trx(const Record& record, Trx* trx)                               = 0;
+  virtual RC update_record_with_trx(const Record& old_record, const Record& new_record, Trx* trx) = 0;
+  virtual RC get_record(const RID& rid, Record& record)                                           = 0;
 
-  virtual RC     create_index(Trx *trx, const FieldMeta *field_meta, const char *index_name) = 0;
-  virtual RC     get_record_scanner(RecordScanner *&scanner, Trx *trx, ReadWriteMode mode)   = 0;
-  virtual RC     get_chunk_scanner(ChunkFileScanner &scanner, Trx *trx, ReadWriteMode mode)  = 0;
-  virtual RC     visit_record(const RID &rid, function<bool(Record &)> visitor)              = 0;
+  virtual RC     create_index(Trx* trx, const FieldMeta* field_meta, const char* index_name) = 0;
+  virtual RC     get_record_scanner(RecordScanner*& scanner, Trx* trx, ReadWriteMode mode)   = 0;
+  virtual RC     get_chunk_scanner(ChunkFileScanner& scanner, Trx* trx, ReadWriteMode mode)  = 0;
+  virtual RC     visit_record(const RID& rid, function<bool(Record&)> visitor)               = 0;
   virtual RC     sync()                                                                      = 0;
-  virtual Index *find_index(const char *index_name) const                                    = 0;
-  virtual Index *find_index_by_field(const char *field_name) const                           = 0;
+  virtual Index* find_index(const char* index_name) const                                    = 0;
+  virtual Index* find_index_by_field(const char* field_name) const                           = 0;
   virtual RC     open()                                                                      = 0;
   // TODO: remove this function
   virtual RC init() = 0;
 
 protected:
-  TableMeta *table_meta_ = nullptr;
+  TableMeta* table_meta_ = nullptr;
 };

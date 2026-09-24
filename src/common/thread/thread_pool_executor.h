@@ -54,7 +54,7 @@ public:
    * @param max_size  线程池最大线程个数
    * @param keep_alive_time_ms 非核心线程空闲多久后退出
    */
-  int init(const char *name, int core_size, int max_size, long keep_alive_time_ms);
+  int init(const char* name, int core_size, int max_size, long keep_alive_time_ms);
 
   /**
    * @brief 初始化线程池
@@ -65,8 +65,8 @@ public:
    * @param keep_alive_time_ms 非核心线程空闲多久后退出
    * @param work_queue 任务队列
    */
-  int init(const char *name, int core_pool_size, int max_pool_size, long keep_alive_time_ms,
-      unique_ptr<Queue<unique_ptr<Runnable>>> &&work_queue);
+  int init(const char* name, int core_pool_size, int max_pool_size, long keep_alive_time_ms,
+      unique_ptr<Queue<unique_ptr<Runnable>>>&& work_queue);
 
   /**
    * @brief 提交一个任务，不一定可以立即执行
@@ -74,7 +74,7 @@ public:
    * @param task 任务
    * @return int 成功放入队列返回0
    */
-  int execute(unique_ptr<Runnable> &&task);
+  int execute(unique_ptr<Runnable>&& task);
 
   /**
    * @brief 提交一个任务，不一定可以立即执行
@@ -82,7 +82,7 @@ public:
    * @param callable 任务
    * @return int 成功放入队列返回0
    */
-  int execute(const function<void()> &callable);
+  int execute(const function<void()>& callable);
 
   /**
    * @brief 关闭线程池
@@ -161,7 +161,7 @@ private:
     bool    core_thread = false;    /// 是否是核心线程
     bool    idle        = false;    /// 是否空闲
     bool    terminated  = false;    /// 是否已经退出
-    thread *thread_ptr  = nullptr;  /// 线程指针
+    thread* thread_ptr  = nullptr;  /// 线程指针
   };
 
 private:

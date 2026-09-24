@@ -18,7 +18,7 @@ struct PropSetPtrHash
   /**
    * TODO: WIP
    */
-  std::size_t operator()(PropertySet *const &s) const { return 0; }
+  std::size_t operator()(PropertySet* const& s) const { return 0; }
 };
 
 struct PropSetPtrEq
@@ -26,7 +26,7 @@ struct PropSetPtrEq
   /**
    * TODO: WIP
    */
-  bool operator()(PropertySet *const &t1, PropertySet *const &t2) const { return false; }
+  bool operator()(PropertySet* const& t1, PropertySet* const& t2) const { return false; }
 };
 
 /**
@@ -39,5 +39,5 @@ public:
   ~PropertySet() = default;
 
 private:
-  std::vector<Property *> properties_;
+  std::vector<Property*> properties_;
 };
